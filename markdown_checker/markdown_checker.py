@@ -1,46 +1,10 @@
 #!/usr/bin/env python3
 """
 Module providing automatic checks functionality to markdown files 
-following the some Guidelines
+following some Guidelines
 """
 import os
-import argparse
 import re
-
-
-def main() -> None:
-    """Main program get inputs and run checks"""
-
-    # get input arguments directory, function to run
-    in_arg = get_input_args()
-
-    lessons = get_lessons_paths(in_arg.dir)
-
-    # iterate over the files to validate the content
-    for lesson_folder_name, lessons_array in lessons.items():
-        for lesson_file_name in lessons_array:
-            file_path = os.path.join(
-                in_arg.dir,
-                lesson_folder_name,
-                lesson_file_name)
-            if in_arg.dir == lesson_folder_name:
-                file_path = os.path.join(lesson_folder_name, lesson_file_name)
-            if "check_broken_paths" in in_arg.func:
-                formatted_output = check_broken_links(file_path, "path" , "broken")
-                if formatted_output:
-                    print(formatted_output)
-            if "check_paths_tracking" in in_arg.func:
-                formatted_output = check_broken_links(file_path, "path" , "tracking")
-                if formatted_output:
-                    print(formatted_output)
-            if "check_urls_tracking" in in_arg.func:
-                formatted_output = check_broken_links(file_path, "url" , "tracking")
-                if formatted_output:
-                    print(formatted_output)
-            if "check_urls_locale" in in_arg.func:
-                formatted_output = check_broken_links(file_path, "url" , "locale")
-                if formatted_output:
-                    print(formatted_output)
 
 # Helper Functions
 
@@ -201,42 +165,6 @@ def check_url_tracking(urls : list) -> list:
         if not matches:
             tracking_id.append(url)
     return tracking_id
-
-def get_input_args() -> None:
-    """
-    Retrieves and parses the 2 command line arguments provided by the user when
-    they run the program from a terminal window. This function uses Python's 
-    argparse module to created and defined these 2 command line arguments. If 
-    the user fails to provide some or all of the 2 arguments, then the default 
-    values are used for the missing arguments. 
-    Command Line Arguments:
-      1. Tutorials Path as --dir
-      2. Function to be executed as --func
-    This function returns these arguments as an ArgumentParser object.
-    Parameters:
-     None - simply using argparse module to create & store command line arguments
-    Returns:
-     parse_args() -data structure that stores the command line arguments object  
-    """
-    # Parse using ArgumentParser
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-d', '--dir', type = str, default = './',
-                    help = 'path to the root directory', required=True)
-
-    parser.add_argument('-f', '--func', type = str, required = True,
-                        help = 'function to be executed',
-                        choices=['check_broken_paths',
-                                 'check_paths_tracking',
-                                 'check_urls_tracking',
-                                 'check_urls_locale'])
-
-    return parser.parse_args()
-
-
-# Call to main function to run the program
-if __name__ == "__main__":
-    main()
 
 # DEPRECATED
 def get_urls_from_file(file_path: str) -> list:
