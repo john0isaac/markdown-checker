@@ -12,4 +12,4 @@ markdown-checker is a markdown validation reporting tool.
 3. The output will be displayed in the terminal.
 
 # Using markdown-checker in GitHub Actions
-The tool has been designed to be run within a GitHub workflow using the [action-check-markdown](https://github.com/marketplace/actions/action-check-markdown) GitHub action. The action will automatically post the output of the tool to your GitHub pull request as a comment.
+The tool has been designed to be run within a GitHub workflow using the [action-check-markdown](https://github.com/marketplace/actions/check-markdown) GitHub action. The action will automatically post the output of the tool to your GitHub pull request as a comment.
