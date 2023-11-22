@@ -1,6 +1,10 @@
-# markdown-checker
+[![PyPi](https://img.shields.io/pypi/v/markdown-checker)](https://pypi.org/project/markdown-checker/)
+[![Downloads](https://img.shields.io/pypi/dm/markdown-checker)](https://pypi.org/project/markdown-checker/)
 
-A Markdown Validation Reporting Tool.
+[![GitHub issues](https://img.shields.io/badge/issue_tracking-github-blue.svg)](https://github.com/john0isaac/markdown-checker/issues)
+[![Contributing](https://img.shields.io/badge/PR-Welcome-%23FF8300.svg?)](https://github.com/john0isaac/markdown-checker/pulls)
+
+markdown-checker is a markdown validation reporting tool.
 
 # How To
 1. Run `pip install markdown-checker`.
