@@ -43,7 +43,7 @@ def check_broken_links(file_path : str, link_type : str , check_type: str) -> st
             elif check_type == "locale" and len(urls) > 0:
                 country_locale_urls = check_url_locale(urls)
                 if len(country_locale_urls) > 0:
-                    formatted_output += f'<code>{country_locale_urls}<\code>|\n'
+                    formatted_output += f'<code>{country_locale_urls}</code>|\n'
                     return formatted_output
 
 def get_links_from_file(file_path: str) -> list:
