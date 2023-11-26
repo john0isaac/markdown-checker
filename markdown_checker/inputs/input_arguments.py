@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Module providing automatic checks functionality to markdown files 
 following some Guidelines
