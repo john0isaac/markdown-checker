@@ -3,9 +3,9 @@
 Module providing automatic checks functionality to markdown files 
 following some Guidelines
 """
-import os
-from markdown_checker.get_input_args.get_input_args import get_input_args
-from markdown_checker.markdown_checker import get_lessons_paths, check_broken_links
+from markdown_checker.inputs.input_arguments import get_input_args
+from markdown_checker.markdown_checker import check_broken_links
+from markdown_checker.paths.files_paths_reader import get_files_paths_list
 
 def main() -> None:
     """Main program get inputs and run checks"""
@@ -13,33 +13,34 @@ def main() -> None:
     # get input arguments directory, function to run
     in_arg = get_input_args()
 
-    lessons = get_lessons_paths(in_arg.dir)
+    _, files_paths = get_files_paths_list(in_arg.dir)
+
+    pass_list = ['./CODE_OF_CONDUCT.md', './CONTRIBUTING.md', './SECURITY.md']
+    files_paths = [file_path for file_path in files_paths if file_path not in pass_list]
+
+    formatted_output = ""
 
     # iterate over the files to validate the content
-    for lesson_folder_name, lessons_array in lessons.items():
-        for lesson_file_name in lessons_array:
-            file_path = os.path.join(
-                in_arg.dir,
-                lesson_folder_name,
-                lesson_file_name)
-            if in_arg.dir == lesson_folder_name:
-                file_path = os.path.join(lesson_folder_name, lesson_file_name)
-            if "check_broken_paths" in in_arg.func:
-                formatted_output = check_broken_links(file_path, "path" , "broken")
-                if formatted_output:
-                    print(formatted_output)
-            if "check_paths_tracking" in in_arg.func:
-                formatted_output = check_broken_links(file_path, "path" , "tracking")
-                if formatted_output:
-                    print(formatted_output)
-            if "check_urls_tracking" in in_arg.func:
-                formatted_output = check_broken_links(file_path, "url" , "tracking")
-                if formatted_output:
-                    print(formatted_output)
-            if "check_urls_locale" in in_arg.func:
-                formatted_output = check_broken_links(file_path, "url" , "locale")
-                if formatted_output:
-                    print(formatted_output)
+    for file_path in files_paths:
+        if "check_broken_paths" in in_arg.func:
+            broken_paths = check_broken_links(file_path, "path" , "broken")
+            if broken_paths:
+                formatted_output += broken_paths
+        if "check_paths_tracking" in in_arg.func:
+            paths_tracking = check_broken_links(file_path, "path" , "tracking")
+            if paths_tracking:
+                formatted_output += paths_tracking
+        if "check_urls_tracking" in in_arg.func:
+            urls_tracking = check_broken_links(file_path, "url" , "tracking")
+            if urls_tracking:
+                formatted_output += urls_tracking
+        if "check_urls_locale" in in_arg.func:
+            urls_locale = check_broken_links(file_path, "url" , "locale")
+            if urls_locale:
+                formatted_output += urls_locale
+    if formatted_output != "":
+        formatted_output = "| File Full Path | Issues |\n|--------|--------|\n" + formatted_output
+        print(formatted_output)
 
 if __name__ == "__main__":
     main()
