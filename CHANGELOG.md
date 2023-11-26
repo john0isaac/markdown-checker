@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
-## [v0.0.6] 26 November 2023
+## [v0.0.7] 26 November 2023
 
 - Rename get_input_args to inputs module with no change.
 - Improve paths reading using recursion.
