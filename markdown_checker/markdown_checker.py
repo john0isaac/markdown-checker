@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Module providing automatic checks functionality to markdown files 
 following some Guidelines
@@ -7,50 +6,6 @@ import os
 import re
 
 # Helper Functions
-
-def get_lessons_paths(root_path: str) -> dict:
-    """function to compile a dictionary of directories
-    
-    Keyword arguments:
-    root_path -- directory to go through looking for md files
-    Return: formatted dictionary with directories as key and an array of files as values
-    """
-    lessons = {}
-    # add root path to the dictionary
-    lessons[root_path] = []
-    pass_list = ['CODE_OF_CONDUCT.md', 'CONTRIBUTING.md', 'SECURITY.md']
-    # get lessons folders
-    for item in os.listdir(root_path):
-        if os.path.isdir(os.path.join(root_path, item)):
-            lessons[item] = []
-
-    # get lesson exercises (md, ipynb files)
-    for lesson, _ in lessons.items():
-        if lesson != root_path:
-            for item in os.listdir(os.path.join(root_path, lesson)):
-                # check for translations directories
-                if os.path.isdir(os.path.join(root_path, lesson, item)):
-                    for sub_item in os.listdir(os.path.join(root_path, lesson, item)):
-                        if os.path.isdir(os.path.join(root_path, lesson, item, sub_item)):
-                            for sub_item2 in os.listdir(os.path.join(root_path, lesson, item, sub_item)):
-                                # check for .md and .ipynb files and store them
-                                if sub_item2.lower().endswith(('.md', '.ipynb')) and sub_item2 not in pass_list:
-                                    lessons[lesson].append(os.path.join(item, sub_item, sub_item2))
-                        # check for .md and .ipynb files and store them
-                        elif sub_item.lower().endswith(('.md', '.ipynb')) and sub_item not in pass_list:
-                            lessons[lesson].append(os.path.join(item, sub_item))
-                # check for .md and .ipynb files and store them
-                elif item.lower().endswith(('.md', '.ipynb')) and item not in pass_list:
-                    lessons[lesson].append(item)
-    # get .md and .ipynb in root directory
-    for item in os.listdir(root_path):
-        if item.lower().endswith(('.md', '.ipynb')) and item not in pass_list:
-            lessons[root_path].append(item)
-
-    # check to remove folders that don't have .md files in them
-    lessons = {key: values for key, values in lessons.items() if len(values) > 0}
-
-    return lessons
 
 def check_broken_links(file_path : str, link_type : str , check_type: str) -> str:
     """function that checks if urls and hyperlinks are broken
@@ -65,30 +20,30 @@ def check_broken_links(file_path : str, link_type : str , check_type: str) -> st
 
     # check if file has links
     if len(all_links) > 0:
-        formatted_output = f"    FILE '{file_path}'\n"
+        formatted_output = f"|<code>{file_path}</code>|"
         if link_type == "path":
             paths = get_paths_from_links(all_links)
             if check_type == "broken" and len(paths) > 0:
                 broken_path = check_paths_exists(file_path, paths)
                 if len (broken_path) > 0:
-                    formatted_output += f'    has the following broken relative paths {broken_path}\n'
+                    formatted_output += f'<code>{broken_path}</code>|\n'
                     return formatted_output
             elif check_type == "tracking" and len(paths) > 0:
                 tracking_id_paths = check_url_tracking(paths)
                 if len(tracking_id_paths) > 0:
-                    formatted_output += f'    has the following paths with no tracking id {tracking_id_paths}\n'
+                    formatted_output += f'<code>{tracking_id_paths}</code>|\n'
                     return formatted_output
         elif link_type == "url":
             urls = get_urls_from_links(all_links)
             if check_type == "tracking" and len(urls) > 0:
                 tracking_id_urls = check_url_tracking(urls)
                 if len(tracking_id_urls) > 0:
-                    formatted_output += f'    has the following links with no tracking id {tracking_id_urls}\n'
+                    formatted_output += f'<code>{tracking_id_urls}</code>|\n'
                     return formatted_output
             elif check_type == "locale" and len(urls) > 0:
                 country_locale_urls = check_url_locale(urls)
                 if len(country_locale_urls) > 0:
-                    formatted_output += f'    has the following links with country locale {country_locale_urls}\n'
+                    formatted_output += f'<code>{country_locale_urls}<\code>|\n'
                     return formatted_output
 
 def get_links_from_file(file_path: str) -> list:
