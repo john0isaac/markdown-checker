@@ -15,7 +15,7 @@ def main() -> None:
 
     _, files_paths = get_files_paths_list(in_arg.dir)
 
-    pass_list = ['./CODE_OF_CONDUCT.md', './CONTRIBUTING.md', './SECURITY.md']
+    pass_list = ['./CODE_OF_CONDUCT.md', './CONTRIBUTING.md', './SECURITY.md', '.\CODE_OF_CONDUCT.md', '.\CONTRIBUTING.md', '.\SECURITY.md']
     files_paths = [file_path for file_path in files_paths if file_path not in pass_list]
 
     formatted_output = ""
