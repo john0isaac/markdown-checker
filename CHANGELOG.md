@@ -12,6 +12,14 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.0.8] 30 December 2023
+
+- feat: separate into modules
+- feat: generate markdown file
+- define tests to execute functions
+- docs: add instructions for local development
+
+
 ## [v0.0.7] 26 November 2023
 
 - Rename get_input_args to inputs module with no change.
