@@ -9,28 +9,28 @@ def check_broken_paths():
     Function to check for broken paths.
     """
     print("check_broken_paths was called")
-    subprocess.run(["markdown-checker", "-d", "./tests/resources/", "-f", "check_broken_paths"], check=False)
+    subprocess.run(["markdown-checker", "-d", "./tests/resources/", "-f", "check_broken_paths", "-gu", "https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md"], check=False)
 
 def check_paths_tracking():
     """
     Function to check paths tracking.
     """
     print("check_paths_tracking was called")
-    subprocess.run(["markdown-checker", "-d", "./tests/resources/", "-f", "check_paths_tracking"], check=False)
+    subprocess.run(["markdown-checker", "-d", "./tests/resources/", "-f", "check_paths_tracking", "-gu", "https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md"], check=False)
 
 def check_urls_tracking():
     """
     Function to check URLs tracking.
     """
     print("check_urls_tracking was called")
-    subprocess.run(["markdown-checker", "-d", "./tests/resources/", "-f", "check_urls_tracking"], check=False)
+    subprocess.run(["markdown-checker", "-d", "./tests/resources/", "-f", "check_urls_tracking", "-gu", "https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md"], check=False)
 
 def check_urls_locale():
     """
     Function to check URLs locale.
     """
     print("check_urls_locale was called")
-    subprocess.run(["markdown-checker", "-d", "./tests/resources/", "-f", "check_urls_locale"], check=False)
+    subprocess.run(["markdown-checker", "-d", "./tests/resources/", "-f", "check_urls_locale", "-gu", "https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md"], check=False)
 
 mydict = {1:check_broken_paths, 2:check_paths_tracking, 3:check_urls_tracking, 4:check_urls_locale}
 

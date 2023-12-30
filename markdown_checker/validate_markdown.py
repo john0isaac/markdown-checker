@@ -6,6 +6,7 @@ following some Guidelines
 from markdown_checker.inputs.input_arguments import get_input_args
 from markdown_checker.check_markdown import check_broken_links
 from markdown_checker.paths.files_paths_reader import get_files_paths_list
+from markdown_checker.generators.md_generator import generate_md
 
 def main() -> None:
     """Main program get inputs and run checks"""
@@ -41,6 +42,7 @@ def main() -> None:
     if formatted_output != "":
         formatted_output = "| File Full Path | Issues |\n|--------|--------|\n" + formatted_output
         print(formatted_output)
+        generate_md(formatted_output, in_arg.func, in_arg.guide_url)
 
 if __name__ == "__main__":
     main()
