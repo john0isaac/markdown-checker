@@ -33,7 +33,7 @@ def get_input_args() -> None:
                                  'check_urls_tracking',
                                  'check_urls_locale'])
 
-    parser.add_argument('-gu', '--guide_url', type = str, default = 'https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md',
+    parser.add_argument('-gu', '--guide-url', type = str, default = 'https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md',
                     help = 'full url of your contributing guide', required=True)
 
     return parser.parse_args()
