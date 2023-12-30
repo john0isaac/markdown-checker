@@ -9,8 +9,8 @@ markdown-checker is a markdown validation reporting tool.
 # How To
 
 1. Run `pip install markdown-checker`.
-2. Run `markdown-checker -d {src} -f {func}`. Replace `{src}` with the directory you want to analyze and {func} with the available functions like check_broken_paths.
-3. The output will be displayed in the terminal.
+2. Run `markdown-checker -d {src} -f {func} -gu {url}`. Replace `{src}` with the directory you want to analyze, {func} with the available functions like check_broken_paths, {gu} with your contribution guidance full URL.
+3. The output will be displayed in the terminal and in a `comments.md` file.
 
 # Using markdown-checker in GitHub Actions
 
