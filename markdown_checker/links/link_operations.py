@@ -60,7 +60,7 @@ def check_url_locale(urls : list) -> list:
     for url in urls:
         locale_pattern = re.compile(r'\/[a-z]{2}-[a-z]{2}\/')
         matches = re.findall(locale_pattern, url)
-        if matches:
+        if matches and "video-embed.html" not in url:
             country_locale.append(url)
     return country_locale
 
