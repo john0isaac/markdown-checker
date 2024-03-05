@@ -12,6 +12,11 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.0.9] 05 March 2023
+
+- fix: skip video urls
+- feat: add devcontainer
+
 ## [v0.0.8] 30 December 2023
 
 - feat: separate into modules
