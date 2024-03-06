@@ -42,6 +42,7 @@ def get_input_args() -> None:
         help="function to be executed",
         choices=[
             "check_broken_paths",
+            "check_broken_urls",
             "check_paths_tracking",
             "check_urls_tracking",
             "check_urls_locale",

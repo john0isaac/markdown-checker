@@ -10,6 +10,7 @@ from markdown_checker.links.link_operations import (
     check_paths_exists,
     check_url_locale,
     check_url_tracking,
+    check_url_alive,
 )
 
 
@@ -50,6 +51,11 @@ def check_broken_links(file_path: str, link_type: str, check_type: str) -> str:
                 country_locale_urls = check_url_locale(urls)
                 if len(country_locale_urls) > 0:
                     formatted_output += format_links(country_locale_urls)
+                    return formatted_output
+            elif check_type == "broken" and len(urls) > 0:
+                dead_urls = check_url_alive(urls)
+                if len(dead_urls) > 0:
+                    formatted_output += format_links(dead_urls)
                     return formatted_output
 
 
