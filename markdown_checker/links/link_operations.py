@@ -1,5 +1,5 @@
-import re
 import os
+import re
 
 
 def get_links_from_file(file_path: str) -> list:
@@ -73,9 +73,14 @@ def check_url_locale(urls: list) -> list:
     """
     country_locale = []
     for url in urls:
+        if (
+            "video-embed.html" in url
+            or "https://www.microsoft.com/en-us/security/blog" in url
+        ):
+            continue
         locale_pattern = re.compile(r"\/[a-z]{2}-[a-z]{2}\/")
         matches = re.findall(locale_pattern, url)
-        if matches and "video-embed.html" not in url:
+        if matches:
             country_locale.append(url)
     return country_locale
 
