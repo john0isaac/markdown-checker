@@ -26,28 +26,50 @@ def check_broken_links(file_path: str, link_type: str, check_type: str) -> str:
 
     # check if file has links
     if len(all_links) > 0:
-        formatted_output = f"|<code>{file_path}</code>|"
+        formatted_output = f"| `{file_path}` |"
         if link_type == "path":
             paths = get_paths_from_links(all_links)
             if check_type == "broken" and len(paths) > 0:
                 broken_path = check_paths_exists(file_path, paths)
                 if len(broken_path) > 0:
-                    formatted_output += f"<code>{broken_path}</code>|\n"
+                    formatted_output += format_links(broken_path)
                     return formatted_output
             elif check_type == "tracking" and len(paths) > 0:
                 tracking_id_paths = check_url_tracking(paths)
                 if len(tracking_id_paths) > 0:
-                    formatted_output += f"<code>{tracking_id_paths}</code>|\n"
+                    formatted_output += format_links(tracking_id_paths)
                     return formatted_output
         elif link_type == "url":
             urls = get_urls_from_links(all_links)
             if check_type == "tracking" and len(urls) > 0:
                 tracking_id_urls = check_url_tracking(urls)
                 if len(tracking_id_urls) > 0:
-                    formatted_output += f"<code>{tracking_id_urls}</code>|\n"
+                    formatted_output += format_links(tracking_id_urls)
                     return formatted_output
             elif check_type == "locale" and len(urls) > 0:
                 country_locale_urls = check_url_locale(urls)
                 if len(country_locale_urls) > 0:
-                    formatted_output += f"<code>{country_locale_urls}</code>|\n"
+                    formatted_output += format_links(country_locale_urls)
                     return formatted_output
+
+
+def format_links(links: list) -> str:
+    """
+    Formats a list of links into a string with numbered bullets.
+
+    Args:
+        links (list): A list of links.
+
+    Returns:
+        str: The formatted string with numbered bullets.
+    """
+    formatted_links = ""
+    i = 1
+    for link in links:
+        if i == len(links):
+            formatted_links += f" {i}. `{link}` |\n"
+        else:
+            formatted_links += f" {i}. `{link}` <br/>"
+        i += 1
+
+    return formatted_links
