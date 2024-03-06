@@ -103,6 +103,8 @@ def check_url_alive(urls: list) -> list:
 
     broken_urls = []
     for url in urls:
+        if "https://vscode.dev/redirect?url=" in url:
+            continue
         try:
             response = requests.get(url, timeout=10)
             if response.status_code != 200:
