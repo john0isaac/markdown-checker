@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Module providing automatic checks functionality to markdown files 
+Module providing automatic checks functionality to markdown files
 following some Guidelines
 """
-from markdown_checker.inputs.input_arguments import get_input_args
+
 from markdown_checker.check_markdown import check_broken_links
-from markdown_checker.paths.files_paths_reader import get_files_paths_list
 from markdown_checker.generators.md_generator import generate_md
+from markdown_checker.inputs.input_arguments import get_input_args
+from markdown_checker.paths.files_paths_reader import get_files_paths_list
 
 
 def main() -> None:

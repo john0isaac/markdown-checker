@@ -1,16 +1,16 @@
 """
-Module providing automatic checks functionality to markdown files 
+Module providing automatic checks functionality to markdown files
 following some Guidelines
 """
 
 from markdown_checker.links.link_operations import (
+    check_paths_exists,
+    check_url_alive,
+    check_url_locale,
+    check_url_tracking,
     get_links_from_file,
     get_paths_from_links,
     get_urls_from_links,
-    check_paths_exists,
-    check_url_locale,
-    check_url_tracking,
-    check_url_alive,
 )
 
 
