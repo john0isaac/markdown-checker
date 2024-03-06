@@ -12,6 +12,11 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.1.2] 06 March 2024
+* Improve-package by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/21
+* Skipped vs code redirect urls
+* fixed typos
+
 ## [v0.1.1] 06 March 2024
 * fix: add requests to required packages by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/19
 
