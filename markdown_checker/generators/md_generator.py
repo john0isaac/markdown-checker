@@ -3,9 +3,9 @@ CHECK_BROKEN_PATHS = """# Check Broken Paths
 We have automatically detected the following broken relative paths in your lessons. Review and fix the paths to resolve this issue.
 
 Check the file paths and associated broken paths inside them."""
-CHECK_BROKEN_URLS = """# Check Broken URLS
+CHECK_BROKEN_URLS = """# Check Broken URLs
 
-We have automatically detected the following broken URLS in your lessons. Review and fix the paths to resolve this issue.
+We have automatically detected the following broken URLs in your lessons. Review and fix the paths to resolve this issue.
 
 Check the file paths and associated broken urls inside them."""
 CHECK_PATHS_TRACKING = """# Check Missing Tracking from Paths
