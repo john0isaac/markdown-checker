@@ -15,3 +15,50 @@ markdown-checker is a markdown validation reporting tool.
 # Using markdown-checker in GitHub Actions
 
 The tool has been designed to be run within a GitHub workflow using the [action-check-markdown](https://github.com/marketplace/actions/check-markdown) GitHub action. The action will automatically post the output of the tool to your GitHub pull request as a comment.
+
+# Supported Functions
+
+## Check broken relative paths
+This function ensures that any relative path in your files is working.
+
+Example:
+
+```bash
+markdown-checker -d . -f check_broken_paths -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
+```
+
+## Check broken URLs
+This function ensures that any web URL in your files is working and returning 200 status code.
+
+Example:
+
+```bash
+markdown-checker -d . -f check_broken_urls -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
+```
+
+## Check country locale present in URLs
+This function ensures that any relative path in your files is working. 
+
+Example:
+
+```bash
+markdown-checker -d . -f check_urls_locale -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
+```
+
+## Check Contributor ID missing from paths
+This function ensures that any relative path has tracking in it.
+
+Example:
+
+```bash
+markdown-checker -d . -f check_paths_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
+```
+
+## Check Contributor ID missing from URLs
+This function ensures that any URL has tracking in it.
+
+Example:
+
+```bash
+markdown-checker -d . -f check_urls_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
+```
