@@ -10,6 +10,7 @@ Functions:
 
 import os
 
+
 def get_files_paths_list(root_path: str, extensions: list = None) -> list:
     """
     function returns a list of files in a directory and its subdirectories,
