@@ -47,6 +47,10 @@ def main() -> None:
             urls_locale = check_broken_links(file_path, "url", "locale")
             if urls_locale:
                 formatted_output += urls_locale
+        if "check_broken_urls" in in_arg.func:
+            broken_urls = check_broken_links(file_path, "url", "broken")
+            if broken_urls:
+                formatted_output += broken_urls
     if formatted_output != "":
         formatted_output = (
             "| File Full Path | Issues |\n|--------|--------|\n" + formatted_output

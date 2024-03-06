@@ -93,6 +93,21 @@ def check_url_tracking(urls: list) -> list:
     return tracking_id
 
 
+def check_url_alive(urls: list) -> list:
+    import requests
+
+    broken_urls = []
+    for url in urls:
+        try:
+            response = requests.get(url, timeout=10)
+            if response.status_code != 200:
+                broken_urls.append(url)
+        except requests.exceptions.RequestException:
+            broken_urls.append(url)
+            continue
+    return broken_urls
+
+
 # DEPRECATED
 def get_urls_from_file(file_path: str) -> list:
     """function to get an array of urls from a file"""
