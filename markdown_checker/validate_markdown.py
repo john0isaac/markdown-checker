@@ -20,10 +20,8 @@ def main() -> None:
 
     pass_list = [
         "./CODE_OF_CONDUCT.md",
-        "./CONTRIBUTING.md",
         "./SECURITY.md",
         ".\CODE_OF_CONDUCT.md",
-        ".\CONTRIBUTING.md",
         ".\SECURITY.md",
     ]
     files_paths = [file_path for file_path in files_paths if file_path not in pass_list]
