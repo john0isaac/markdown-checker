@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.1.1] 06 March 2024
+* fix: add requests to required packages by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/19
+
 ## [v0.1.0] 06 March 2024
 * add development requirements and install in devcontainer by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/13
 * format with ruff and black by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/14
