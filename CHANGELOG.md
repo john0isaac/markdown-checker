@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.1.3] 15 March 2024
+Change lessons to files
+Remove ID's from the end of Relative Paths
+
 ## [v0.1.2] 06 March 2024
 * Improve-package by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/21
 * Skipped vs code redirect urls
