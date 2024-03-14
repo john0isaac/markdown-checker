@@ -1,26 +1,26 @@
 CHECK_BROKEN_PATHS = """# Check Broken Paths
 
-We have automatically detected the following broken relative paths in your lessons. Review and fix the paths to resolve this issue.
+We have automatically detected the following broken relative paths in your files. Review and fix the paths to resolve this issue.
 
 Check the file paths and associated broken paths inside them."""
 CHECK_BROKEN_URLS = """# Check Broken URLs
 
-We have automatically detected the following broken URLs in your lessons. Review and fix the paths to resolve this issue.
+We have automatically detected the following broken URLs in your files. Review and fix the paths to resolve this issue.
 
-Check the file paths and associated broken urls inside them."""
+Check the file paths and associated broken URLs inside them."""
 CHECK_PATHS_TRACKING = """# Check Missing Tracking from Paths
 
-We have automatically detected missing tracking id from the following relative paths in your lessons. Review and add tracking to paths to resolve this issue.
+We have automatically detected missing tracking IDs from the following relative paths in your files. Review and add tracking to paths to resolve this issue.
 
 Check the file paths and associated paths inside them."""
 CHECK_URLS_TRACKING = """# Check Missing Tracking from URLs
 
-We have automatically detected missing tracking id from the following URLs in your lessons. Review and add tracking to URLs to resolve this issue.
+We have automatically detected missing tracking IDs from the following URLs in your files. Review and add tracking to URLs to resolve this issue.
 
 Check the file paths and associated URLs inside them."""
 CHECK_URLS_LOCALE = """# Check Country Locale in URLs
 
-We have automatically detected added country locale to URLs in your lessons. Review and remove country specific locale from URLs to resolve this issue.
+We have automatically detected added country locale to URLs in your files. Review and remove country-specific locale from URLs to resolve this issue.
 
 Check the file paths and associated URLs inside them."""
 

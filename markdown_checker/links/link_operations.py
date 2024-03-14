@@ -49,7 +49,7 @@ def get_paths_from_links(all_links: list) -> list:
         link = link.split(" ")[0]
         matches = re.findall(path_pattern, link)
         if matches:
-            paths.append(link)
+            paths.append(link.split("#")[0])
     return paths
 
 
