@@ -3,6 +3,8 @@ Module providing automatic checks functionality to markdown files
 following some Guidelines
 """
 
+from typing import List
+
 from markdown_checker.links.link_operations import (
     check_paths_exists,
     check_url_alive,
@@ -60,12 +62,12 @@ def check_broken_links(file_path: str, link_type: str, check_type: str) -> str:
     return ""
 
 
-def format_links(links: list[str]) -> str:
+def format_links(links: List[str]) -> str:
     """
-    Formats a list of links into a string with numbered bullets.
+    Formats a List of links into a string with numbered bullets.
 
     Args:
-        links (list): A list of links.
+        links (List): A List of links.
 
     Returns:
         str: The formatted string with numbered bullets.
