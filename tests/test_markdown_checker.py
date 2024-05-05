@@ -113,7 +113,15 @@ try:
         map(
             int,
             input(
-                "Do you want to: \n(1) Run check_broken_paths \n(2) Run check_broken_urls \n(3) Run check_paths_tracking \n(4) Run check_urls_tracking \n(5) Run check_urls_locale \n"
+                """
+                Do you want to:
+                (1) Run check_broken_paths
+                (2) Run check_broken_urls
+                (3) Run check_paths_tracking
+                (4) Run check_urls_tracking
+                (5) Run check_urls_locale
+                
+                """
             ).split(),
         )
     )
