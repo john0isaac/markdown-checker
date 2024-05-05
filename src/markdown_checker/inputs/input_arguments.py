@@ -6,7 +6,7 @@ following some Guidelines
 import argparse
 
 
-def get_input_args() -> None:
+def get_input_args() -> argparse.Namespace:
     """
     Retrieves and parses the 2 command line arguments provided by the user when
     they run the program from a terminal window. This function uses Python's
