@@ -9,6 +9,8 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.12"
+  commnands:
+      -  pip install mkdocs-material mkdocstrings[python] pymdown-extensions
 
 mkdocs:
   configuration: docs/mkdocs.yml

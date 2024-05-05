@@ -46,10 +46,6 @@ dev = [
     "ruff",
     "black",
     "mypy",
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocstrings[python]",
-    "pymdown-extensions",
 ]
 
 [tool.ruff]
