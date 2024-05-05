@@ -1,4 +1,5 @@
 [![PyPi](https://img.shields.io/pypi/v/markdown-checker)](https://pypi.org/project/markdown-checker/)
+[![Documentation Status](https://readthedocs.org/projects/markdown-checker/badge/?version=latest)](https://markdown-checker.readthedocs.io/en/latest/?badge=latest)
 [![Downloads](https://img.shields.io/pypi/dm/markdown-checker)](https://pypi.org/project/markdown-checker/)
 
 [![GitHub issues](https://img.shields.io/badge/issue_tracking-github-blue.svg)](https://github.com/john0isaac/markdown-checker/issues)
@@ -13,6 +14,10 @@ Install the package:
 ```bash
 pip install markdown-checker
 ```
+
+### Documentation
+
+- [Full documentation](https://markdown-checker.readthedocs.io/en/latest/).
 
 ## 1, 2, 3 - How To
 
