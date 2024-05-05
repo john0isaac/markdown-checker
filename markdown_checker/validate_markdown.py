@@ -21,8 +21,8 @@ def main() -> None:
     pass_list = [
         "./CODE_OF_CONDUCT.md",
         "./SECURITY.md",
-        ".\CODE_OF_CONDUCT.md",
-        ".\SECURITY.md",
+        ".\\CODE_OF_CONDUCT.md",
+        ".\\SECURITY.md",
     ]
     files_paths = [file_path for file_path in files_paths if file_path not in pass_list]
 
@@ -51,9 +51,7 @@ def main() -> None:
             if broken_urls:
                 formatted_output += broken_urls
     if formatted_output != "":
-        formatted_output = (
-            "| File Full Path | Issues |\n|--------|--------|\n" + formatted_output
-        )
+        formatted_output = "| File Full Path | Issues |\n|--------|--------|\n" + formatted_output
         print(formatted_output)
         generate_md(formatted_output, in_arg.func, in_arg.guide_url)
 

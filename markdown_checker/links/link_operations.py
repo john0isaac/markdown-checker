@@ -7,7 +7,7 @@ def get_links_from_file(file_path: str) -> list:
     flags markdown links captures the part inside () that comes right after []
     """
     all_links = []
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8") as file:
         data = file.read()
         link_pattern = re.compile(r"\]\((.*?)\)| \)")
         matches = re.finditer(link_pattern, data)
@@ -60,9 +60,7 @@ def check_paths_exists(file_path: str, paths: list) -> list:
     broken_path = []
     for path in paths:
         path = re.sub(r"(\?|\&)(WT|wt)\.mc_id=.*", "", path)
-        if not os.path.exists(
-            os.path.normpath(os.path.join(os.path.dirname(file_path), path))
-        ):
+        if not os.path.exists(os.path.normpath(os.path.join(os.path.dirname(file_path), path))):
             broken_path.append(path)
     return broken_path
 
@@ -73,10 +71,7 @@ def check_url_locale(urls: list) -> list:
     """
     country_locale = []
     for url in urls:
-        if (
-            "video-embed.html" in url
-            or "https://www.microsoft.com/en-us/security/blog" in url
-        ):
+        if "video-embed.html" in url or "https://www.microsoft.com/en-us/security/blog" in url:
             continue
         locale_pattern = re.compile(r"\/[a-z]{2}-[a-z]{2}\/")
         matches = re.findall(locale_pattern, url)
@@ -119,7 +114,7 @@ def check_url_alive(urls: list) -> list:
 def get_urls_from_file(file_path: str) -> list:
     """function to get an array of urls from a file"""
     urls = []
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8") as file:
         data = file.read()
         url_pattern = re.compile(
             r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
@@ -133,11 +128,9 @@ def get_urls_from_file(file_path: str) -> list:
 def get_paths_from_file(file_path: str) -> list:
     """function to get relative paths from a file"""
     paths = []
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8") as file:
         data = file.read()
-        path_pattern = re.compile(
-            r"(\.{1,2}\/)+([A-Za-z0-9-]+\/)*([A-Za-z0-9]+\.[A-Za-z]+)"
-        )
+        path_pattern = re.compile(r"(\.{1,2}\/)+([A-Za-z0-9-]+\/)*([A-Za-z0-9]+\.[A-Za-z]+)")
         matches = re.finditer(path_pattern, data)
         for matched_group in matches:
             paths.append(matched_group.group())

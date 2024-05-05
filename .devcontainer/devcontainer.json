@@ -32,5 +32,5 @@
             }
         }
     },
-    "postCreateCommand": ".devcontainer/setup.sh"
+    "postCreateCommand": ". .devcontainer/setup.sh"
 }
