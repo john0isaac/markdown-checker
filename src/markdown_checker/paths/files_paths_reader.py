@@ -5,13 +5,13 @@ its subdirectories, filtered by file extension.
 The main function in this module is `get_files_paths_list`.
 
 Functions:
-- get_files_paths_list(root_path: str, extension: list = None) -> list
+- get_files_paths_list(root_path: str, extension: list = []) -> list
 """
 
 import os
 
 
-def get_files_paths_list(root_path: str, extensions: list = None) -> list:
+def get_files_paths_list(root_path: str, extensions: list = []) -> list:
     """
     function returns a list of files in a directory and its subdirectories,
     filtered by file extensions.
