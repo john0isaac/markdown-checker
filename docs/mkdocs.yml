@@ -1,0 +1,41 @@
+site_name: markdown-checker
+site_description: "markdown-checker documentation"
+site_author: "John Aziz"
+
+# Repository
+repo_name: "markdown-checker"
+repo_url: "https://github.com/john0isaac/markdown-checker"
+
+# Copyright
+copyright: "Copyright &copy; John Aziz"
+
+theme:
+  name: "material"
+  language: "en"
+  highlightjs: true
+
+
+plugins:
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [axe_playwright_python]
+          options:
+            show_source: false
+            heading_level: 2
+            show_root_heading: true
+            show_root_toc_entry: false
+            docstring_section_style: list
+            merge_init_into_class: true
+
+# Customization
+extra:
+  social:
+  search:
+    language: "en"
+
+nav:
+  - About: index.md
+  - Usage: usage.md
+  - Automate: automate.md
