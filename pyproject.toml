@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "markdown-checker"
-description= "A markdown validation reporting tool"
+description= "A markdown link validation reporting tool"
 version = "0.1.3"
 authors = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 maintainers = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
