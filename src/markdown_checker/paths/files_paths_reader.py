@@ -9,10 +9,10 @@ Functions:
 """
 
 import os
-from typing import List
+from typing import List, Tuple
 
 
-def get_files_paths_list(root_path: str, extensions: List[str] = []) -> tuple[List[str], List[str]]:
+def get_files_paths_list(root_path: str, extensions: List[str] = []) -> Tuple[List[str], List[str]]:
     """
     function returns a list of files in a directory and its subdirectories,
     filtered by file extensions.

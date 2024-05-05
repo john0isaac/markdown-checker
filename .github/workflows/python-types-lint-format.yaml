@@ -1,4 +1,4 @@
-name: Run Python Type, lint and format checks
+name: Run Python type, lint and format checks
 
 on:
   workflow_dispatch:
