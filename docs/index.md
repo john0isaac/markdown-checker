@@ -1,6 +1,6 @@
 # markdown-checker
 
-Markdown link validation reporting tool. It provides a couple of functions to validate relative paths and web urls.
+Markdown link validation reporting tool. It provides a couple of functions to validate relative paths and web URLs.
 
 ## Requirements
 
