@@ -4,7 +4,7 @@
 [![GitHub issues](https://img.shields.io/badge/issue_tracking-github-blue.svg)](https://github.com/john0isaac/markdown-checker/issues)
 [![Contributing](https://img.shields.io/badge/PR-Welcome-%23FF8300.svg?)](https://github.com/john0isaac/markdown-checker/pulls)
 
-markdown-checker is a markdown link validation reporting tool. It provides a couple of functions to validate relative paths and web urls.
+markdown-checker is a markdown link validation reporting tool. It provides a couple of functions to validate relative paths and web URLs.
 
 ## Installation
 
