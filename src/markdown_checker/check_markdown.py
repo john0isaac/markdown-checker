@@ -57,6 +57,7 @@ def check_broken_links(file_path: str, link_type: str, check_type: str) -> str:
                 if len(dead_urls) > 0:
                     formatted_output += format_links(dead_urls)
                     return formatted_output
+    return ""
 
 
 def format_links(links: list) -> str:

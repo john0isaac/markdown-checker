@@ -1,6 +1,0 @@
-include README.md
-include markdown_checker/inputs/*
-include markdown_checker/paths/*
-include markdown_checker/links/*
-include markdown_checker/generators/*
-include setup.cfg

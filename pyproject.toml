@@ -14,6 +14,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "requests",
+    "types-requests",
     ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -50,6 +51,7 @@ dev = [
 [tool.ruff]
 line-length = 120
 target-version = "py38"
+src = ["src"]
 output-format = "full"
 
 [tool.ruff.lint]
