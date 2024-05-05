@@ -60,7 +60,7 @@ def check_broken_links(file_path: str, link_type: str, check_type: str) -> str:
     return ""
 
 
-def format_links(links: list) -> str:
+def format_links(links: list[str]) -> str:
     """
     Formats a list of links into a string with numbered bullets.
 

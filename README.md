@@ -37,7 +37,7 @@ markdown-checker -d . -f check_broken_urls -gu https://github.com/john0isaac/mar
 ```
 
 ## Check country locale present in URLs
-This function ensures that any relative path in your files is working. 
+This function ensures that any relative path in your files is working.
 
 Example:
 

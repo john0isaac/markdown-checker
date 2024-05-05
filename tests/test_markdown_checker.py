@@ -5,7 +5,7 @@ Module to check paths in markdown files.
 import subprocess
 
 
-def check_broken_paths():
+def check_broken_paths() -> None:
     """
     Function to check for broken paths.
     """
@@ -24,7 +24,7 @@ def check_broken_paths():
     )
 
 
-def check_broken_urls():
+def check_broken_urls() -> None:
     """
     Function to check for broken paths.
     """
@@ -43,7 +43,7 @@ def check_broken_urls():
     )
 
 
-def check_paths_tracking():
+def check_paths_tracking() -> None:
     """
     Function to check paths tracking.
     """
@@ -62,7 +62,7 @@ def check_paths_tracking():
     )
 
 
-def check_urls_tracking():
+def check_urls_tracking() -> None:
     """
     Function to check URLs tracking.
     """
@@ -81,7 +81,7 @@ def check_urls_tracking():
     )
 
 
-def check_urls_locale():
+def check_urls_locale() -> None:
     """
     Function to check URLs locale.
     """
@@ -120,7 +120,7 @@ try:
                 (3) Run check_paths_tracking
                 (4) Run check_urls_tracking
                 (5) Run check_urls_locale
-                
+
                 """
             ).split(),
         )
