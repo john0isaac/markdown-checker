@@ -17,13 +17,12 @@ permissions:
 
 jobs:
     python-types-lint-format:
-        name: Python ${{ matrix.python_version }} - ${{ matrix.test}} Check - ${{ matrix.os }}
+        name: Python ${{ matrix.python_version }} - Check ${{ matrix.command }}- ${{ matrix.os }}
         runs-on: ${{ matrix.os }}
         strategy:
           matrix:
             os: [ubuntu-latest]
-            python_version: [3.8, 3.9, 3.10, 3.11, 3.12]
-            test: [types, lint, format]
+            python_version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
             command: ["mypy .", "ruff check .", "black ."]
         steps:
         - uses: actions/checkout@v4
@@ -36,5 +35,5 @@ jobs:
             python3 -m pip install --upgrade pip
             python3 -m pip install -e '.[dev]'
 
-        - name: Run ${{ matrix.test }} check
+        - name: Run ${{ matrix.command }} check
           run: python -m ${{ matrix.command }}
