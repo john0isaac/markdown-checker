@@ -10,7 +10,7 @@ build:
   tools:
     python: "3.12"
   commnands:
-      -  pip install mkdocs-material mkdocstrings[python] pymdown-extensions
+    -  pip install mkdocs-material mkdocstrings[python] pymdown-extensions
 
 mkdocs:
   configuration: docs/mkdocs.yml
