@@ -6,6 +6,8 @@ site_author: "John Aziz"
 repo_name: "markdown-checker"
 repo_url: "https://github.com/john0isaac/markdown-checker"
 
+docs_dir: ./source
+
 # Copyright
 copyright: "Copyright &copy; John Aziz"
 
