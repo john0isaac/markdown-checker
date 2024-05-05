@@ -50,6 +50,7 @@ dev = [
 [tool.ruff]
 line-length = 120
 target-version = "py38"
+src = ["src"]
 output-format = "full"
 
 [tool.ruff.lint]
