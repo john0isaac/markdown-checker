@@ -4,22 +4,41 @@
 [![GitHub issues](https://img.shields.io/badge/issue_tracking-github-blue.svg)](https://github.com/john0isaac/markdown-checker/issues)
 [![Contributing](https://img.shields.io/badge/PR-Welcome-%23FF8300.svg?)](https://github.com/john0isaac/markdown-checker/pulls)
 
-markdown-checker is a markdown validation reporting tool.
+markdown-checker is a markdown link validation reporting tool. It provides a couple of functions to validate relative paths and web urls.
 
-# How To
+## Installation
+
+Install the package:
+
+```bash
+pip install markdown-checker
+```
+
+## 1, 2, 3 - How To
 
 1. Run `pip install markdown-checker`.
-2. Run `markdown-checker -d {src} -f {func} -gu {url}`. Replace `{src}` with the directory you want to analyze, {func} with the available functions like check_broken_paths, {gu} with your contribution guidance full URL.
+2. Run `markdown-checker -d {src} -f {func} -gu {url}`. Replace `{src}` with the directory you want to analyze, `{func}` with the available functions like `check_broken_paths`, `{gu}` with your contribution guidance full URL.
 3. The output will be displayed in the terminal and in a `comments.md` file.
 
-# Using markdown-checker in GitHub Actions
+## Using `markdown-checker` in GitHub Actions
 
-The tool has been designed to be run within a GitHub workflow using the [action-check-markdown](https://github.com/marketplace/actions/check-markdown) GitHub action. The action will automatically post the output of the tool to your GitHub pull request as a comment.
+You can run this tool within a GitHub workflow using the [action-check-markdown](https://github.com/marketplace/actions/check-markdown) GitHub action.
 
-# Supported Functions
+The action will automatically post the output of the tool to your GitHub pull request as a comment.
 
-## Check broken relative paths
-This function ensures that any relative path in your files is working.
+# Usage
+
+The library provides the following functions:
+
+- [`check_broken_paths`](./README.md#check_broken_paths)
+- [`check_broken_urls`](./README.md#check_broken_urls)
+- [`check_urls_locale`](./README.md#check_urls_locale)
+- [`check_paths_tracking`](./README.md#check_paths_tracking)
+- [`check_urls_tracking`](./README.md#check_urls_tracking)
+
+## `check_broken_paths`
+
+This function ensures that any relative path in your files are working.
 
 Example:
 
@@ -27,7 +46,8 @@ Example:
 markdown-checker -d . -f check_broken_paths -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
 ```
 
-## Check broken URLs
+## `check_broken_urls`
+
 This function ensures that any web URL in your files is working and returning 200 status code.
 
 Example:
@@ -36,8 +56,9 @@ Example:
 markdown-checker -d . -f check_broken_urls -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
 ```
 
-## Check country locale present in URLs
-This function ensures that any relative path in your files is working.
+## `check_urls_locale`
+
+This function checks if country specific locale is present in URLs.
 
 Example:
 
@@ -45,7 +66,8 @@ Example:
 markdown-checker -d . -f check_urls_locale -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
 ```
 
-## Check Contributor ID missing from paths
+## `check_paths_tracking`
+
 This function ensures that any relative path has tracking in it.
 
 Example:
@@ -54,7 +76,8 @@ Example:
 markdown-checker -d . -f check_paths_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
 ```
 
-## Check Contributor ID missing from URLs
+## `check_urls_tracking`
+
 This function ensures that any URL has tracking in it.
 
 Example:
