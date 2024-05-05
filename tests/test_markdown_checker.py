@@ -126,7 +126,7 @@ try:
         )
     )
 except ValueError:
-    print("Please input number")
+    print("Please input number.")
 
 for choice in choices:
     if 0 < choice and choice < 6:

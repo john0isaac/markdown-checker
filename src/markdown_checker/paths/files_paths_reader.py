@@ -9,9 +9,10 @@ Functions:
 """
 
 import os
+from typing import List, Tuple
 
 
-def get_files_paths_list(root_path: str, extensions: list[str] = []) -> tuple[list[str], list[str]]:
+def get_files_paths_list(root_path: str, extensions: List[str] = []) -> Tuple[List[str], List[str]]:
     """
     function returns a list of files in a directory and its subdirectories,
     filtered by file extensions.
@@ -27,8 +28,8 @@ def get_files_paths_list(root_path: str, extensions: list[str] = []) -> tuple[li
     if len(extensions) == 0:
         extensions = [".md", ".ipynb"]
 
-    sub_folders: list[str] = []
-    files_paths: list[str] = []
+    sub_folders: List[str] = []
+    files_paths: List[str] = []
 
     for f in os.scandir(root_path):
         if f.is_dir():
