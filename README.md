@@ -30,11 +30,12 @@ The action will automatically post the output of the tool to your GitHub pull re
 
 The library provides the following functions:
 
-- [`check_broken_paths`](./README.md#check_broken_paths)
-- [`check_broken_urls`](./README.md#check_broken_urls)
-- [`check_urls_locale`](./README.md#check_urls_locale)
-- [`check_paths_tracking`](./README.md#check_paths_tracking)
-- [`check_urls_tracking`](./README.md#check_urls_tracking)
+- [Usage](#usage)
+  - [`check_broken_paths`](#check_broken_paths)
+  - [`check_broken_urls`](#check_broken_urls)
+  - [`check_urls_locale`](#check_urls_locale)
+  - [`check_paths_tracking`](#check_paths_tracking)
+  - [`check_urls_tracking`](#check_urls_tracking)
 
 ## `check_broken_paths`
 
