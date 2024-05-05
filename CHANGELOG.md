@@ -12,9 +12,17 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.1.4] 5 May 2024
+- Improve Dev Experience.
+- Better Typing.
+- Add ruff, black, mypy and workflows to check them on all supported python versions.
+- Add pre-commit.
+- Change packaging strategy to setuptools with pyproject.toml.
+- Add docs
+
 ## [v0.1.3] 15 March 2024
-Change lessons to files
-Remove ID's from the end of Relative Paths
+* Change lessons to files
+* Remove ID's from the end of Relative Paths
 
 ## [v0.1.2] 06 March 2024
 * Improve-package by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/21
