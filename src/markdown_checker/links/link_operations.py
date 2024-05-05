@@ -2,7 +2,7 @@ import os
 import re
 
 
-def get_links_from_file(file_path: str) -> list:
+def get_links_from_file(file_path: str) -> list[str]:
     """function to get an array of markdown links from a file
     flags markdown links captures the part inside () that comes right after []
     """
@@ -17,7 +17,7 @@ def get_links_from_file(file_path: str) -> list:
     return all_links
 
 
-def get_urls_from_links(all_links: list) -> list:
+def get_urls_from_links(all_links: list[str]) -> list[str]:
     """function to get an array of urls from a list"""
     urls = []
     url_pattern = re.compile(
@@ -38,7 +38,7 @@ def get_urls_from_links(all_links: list) -> list:
     return urls
 
 
-def get_paths_from_links(all_links: list) -> list:
+def get_paths_from_links(all_links: list[str]) -> list[str]:
     """function to get relative paths from a list
     flags paths that start with ./ or ../
     """
@@ -53,7 +53,7 @@ def get_paths_from_links(all_links: list) -> list:
     return paths
 
 
-def check_paths_exists(file_path: str, paths: list) -> list:
+def check_paths_exists(file_path: str, paths: list[str]) -> list[str]:
     """function checks if a path exist if not return non existent paths
     flags any relative path that can't be accessed
     """
@@ -65,7 +65,7 @@ def check_paths_exists(file_path: str, paths: list) -> list:
     return broken_path
 
 
-def check_url_locale(urls: list) -> list:
+def check_url_locale(urls: list[str]) -> list[str]:
     """function checks if a url has country locale
     flags urls that have ==> /en-us/
     """
@@ -80,7 +80,7 @@ def check_url_locale(urls: list) -> list:
     return country_locale
 
 
-def check_url_tracking(urls: list) -> list:
+def check_url_tracking(urls: list[str]) -> list[str]:
     """function checks if a url has tracking id
     flags urls missing ==> (? or &) plus WT.mc_id= or wt.mc_id=
     """
@@ -93,8 +93,8 @@ def check_url_tracking(urls: list) -> list:
     return tracking_id
 
 
-def check_url_alive(urls: list) -> list:
-    import requests
+def check_url_alive(urls: list[str]) -> list[str]:
+    import requests  # type: ignore
 
     broken_urls = []
     for url in urls:
@@ -111,7 +111,7 @@ def check_url_alive(urls: list) -> list:
 
 
 # DEPRECATED
-def get_urls_from_file(file_path: str) -> list:
+def get_urls_from_file(file_path: str) -> list[str]:
     """function to get an array of urls from a file"""
     urls = []
     with open(file_path, encoding="utf-8") as file:
@@ -125,7 +125,7 @@ def get_urls_from_file(file_path: str) -> list:
     return urls
 
 
-def get_paths_from_file(file_path: str) -> list:
+def get_paths_from_file(file_path: str) -> list[str]:
     """function to get relative paths from a file"""
     paths = []
     with open(file_path, encoding="utf-8") as file:

@@ -11,7 +11,7 @@ Functions:
 import os
 
 
-def get_files_paths_list(root_path: str, extensions: list = []) -> tuple[list, list]:
+def get_files_paths_list(root_path: str, extensions: list[str] = []) -> tuple[list[str], list[str]]:
     """
     function returns a list of files in a directory and its subdirectories,
     filtered by file extensions.
@@ -24,11 +24,11 @@ def get_files_paths_list(root_path: str, extensions: list = []) -> tuple[list, l
     Returns:
     list: A list of file paths that match the given file extensions.
     """
-    if extensions is None:
+    if len(extensions) == 0:
         extensions = [".md", ".ipynb"]
 
-    sub_folders: list = []
-    files_paths: list = []
+    sub_folders: list[str] = []
+    files_paths: list[str] = []
 
     for f in os.scandir(root_path):
         if f.is_dir():
