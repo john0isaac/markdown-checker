@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.1.5] 8 Jul 2024
+- Increase timeout for requests to check web urls alive or not. https://github.com/john0isaac/markdown-checker/pull/52
+
 ## [v0.1.4] 6 May 2024
 - Improve Dev Experience. https://github.com/john0isaac/markdown-checker/pull/28
 - Better Typing. https://github.com/john0isaac/markdown-checker/pull/37
