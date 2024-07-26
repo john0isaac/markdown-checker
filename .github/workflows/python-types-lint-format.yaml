@@ -42,7 +42,7 @@ jobs:
 
   python-lint-format-check:
     if: ${{ always() }} # Always run even if a matrix candidate fails
-    name: Python ${{ matrix.python_version }} - Check Linting - ${{ matrix.os }}
+    name: Python ${{ matrix.python_version }} - Check Linting and Formatting - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
