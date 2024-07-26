@@ -6,7 +6,7 @@ Markdown link validation reporting tool. It provides a couple of functions to va
 
 You will need the following prerequisites in order to use this library:
 
-- Python >= 3.8
+- Python >= 3.9
 - [requests](https://pypi.org/project/requests/)
 
 ## Installation

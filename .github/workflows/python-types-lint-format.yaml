@@ -6,11 +6,13 @@ on:
     branches: [ main ]
     paths:
       - '**.py'
+      - ".github/workflows/python-types-lint-format.yaml"
 
   pull_request:
     branches: [ main ]
     paths:
       - '**.py'
+      - ".github/workflows/python-types-lint-format.yaml"
 
 permissions:
   contents: read
@@ -23,7 +25,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python_version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
@@ -36,16 +38,16 @@ jobs:
         python3 -m pip install -e '.[dev]'
 
     - name: Run type check
-      run: python -m mypy .
+      run: python3 -m mypy .
 
-  python-lint-check:
+  python-lint-format-check:
     if: ${{ always() }} # Always run even if a matrix candidate fails
-    name: Python ${{ matrix.python_version }} - Check Linting - ${{ matrix.os }}
+    name: Python ${{ matrix.python_version }} - Check Linting and Formatting - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python_version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
@@ -55,29 +57,10 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install -e '.[dev]'
+        python3 -m pip install -e '.[lint]'
 
     - name: Run lint check
-      run: python -m ruff check .
-
-  python-format-check:
-    if: ${{ always() }} # Always run even if a matrix candidate fails
-    name: Python ${{ matrix.python_version }} - Check formatting - ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python_version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python_version }}
-        architecture: x64
-    - name: Install dependencies
-      run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install -e '.[dev]'
+      run: python3 -m ruff check .
 
     - name: Run format check
-      run: python -m black .
+      run: python3 -m ruff format . --check

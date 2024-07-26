@@ -12,6 +12,16 @@
             "purpose": ["debug-test"],
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "Serve MkDocs",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "cwd": "${workspaceFolder}",
+            "module": "mkdocs",
+            "args": ["serve", "-f", "docs/mkdocs.yml"],
+            "console": "integratedTerminal",
         }
     ]
 }

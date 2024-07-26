@@ -8,10 +8,10 @@ This repository is open for everyone to contribute and is maintained by [John Az
 
 ## Develop Locally
 
-To run the the package locally (Lean more: [here](https://python-packaging-tutorial.readthedocs.io/2018/setup_py.html#under-development)):
+To run the the package locally (Lean more: [here](https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#working-in-development-mode)):
 
 ```shell
-python setup.py develop
+pip install -e .
 ```
 
 Any changes you do will take effect immediately.
