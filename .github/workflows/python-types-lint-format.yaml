@@ -6,11 +6,13 @@ on:
     branches: [ main ]
     paths:
       - '**.py'
+      - ".github/workflows/python-types-lint-format.yaml"
 
   pull_request:
     branches: [ main ]
     paths:
       - '**.py'
+      - ".github/workflows/python-types-lint-format.yaml"
 
 permissions:
   contents: read
