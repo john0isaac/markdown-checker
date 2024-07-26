@@ -1,9 +1,8 @@
 import os
 import re
-from typing import List
 
 
-def get_links_from_file(file_path: str) -> List[str]:
+def get_links_from_file(file_path: str) -> list[str]:
     """function to get an array of markdown links from a file
     flags markdown links captures the part inside () that comes right after []
     """
@@ -18,7 +17,7 @@ def get_links_from_file(file_path: str) -> List[str]:
     return all_links
 
 
-def get_urls_from_links(all_links: List[str]) -> List[str]:
+def get_urls_from_links(all_links: list[str]) -> list[str]:
     """function to get an array of urls from a List"""
     urls = []
     url_pattern = re.compile(
@@ -39,7 +38,7 @@ def get_urls_from_links(all_links: List[str]) -> List[str]:
     return urls
 
 
-def get_paths_from_links(all_links: List[str]) -> List[str]:
+def get_paths_from_links(all_links: list[str]) -> list[str]:
     """function to get relative paths from a List
     flags paths that start with ./ or ../
     """
@@ -54,7 +53,7 @@ def get_paths_from_links(all_links: List[str]) -> List[str]:
     return paths
 
 
-def check_paths_exists(file_path: str, paths: List[str]) -> List[str]:
+def check_paths_exists(file_path: str, paths: list[str]) -> list[str]:
     """function checks if a path exist if not return non existent paths
     flags any relative path that can't be accessed
     """
@@ -66,7 +65,7 @@ def check_paths_exists(file_path: str, paths: List[str]) -> List[str]:
     return broken_path
 
 
-def check_url_locale(urls: List[str]) -> List[str]:
+def check_url_locale(urls: list[str]) -> list[str]:
     """function checks if a url has country locale
     flags urls that have ==> /en-us/
     """
@@ -81,7 +80,7 @@ def check_url_locale(urls: List[str]) -> List[str]:
     return country_locale
 
 
-def check_url_tracking(urls: List[str]) -> List[str]:
+def check_url_tracking(urls: list[str]) -> list[str]:
     """function checks if a url has tracking id
     flags urls missing ==> (? or &) plus WT.mc_id= or wt.mc_id=
     """
@@ -94,7 +93,7 @@ def check_url_tracking(urls: List[str]) -> List[str]:
     return tracking_id
 
 
-def check_url_alive(urls: List[str]) -> List[str]:
+def check_url_alive(urls: list[str]) -> list[str]:
     import requests  # type: ignore
 
     broken_urls = []
@@ -112,7 +111,7 @@ def check_url_alive(urls: List[str]) -> List[str]:
 
 
 # DEPRECATED
-def get_urls_from_file(file_path: str) -> List[str]:
+def get_urls_from_file(file_path: str) -> list[str]:
     """function to get an array of urls from a file"""
     urls = []
     with open(file_path, encoding="utf-8") as file:
@@ -126,7 +125,7 @@ def get_urls_from_file(file_path: str) -> List[str]:
     return urls
 
 
-def get_paths_from_file(file_path: str) -> List[str]:
+def get_paths_from_file(file_path: str) -> list[str]:
     """function to get relative paths from a file"""
     paths = []
     with open(file_path, encoding="utf-8") as file:
