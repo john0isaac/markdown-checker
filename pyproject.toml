@@ -1,7 +1,3 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "markdown-checker"
 description= "A markdown link validation reporting tool"
@@ -13,19 +9,23 @@ readme = "README.md"
 
 requires-python = ">=3.9"
 dependencies = [
+    "click",
     "requests",
-    "types-requests",
-    ]
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    ]
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Quality Assurance",
+]
 
 [project.urls]
 Homepage = "https://github.com/john0isaac/markdown-checker"
@@ -40,7 +40,8 @@ Releases = "https://github.com/john0isaac/markdown-checker/releases"
 [project.optional-dependencies]
 dev = [
     "pre-commit",
-    "mypy"
+    "mypy",
+    "types-requests",
 ]
 lint = [
     "ruff"
@@ -61,7 +62,17 @@ lint.select = ["E", "F", "I", "UP"]
 line-length = 120
 target-version = "py39"
 src = ["src"]
+lint.isort.known-first-party = ["markdown_checker"]
 output-format = "full"
 
+[tool.mypy]
+check_untyped_defs = true
+python_version = 3.9
+exclude = [".venv/*"]
+
 [project.scripts]
-markdown-checker = "markdown_checker.validate_markdown:main"
+markdown-checker = "markdown_checker:main_with_spinner"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
