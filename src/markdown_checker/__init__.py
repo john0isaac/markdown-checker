@@ -42,7 +42,7 @@ def detect_issues(
         retries (int): Number of retries for the requests
 
     Returns:
-        tuple[list[Union[MarkdownPath, MarkdownURL]], int]: Detected issues and links count
+        Detected issues and links count.
     """
     detected_issues: list[Union[MarkdownPath, MarkdownURL]] = []
     links_count = 0
@@ -255,7 +255,7 @@ def main(
     tracking_domains: list[str],
     output_file_name: str,
 ) -> None:
-    """Markdown Link Checker"""
+    """A markdown link validation reporting tool."""
     _ = tuple(Path(item) for item in src) or (Path("./"),)  # default to current directory
 
     _, files_paths = get_files_paths_list(Path(dir), extensions)

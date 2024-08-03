@@ -12,11 +12,11 @@ def get_files_paths_list(root_path: Path, extensions: list[str] = []) -> tuple[l
     Get a list of file paths from a root directory and its subdirectories, filtered by file extension.
 
     Args:
-        - root_path (Path): The root directory to start the search.
-        - extensions (list[str]): A list of file extensions to filter the search.
+        root_path (Path): The root directory to start the search.
+        extensions (list[str]): A list of file extensions to filter the search.
 
     Returns:
-        - tuple[list[Path], list[Path]]: A tuple containing a list of subdirectories and a list of file paths.
+        A tuple containing a list of subdirectories and a list of file paths.
     """
 
     sub_folders: list[Path] = []

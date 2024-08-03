@@ -13,10 +13,10 @@ def format_links(links: list[Union[MarkdownPath, MarkdownURL]]) -> str:
     Formats a List of links into a string with numbered bullets.
 
     Args:
-        links (List): A List of links.
+        links (list[Union[MarkdownPath, MarkdownURL]]): The list of links to format.
 
     Returns:
-        str: The formatted string with numbered bullets.
+        formatted_links (str): The formatted string with numbered bullets.
     """
     formatted_links = ""
     i = 1

@@ -22,7 +22,7 @@ def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
         file_path (Path): The file path to check.
 
     Returns:
-        MarkdownLinks: Dataclass with urls and paths
+        markdown_links (MarkdownLinks): Dataclass with urls and paths
     """
     markdown_links = MarkdownLinks(urls=[], paths=[])
     link_pattern = re.compile(r"\]\((.*?)\)| \)")
