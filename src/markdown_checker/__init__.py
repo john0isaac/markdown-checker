@@ -4,6 +4,7 @@ Module providing automatic checks functionality to markdown files
 following some Guidelines
 """
 
+import concurrent.futures
 import platform
 import sys
 from pathlib import Path
@@ -18,6 +19,17 @@ from markdown_checker.utils.extract_links import get_links_from_md_file
 from markdown_checker.utils.format_output import format_links
 from markdown_checker.utils.list_files import get_files_paths_list
 from markdown_checker.utils.spinner import spinner
+
+
+def check_url(url: MarkdownURL, skip_domains: list[str], skip_urls_containing: list[str], timeout: int, retries: int):
+    if any(url.host_name().lower() in domain.lower() for domain in skip_domains) or any(
+        url.link in substring for substring in skip_urls_containing
+    ):
+        return None
+    if not url.is_alive(timeout=timeout, retries=retries):
+        url.issue = "is broken"
+        return url
+    return None
 
 
 def detect_issues(
@@ -83,14 +95,18 @@ def detect_issues(
                 "upload.wikimedia.org",
             ]
         )
-        for url in all_links.urls:
-            if any(url.host_name().lower() in domain.lower() for domain in skip_domains) or any(
-                url.link in substring for substring in skip_urls_containing
-            ):
-                continue
-            if not url.is_alive(timeout=timeout, retries=retries):
-                url.issue = "is broken"
-                detected_issues.append(url)
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            results = list(
+                executor.map(
+                    check_url,
+                    all_links.urls,
+                    [skip_domains] * len(all_links.urls),
+                    [skip_urls_containing] * len(all_links.urls),
+                    [timeout] * len(all_links.urls),
+                    [retries] * len(all_links.urls),
+                )
+            )
+        detected_issues.extend(filter(None, results))
         links_count += len(all_links.urls)
     elif func == "check_urls_tracking":
         for url in all_links.urls:
@@ -280,7 +296,7 @@ def main(
         )
         links_checked_count += links_count
         if len(detected_issues) > 0:
-            formatted_output += f"| `{file_path}` |" + format_links(detected_issues)
+            formatted_output += f"| [`{file_path}`]({file_path}) |" + format_links(detected_issues)
             all_files_issues.extend(detected_issues)
     click.echo(
         click.style(f"\n🔍 Checked {links_checked_count} links in {len(files_paths)} files.", fg="blue"), err=False
