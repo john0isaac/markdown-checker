@@ -7,8 +7,6 @@
 
 markdown-checker is a markdown link validation reporting tool. It provides a couple of functions to validate relative paths and web URLs.
 
-[test](./sdvjn.md)
-
 ## Installation
 
 Install the package:
