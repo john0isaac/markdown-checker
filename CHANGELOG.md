@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 - Add Spinner to indicate that the tool is working (Not compatible with all terminals)
 - Add documentation for the new features.
 - Use multiprocessing for checking broken urls reducing the execution time by 50%.
+- Add support for GitHub automatic annotations.
 
 ## [v0.1.5] 8 Jul 2024
 - Increase timeout for requests to check web urls alive or not. https://github.com/john0isaac/markdown-checker/pull/52
