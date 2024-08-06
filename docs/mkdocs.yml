@@ -42,4 +42,5 @@ nav:
     - Paths: ./api/paths.md
     - Markdown Link Base: ./api/markdown_link_base.md
     - Utilities: ./api/utils.md
+    - Reports : ./api/reports.md
   - Automate: automate.md
