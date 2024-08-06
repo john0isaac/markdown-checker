@@ -318,6 +318,7 @@ def main(
                     ),
                     err=True,
                 )
+                return
             else:
                 click.echo(
                     click.style(
@@ -327,7 +328,7 @@ def main(
                     ),
                     err=True,
                 )
-        sys.exit(1)
+                sys.exit(1)
     click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
     sys.exit(0)
 
