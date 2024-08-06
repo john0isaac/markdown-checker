@@ -313,10 +313,11 @@ def main(
         click.echo(click.style(f"😭 Found {len(all_files_issues)} issues in the following files:", fg="red"), err=True)
         for markdown_path in all_files_issues:
             if github_ci == "true":
+                # Ref: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-a-warning-message
                 click.echo(
                     click.style(
-                        f"::error::Filename {markdown_path.file_path}:{markdown_path.line_number} "
-                        f"Link {markdown_path} {markdown_path.issue}.",
+                        f"::error:: file={markdown_path.file_path},line={markdown_path.line_number}"
+                        f"::Link {markdown_path} {markdown_path.issue}.",
                         fg="red",
                     ),
                     err=True,
