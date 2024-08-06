@@ -313,6 +313,7 @@ def main(
                 click.echo(
                     click.style(
                         f"Error: {markdown_path.file_path}:{markdown_path.line_number} "
+                        "MD012/no-multiple-blanks "
                         f"Link {markdown_path} {markdown_path.issue}.",
                         fg="red",
                     ),
