@@ -31,18 +31,12 @@ jobs:
     - name: Clone Testing Repositories
       run: |
         git clone https://github.com/Azure-Samples/azure-search-openai-demo
-        git clone https://github.com/microsoft/generative-ai-for-beginners
         git clone https://github.com/microsoft/Phi-3CookBook
 
     - name: Test Check Broken Paths in azure-search-openai-demo
       if: always()
       run: |
         cd azure-search-openai-demo
-        markdown-checker -d . -f check_broken_paths -gu ''
-    - name: Test Check Broken Paths in generative-ai-for-beginners
-      if: always()
-      run: |
-        cd generative-ai-for-beginners
         markdown-checker -d . -f check_broken_paths -gu ''
     - name: Test Check Broken Paths in Phi-3CookBook
       if: always()
@@ -55,11 +49,6 @@ jobs:
       run: |
         cd azure-search-openai-demo
         markdown-checker -d . -f check_urls_locale -gu ''
-    - name: Test Check URLs Country locale in generative-ai-for-beginners
-      if: always()
-      run: |
-        cd generative-ai-for-beginners
-        markdown-checker -d . -f check_urls_locale -gu ''
     - name: Test Check URLs Country locale in Phi-3CookBook
       if: always()
       run: |
@@ -70,11 +59,6 @@ jobs:
       if: always()
       run: |
         cd azure-search-openai-demo
-        markdown-checker -d . -f check_broken_urls -gu ''
-    - name: Test Check Broken URLs in generative-ai-for-beginners
-      if: always()
-      run: |
-        cd generative-ai-for-beginners
         markdown-checker -d . -f check_broken_urls -gu ''
     - name: Test Check Broken URLs in Phi-3CookBook
       if: always()

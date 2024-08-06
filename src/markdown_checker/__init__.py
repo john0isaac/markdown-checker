@@ -5,6 +5,7 @@ following some Guidelines
 """
 
 import concurrent.futures
+import os
 import platform
 import sys
 from pathlib import Path
@@ -242,7 +243,7 @@ def detect_issues(
     "-o",
     "--output-file-name",
     type=str,
-    default="comments",
+    default="comment",
     help="Name of the output file.",
     required=True,
 )
@@ -282,6 +283,7 @@ def main(
     formatted_output = ""
     all_files_issues: list[Union[MarkdownPath, MarkdownURL]] = []
     links_checked_count = 0
+    github_ci = os.getenv("CI", "false")
 
     # iterate over the files to validate the content
     for file_path in files_paths:
@@ -296,7 +298,10 @@ def main(
         )
         links_checked_count += links_count
         if len(detected_issues) > 0:
-            formatted_output += f"| [`{file_path}`]({file_path}) |" + format_links(detected_issues)
+            if github_ci == "true":
+                formatted_output += f"| `{file_path}` |" + format_links(detected_issues)
+            else:
+                formatted_output += f"| [`{file_path}`]({file_path}) |" + format_links(detected_issues)
             all_files_issues.extend(detected_issues)
     click.echo(
         click.style(f"\n🔍 Checked {links_checked_count} links in {len(files_paths)} files.", fg="blue"), err=False
@@ -307,14 +312,26 @@ def main(
         generator.generate(func, formatted_output)
         click.echo(click.style(f"😭 Found {len(all_files_issues)} issues in the following files:", fg="red"), err=True)
         for markdown_path in all_files_issues:
-            click.echo(
-                click.style(
-                    f"\tFile '{markdown_path.file_path.resolve()}', line {markdown_path.line_number}"
-                    f"\n{markdown_path} {markdown_path.issue}.\n",
-                    fg="red",
-                ),
-                err=True,
-            )
+            if github_ci == "true":
+                # Ref: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-a-warning-message
+                click.echo(
+                    click.style(
+                        f"::error file={markdown_path.file_path},line={markdown_path.line_number}::"
+                        f"File {markdown_path.file_path}, line {markdown_path.line_number}, "
+                        f"Link {markdown_path} {markdown_path.issue}.",
+                        fg="red",
+                    ),
+                    err=True,
+                )
+            else:
+                click.echo(
+                    click.style(
+                        f"\tFile '{markdown_path.file_path.resolve()}', line {markdown_path.line_number}"
+                        f"\n{markdown_path} {markdown_path.issue}.\n",
+                        fg="red",
+                    ),
+                    err=True,
+                )
         sys.exit(1)
     click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
     sys.exit(0)
