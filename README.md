@@ -25,6 +25,8 @@ pip install markdown-checker
 2. Run `markdown-checker -d {src} -f {func} -gu {url}`. Replace `{src}` with the directory you want to analyze, `{func}` with the available functions like `check_broken_paths`, `{gu}` with your contribution guidance full URL.
 3. The output will be displayed in the terminal and in a `comments.md` file.
 
+For more customizations read the docs.
+
 ## Using `markdown-checker` in GitHub Actions
 
 You can run this tool within a GitHub workflow using the [action-check-markdown](https://github.com/marketplace/actions/check-markdown) GitHub action.

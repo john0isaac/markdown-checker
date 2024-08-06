@@ -16,7 +16,7 @@ class MarkdownPath(MarkdownLinkBase):
         Get the path without the fragment
 
         Returns:
-            Path: The path without the fragment
+            The path without the fragment
         """
         return Path(self.remove_fragments())
 
@@ -25,7 +25,7 @@ class MarkdownPath(MarkdownLinkBase):
         Remove the fragments from a path
 
         Returns:
-            str: The path without the fragment
+            The path without the fragment
         """
         # Find the last occurrence of the dot
         dot_index = self.link.rfind(".")
@@ -51,7 +51,7 @@ class MarkdownPath(MarkdownLinkBase):
         Get the full path of the file by resolving the path without fragments
 
         Returns:
-            Path: The full path of the file
+            The full path of the file
         """
         try:
             return self.path_without_fragments.resolve()
@@ -63,7 +63,7 @@ class MarkdownPath(MarkdownLinkBase):
         Get the full path of the file by resolving the path without fragments
 
         Returns:
-            str: The full path of the file
+            The full path of the file
         """
         return os.path.normpath(os.path.join(os.path.dirname(self.file_path), self.remove_fragments()))
 
@@ -72,7 +72,7 @@ class MarkdownPath(MarkdownLinkBase):
         Check if the path exists
 
         Returns:
-            bool: True if the path exists, False otherwise
+            True if the path exists, False otherwise
         """
         # Paths starting with / are considered absolute and not resolved
         # so we need to remove the / and check if the path exists

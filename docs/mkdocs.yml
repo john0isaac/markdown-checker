@@ -34,4 +34,13 @@ plugins:
 nav:
   - About: index.md
   - Usage: usage.md
+  - Advanced Usage: advanced.md
+  - API Reference: 
+    - API Reference: api.md
+    - Main: ./api/main.md
+    - Urls: ./api/urls.md
+    - Paths: ./api/paths.md
+    - Markdown Link Base: ./api/markdown_link_base.md
+    - Utilities: ./api/utils.md
+    - Reports : ./api/reports.md
   - Automate: automate.md

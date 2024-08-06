@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 from urllib.parse import ParseResult, urlparse
 
@@ -47,4 +48,5 @@ class MarkdownURL(MarkdownLinkBase):
                     return response.status_code == 200
             except requests.RequestException:
                 continue
+            time.sleep(1)
         return False

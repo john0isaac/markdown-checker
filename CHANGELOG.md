@@ -12,6 +12,17 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.2.0] 3 Aug 2024
+- Redesign the package.
+- Port to using Click instead of arg_parser.
+- Expose options for external users to allow for more customization.
+- Increase coverage for paths by including paths that start with `/` or nothing.
+- Add retires for URLs before flagging them as broken.
+- Preform head request on URL which falls back to get if both not working flag as broken after retries count finishes.
+- Analyze all web URLs except the ones in skip_domains list.
+- Change Syntax of terminal comments to improve readability.
+- Add Spinner to indicate that the tool is working (Not compatible with all terminals)
+
 ## [v0.1.5] 8 Jul 2024
 - Increase timeout for requests to check web urls alive or not. https://github.com/john0isaac/markdown-checker/pull/52
 

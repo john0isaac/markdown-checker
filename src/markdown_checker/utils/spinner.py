@@ -63,14 +63,13 @@ def spinner(
     The spinner is created only if stdout is not redirected, or if the spinner
     is forced using the `force` parameter.
 
-    Parameters
-    ----------
-    beep : bool
-        Beep when spinner finishes.
-    disable : bool
-        Hide spinner.
-    force : bool
-        Force creation of spinner even when stdout is redirected.
+    Args:
+        beep (bool):
+            Beep when spinner finishes.
+        disable (bool):
+            Hide spinner.
+        force (bool):
+            Force creation of spinner even when stdout is redirected.
 
     Example
     -------
