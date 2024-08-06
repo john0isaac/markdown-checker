@@ -315,7 +315,7 @@ def main(
             if github_ci == "true":
                 click.echo(
                     click.style(
-                        f"::Error: {markdown_path.file_path}:{markdown_path.line_number} "
+                        f"::error:: {markdown_path.file_path}:{markdown_path.line_number} "
                         f"Link {markdown_path} {markdown_path.issue}.",
                         fg="red",
                     ),

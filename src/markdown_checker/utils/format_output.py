@@ -29,12 +29,12 @@ def format_links(links: list[Union[MarkdownPath, MarkdownURL]]) -> str:
     if github_ci == "true":
         for link in range(len(links)):
             formatted_links += (
-                f"<tr><td>{link + 1}</td><td>{links[link].link}</td><td>{links[link].line_number}</td></tr>"
+                f"<tr><td>{link + 1}</td><td>`{links[link].link}`</td><td>`{links[link].line_number}`</td></tr>"
             )
     else:
         for link in range(len(links)):
             formatted_links += (
-                f"<tr><td>{link + 1}</td><td>{links[link].link}</td>"
+                f"<tr><td>{link + 1}</td><td>`{links[link].link}`</td>"
                 f"<td>[`{links[link].line_number}`]({links[link].file_path}#L{links[link].line_number})</td></tr>"
             )
 
