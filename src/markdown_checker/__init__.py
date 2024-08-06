@@ -308,11 +308,12 @@ def main(
         generator.generate(func, formatted_output)
         click.echo(click.style(f"😭 Found {len(all_files_issues)} issues in the following files:", fg="red"), err=True)
         for markdown_path in all_files_issues:
-            github_ci = os.getenv("CI", 'false')
-            if github_ci == 'true':
+            github_ci = os.getenv("CI", "false")
+            if github_ci == "true":
                 click.echo(
                     click.style(
-                        f"Error: {markdown_path.file_path}:{markdown_path.line_number} Link {markdown_path} {markdown_path.issue}.",
+                        f"Error: {markdown_path.file_path}:{markdown_path.line_number} "
+                        f"Link {markdown_path} {markdown_path.issue}.",
                         fg="red",
                     ),
                     err=True,
