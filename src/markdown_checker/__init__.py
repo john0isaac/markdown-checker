@@ -307,9 +307,9 @@ def main(
         generator = MarkdownGenerator(contributing_guide_url=guide_url, output_file_name=output_file_name)
         generator.generate(func, formatted_output)
         click.echo(click.style(f"😭 Found {len(all_files_issues)} issues in the following files:", fg="red"), err=True)
-        for markdown_path in all_files_issues:
-            github_ci = os.getenv("CI", "false")
-            if github_ci == "true":
+        github_ci = os.getenv("CI", "false")
+        if github_ci == "true":
+            for markdown_path in all_files_issues:
                 click.echo(
                     click.style(
                         f"Error: {markdown_path.file_path}:{markdown_path.line_number} "
@@ -318,8 +318,9 @@ def main(
                     ),
                     err=True,
                 )
-                return
-            else:
+            return
+        else:
+            for markdown_path in all_files_issues:
                 click.echo(
                     click.style(
                         f"\tFile '{markdown_path.file_path.resolve()}', line {markdown_path.line_number}"
@@ -328,7 +329,7 @@ def main(
                     ),
                     err=True,
                 )
-                sys.exit(1)
+            sys.exit(1)
     click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
     sys.exit(0)
 
