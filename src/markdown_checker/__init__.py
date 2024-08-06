@@ -316,8 +316,9 @@ def main(
                 # Ref: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-a-warning-message
                 click.echo(
                     click.style(
-                        f"::error file={markdown_path.file_path},line={markdown_path.line_number}"
-                        f"::Link {markdown_path} {markdown_path.issue}.",
+                        f"::error file={markdown_path.file_path},line={markdown_path.line_number}::"
+                        f"File {markdown_path.file_path}, line {markdown_path.line_number}, "
+                        f"Link {markdown_path} {markdown_path.issue}.",
                         fg="red",
                     ),
                     err=True,

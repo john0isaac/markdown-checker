@@ -148,15 +148,3 @@ jobs:
       if: ${{ always() &&  hashFiles('./comment.md') != '' }}
       shell: bash
       run: cat ./comment.md >> $GITHUB_STEP_SUMMARY
-
-    - name: Post comment
-      if: ${{ always() &&  hashFiles('./comment.md') != '' }}
-      shell: bash
-      env:
-        GH_TOKEN: ${{ inputs.github-token }}
-      run: gh pr comment ${{ github.event.pull_request.html_url }} -F ./comment.md
-
-    - name: Update workflow run status
-      if: ${{ always() &&  hashFiles('./comment.md') != '' }}
-      shell: bash
-      run: exit 1
