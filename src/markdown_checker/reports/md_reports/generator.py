@@ -20,7 +20,7 @@ class MarkdownGenerator(GeneratorBase):
 
     def __init__(
         self,
-        output_file_name: str = "comments",
+        output_file_name: str = "comment",
         contributing_guide_url: str = "https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md",
     ) -> None:
         self.output_file_name = output_file_name

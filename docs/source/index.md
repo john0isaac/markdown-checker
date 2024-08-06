@@ -19,4 +19,4 @@ pip install markdown-checker
 
 1. Run `pip install markdown-checker`.
 2. Run `markdown-checker -d {src} -f {func} -gu {url}`. Replace `{src}` with the directory you want to analyze, `{func}` with the available functions like `check_broken_paths`, `{gu}` with your contribution guidance full URL.
-3. The output will be displayed in the terminal and in a `comments.md` file.
+3. The output will be displayed in the terminal and in a `comment.md` file.

@@ -70,7 +70,7 @@ To further customize your experience with the Markdown Checker, you can utilize 
 ### `-o`, `--output-file-name`
 - **Type**: `str`
 - **Description**: Name of the output file.
-- **Default**: `comments`
+- **Default**: `comment`
 - **Required**: Yes
 
 

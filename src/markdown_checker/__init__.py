@@ -243,7 +243,7 @@ def detect_issues(
     "-o",
     "--output-file-name",
     type=str,
-    default="comments",
+    default="comment",
     help="Name of the output file.",
     required=True,
 )
