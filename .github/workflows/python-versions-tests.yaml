@@ -3,7 +3,7 @@ name: Run Python Matrix Tests
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
 
 permissions:
   contents: read
