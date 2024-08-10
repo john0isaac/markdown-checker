@@ -63,4 +63,3 @@ class MarkdownGenerator(GeneratorBase):
         """
         generated_text = self._generate_text(function_name=function_name, formatted_output=formatted_output)
         self._write_file(generated_text)
-
