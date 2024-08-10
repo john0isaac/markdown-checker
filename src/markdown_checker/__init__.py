@@ -22,7 +22,9 @@ from markdown_checker.utils.list_files import get_files_paths_list
 from markdown_checker.utils.spinner import spinner
 
 
-def check_url(url: MarkdownURL, skip_domains: list[str], skip_urls_containing: list[str], timeout: int, retries: int):
+def check_url(
+    url: MarkdownURL, skip_domains: list[str], skip_urls_containing: list[str], timeout: int, retries: int
+) -> Union[None, MarkdownURL]:
     if any(url.host_name().lower() in domain.lower() for domain in skip_domains) or any(
         url.link in substring for substring in skip_urls_containing
     ):
@@ -150,56 +152,33 @@ def detect_issues(
     return detected_issues, links_count
 
 
+class ListOfStrings(click.Option):
+    """
+    Helper class to parse a list of strings from the command line.
+
+    Ref: https://stackoverflow.com/questions/47631914/how-to-pass-several-list-of-arguments-to-click-option
+    """
+
+    def type_cast_value(self, ctx, value):
+        try:
+            if isinstance(value, str):
+                # split the string by comma and remove empty strings
+                return list(filter(None, value.split(",")))
+            elif isinstance(value, list):
+                return value
+            else:
+                raise Exception
+        except Exception:
+            raise click.BadParameter(value)
+
+
 @click.command()
 @click.option(
     "-d",
     "--dir",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True),
+    type=click.Path(path_type=Path, exists=True, file_okay=False, dir_okay=True, readable=True),
     help="Path to the root directory to check.",
     required=True,
-)
-@click.option(
-    "-ext",
-    "--extensions",
-    type=list[str],
-    default=[".md", ".ipynb"],
-    help="File extensions to filter the files.",
-    required=True,
-)
-@click.option(
-    "-td",
-    "--tracking-domains",
-    type=list[str],
-    default=["github.com", "microsoft.com", "visualstudio.com", "aka.ms", "azure.com"],
-    help="List of tracking domains to check.",
-    required=True,
-)
-@click.option(
-    "-sf",
-    "--skip-files",
-    type=list[str],
-    default=[
-        "CODE_OF_CONDUCT.md",
-        "SECURITY.md",
-    ],
-    help="List of file names to skip check.",
-    required=True,
-)
-@click.option(
-    "-sd",
-    "--skip-domains",
-    type=list[str],
-    default=[],
-    help="List of domains to skip check.",
-    required=False,
-)
-@click.option(
-    "-suc",
-    "--skip-urls-containing",
-    type=list[str],
-    default=["https://www.microsoft.com/en-us/security/blog", "video-embed.html"],
-    help="List of urls to skip check.",
-    required=False,
 )
 @click.option(
     "-f",
@@ -217,16 +196,64 @@ def detect_issues(
     required=True,
 )
 @click.option(
+    "-ext",
+    "--extensions",
+    cls=ListOfStrings,
+    type=list[str],
+    default=[".md", ".ipynb"],
+    help="File extensions to filter the files.",
+    required=False,
+)
+@click.option(
+    "-td",
+    "--tracking-domains",
+    cls=ListOfStrings,
+    type=list[str],
+    default=["github.com", "microsoft.com", "visualstudio.com", "aka.ms", "azure.com"],
+    help="List of tracking domains to check.",
+    required=False,
+)
+@click.option(
+    "-sf",
+    "--skip-files",
+    cls=ListOfStrings,
+    type=list[str],
+    default=[
+        "CODE_OF_CONDUCT.md",
+        "SECURITY.md",
+    ],
+    help="List of file names to skip check.",
+    required=False,
+)
+@click.option(
+    "-sd",
+    "--skip-domains",
+    cls=ListOfStrings,
+    type=list[str],
+    default=[],
+    help="List of domains to skip check.",
+    required=False,
+)
+@click.option(
+    "-suc",
+    "--skip-urls-containing",
+    cls=ListOfStrings,
+    type=list[str],
+    default=["https://www.microsoft.com/en-us/security/blog", "video-embed.html"],
+    help="List of urls to skip check.",
+    required=False,
+)
+@click.option(
     "-gu",
     "--guide-url",
     type=str,
     help="Full url of your contributing guide.",
-    required=True,
+    required=False,
 )
 @click.option(
     "-to",
     "--timeout",
-    type=int,
+    type=click.IntRange(0, 50),
     default=10,
     help="Timeout in seconds for the requests.",
     required=False,
@@ -234,7 +261,7 @@ def detect_issues(
 @click.option(
     "-rt",
     "--retries",
-    type=int,
+    type=click.IntRange(0, 10),
     default=3,
     help="Number of retries for the requests.",
     required=False,
@@ -245,12 +272,12 @@ def detect_issues(
     type=str,
     default="comment",
     help="Name of the output file.",
-    required=True,
+    required=False,
 )
 @click.argument(
     "src",
     nargs=-1,
-    type=click.Path(exists=True, file_okay=True, dir_okay=True, readable=True),
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=True, readable=True),
     is_eager=True,
     metavar="SRC ...",
     required=False,
@@ -259,23 +286,22 @@ def detect_issues(
     message=(f"%(prog)s, %(version)s\n" f"Python ({platform.python_implementation()}) {platform.python_version()}"),
 )
 def main(
-    src: tuple[str, ...],
-    dir: str,
+    src: tuple[Path, ...],
+    dir: Path,
     func: str,
-    guide_url: str,
+    guide_url: Union[str, None],
     extensions: list[str],
     skip_files: list[str],
     skip_domains: list[str],
     skip_urls_containing: list[str],
+    tracking_domains: list[str],
     timeout: int,
     retries: int,
-    tracking_domains: list[str],
     output_file_name: str,
 ) -> None:
     """A markdown link validation reporting tool."""
-    _ = tuple(Path(item) for item in src) or (Path("./"),)  # default to current directory
-
-    _, files_paths = get_files_paths_list(Path(dir), extensions)
+    _ = src or (Path("./"),)  # default to current directory
+    _, files_paths = get_files_paths_list(dir, extensions)
 
     # remove files from skip_files list
     files_paths = [file_path for file_path in files_paths if file_path.name not in skip_files]

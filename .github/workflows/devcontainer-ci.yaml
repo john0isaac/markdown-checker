@@ -3,12 +3,12 @@ name: Check Dev Container
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
     paths:
       - ".devcontainer/**"
       - ".github/workflows/devcontainer-ci.yaml"
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
     paths:
       - ".devcontainer/**"
       - ".github/workflows/devcontainer-ci.yaml"

@@ -1,4 +1,5 @@
 import pathlib
+from typing import Union
 
 from markdown_checker.reports.generator_base import GeneratorBase
 
@@ -20,12 +21,14 @@ class MarkdownGenerator(GeneratorBase):
 
     def __init__(
         self,
+        contributing_guide_url: Union[str, None] = None,
         output_file_name: str = "comment",
-        contributing_guide_url: str = "https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md",
     ) -> None:
         self.output_file_name = output_file_name
         self.contributing_guide_line = (
-            f" For more details, check our [Contributing Guide]({contributing_guide_url}).\n\n"
+            (f" For more details, check our [Contributing Guide]({contributing_guide_url}).\n\n")
+            if contributing_guide_url
+            else "\n\n"
         )
 
     def _write_file(self, generated_text: str) -> None:
@@ -60,8 +63,3 @@ class MarkdownGenerator(GeneratorBase):
         """
         generated_text = self._generate_text(function_name=function_name, formatted_output=formatted_output)
         self._write_file(generated_text)
-
-
-if __name__ == "__main__":
-    md_generator = MarkdownGenerator()
-    md_generator.generate("check_broken_paths", "This is a test")

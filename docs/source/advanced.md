@@ -9,24 +9,35 @@ To further customize your experience with the Markdown Checker, you can utilize 
 - **Description**: Path to the root directory to check.
 - **Required**: Yes
 
+### `-f`, `--func`
+- **Type**: `click.Choice`
+- **Description**: Function to be executed.
+- **Choices**:
+    - `check_broken_paths`
+    - `check_broken_urls`
+    - `check_paths_tracking`
+    - `check_urls_tracking`
+    - `check_urls_locale`
+- **Required**: Yes
+
 ### `-ext`, `--extensions`
 - **Type**: `list[str]`
 - **Description**: File extensions to filter the files.
 - **Default**: 
     - `.md`
     - `.ipynb`
-- **Required**: Yes
+- **Required**: No
 
 ### `-td`, `--tracking-domains`
 - **Type**: `list[str]`
-- **Description**: List of tracking domains to check if they have a tracking id or not.
+- **Description**: List of tracking domains to check.
 - **Default**: 
     - `github.com`
     - `microsoft.com`
     - `visualstudio.com`
     - `aka.ms`
     - `azure.com`
-- **Required**: Yes
+- **Required**: No
 
 ### `-sf`, `--skip-files`
 - **Type**: `list[str]`
@@ -34,11 +45,11 @@ To further customize your experience with the Markdown Checker, you can utilize 
 - **Default**: 
     - `CODE_OF_CONDUCT.md`
     - `SECURITY.md`
-- **Required**: Yes
+- **Required**: No
 
 ### `-sd`, `--skip-domains`
 - **Type**: `list[str]`
-- **Description**: List of domains to skip checking if their urls are working or not.
+- **Description**: List of domains to skip checking.
 - **Default**: `[]`
 - **Required**: No
 
@@ -53,26 +64,32 @@ To further customize your experience with the Markdown Checker, you can utilize 
 ### `-gu`, `--guide-url`
 - **Type**: `str`
 - **Description**: Full URL of your contributing guide.
-- **Required**: Yes
+- **Required**: No
 
 ### `-to`, `--timeout`
-- **Type**: `int`
+- **Type**: `Click.IntRange`
 - **Description**: Timeout in seconds for the requests before retrying.
 - **Default**: `10`
+- **Range**: `0-50`
 - **Required**: No
 
 ### `-rt`, `--retries`
-- **Type**: `int`
+- **Type**: `Click.IntRange`
 - **Description**: Number of retries for the requests before flagging a url as broken.
 - **Default**: `3`
+- **Range**: `0-10`
 - **Required**: No
 
 ### `-o`, `--output-file-name`
 - **Type**: `str`
 - **Description**: Name of the output file.
 - **Default**: `comment`
-- **Required**: Yes
+- **Required**: No
 
+### `SRC ...`
+- **Type**: `click.Path`
+- **Description**: Source files or directories to check.
+- **Required**: No
 
 ## Other Options
 

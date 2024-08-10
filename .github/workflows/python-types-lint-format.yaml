@@ -3,13 +3,13 @@ name: Run Python type, lint and format checks
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
     paths:
       - '**.py'
       - ".github/workflows/python-types-lint-format.yaml"
 
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
     paths:
       - '**.py'
       - ".github/workflows/python-types-lint-format.yaml"
