@@ -253,7 +253,7 @@ class ListOfStrings(click.Option):
 @click.option(
     "-to",
     "--timeout",
-    type=click.IntRange(1, 50),
+    type=click.IntRange(0, 50),
     default=10,
     help="Timeout in seconds for the requests.",
     required=False,
