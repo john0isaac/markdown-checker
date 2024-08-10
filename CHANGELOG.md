@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.2.1] 7 Aug 2024
+- Fix command line list[str] type issue and use Click.IntRange for retries and timeout.
+
 ## [v0.2.0] 7 Aug 2024
 - Redesign the package.
 - Port to using Click instead of arg_parser.
