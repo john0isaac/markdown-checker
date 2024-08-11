@@ -76,3 +76,43 @@ markdown-checker = "markdown_checker:main_with_spinner"
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.briefcase]
+project_name = "markdown-checker"
+bundle = "com.markdown-checker"
+version = "0.0.1"
+url = "https://markdown-checker.readthedocs.io"
+license.file = "LICENSE"
+author = "John Aziz"
+author_email = "johnaziz269@gmail.com"
+
+[tool.briefcase.app.markdown-checker]
+formal_name = "markdown-checker"
+description = "A markdown link validation reporting tool."
+long_description = """A markdown link validation reporting tool.
+"""
+console_app = true
+sources = [
+    "src/markdown_checker",
+]
+requires = [
+    "click",
+    "requests",
+]
+test_sources = [
+    "tests",
+]
+test_requires = [
+    "pytest",
+]
+
+# Mobile deployments
+[tool.briefcase.app.markdown-checker.iOS]
+supported = false
+
+[tool.briefcase.app.markdown-checker.android]
+supported = false
+
+# Web deployments
+[tool.briefcase.app.markdown-checker.web]
+supported = false
