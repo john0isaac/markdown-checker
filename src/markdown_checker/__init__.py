@@ -100,6 +100,7 @@ def detect_issues(
                 "blogs.nvidia.com",
                 "blog.gopenai.com",
                 "towardsdatascience.com",
+                "code.visualstudio.com"
             ]
         )
         with concurrent.futures.ProcessPoolExecutor() as executor:
