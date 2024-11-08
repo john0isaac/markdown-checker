@@ -43,9 +43,10 @@ class MarkdownURL(MarkdownLinkBase):
                 response = requests.head(self.link, timeout=timeout, allow_redirects=True)
                 if response.status_code == 200:
                     return True
-                elif response.status_code == 405:
+                else:
                     response = requests.get(self.link, timeout=timeout, allow_redirects=True)
-                    return response.status_code == 200
+                    if response.status_code == 200:
+                        return True
             except requests.RequestException:
                 continue
             time.sleep(1)
