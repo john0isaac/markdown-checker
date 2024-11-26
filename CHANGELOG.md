@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.2.3] 26 Nov 2024
+
+- Skip another domain by @IsuminI
+
 ## [v0.2.2] 8 Nov 2024
 
 - Change Broken URLs flagging to always try head and get request on any URL before flagging it as broken.
@@ -55,7 +59,7 @@ All notable changes to this project will be documented in this file.
 
 ## [v0.1.2] 06 March 2024
 
--  Improve-package by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/21
+- Improve-package by @john0isaac in https://github.com/john0isaac/markdown-checker/pull/21
 - Skipped vs code redirect urls
 - fixed typos
 
