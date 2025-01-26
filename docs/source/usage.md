@@ -4,11 +4,11 @@ The library provides the following functions:
 
 [Usage](#usage):
 
-  - [`check_broken_paths`](#check_broken_paths)
-  - [`check_broken_urls`](#check_broken_urls)
-  - [`check_urls_locale`](#check_urls_locale)
-  - [`check_paths_tracking`](#check_paths_tracking)
-  - [`check_urls_tracking`](#check_urls_tracking)
+- [`check_broken_paths`](#check_broken_paths)
+- [`check_broken_urls`](#check_broken_urls)
+- [`check_urls_locale`](#check_urls_locale)
+- [`check_paths_tracking`](#check_paths_tracking)
+- [`check_urls_tracking`](#check_urls_tracking)
 
 ## `check_broken_paths`
 
@@ -60,4 +60,4 @@ Example:
 markdown-checker -d . -f check_urls_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
 ```
 
-## Want to do more? Check out the [Advanced Usage](./advanced.md) page.
+## Want to do more? Check out the [Advanced Usage](./advanced.md) page
