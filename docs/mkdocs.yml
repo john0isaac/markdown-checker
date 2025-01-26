@@ -35,7 +35,7 @@ nav:
   - About: index.md
   - Usage: usage.md
   - Advanced Usage: advanced.md
-  - API Reference: 
+  - API Reference:
     - API Reference: api.md
     - Main: ./api/main.md
     - Urls: ./api/urls.md

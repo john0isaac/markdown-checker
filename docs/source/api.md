@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD041 -->
 - [Main](./api/main.md)
 - [Urls](./api/urls.md)
 - [Paths](./api/paths.md)
