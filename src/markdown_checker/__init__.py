@@ -84,6 +84,7 @@ def detect_issues(
                 "en.wikipedia.org",
                 "www.midjourney.com",
                 "www.linkedin.com",
+                "rodtrent.substack.com",
             ]
         )
         with concurrent.futures.ProcessPoolExecutor() as executor:
