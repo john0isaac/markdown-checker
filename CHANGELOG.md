@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.2.4] 26 Jan 2025
+
+- Increase timeout for requests to check web urls alive or not, defaults to 15 seconds.
+- Consider status codes between 2xx and 3xx as valid URLs.
+- Add headers Accept and User-Agent headers to the requests which are required by some websites.
+
 ## [v0.2.3] 26 Nov 2024
 
 - Skip another domain by @IsuminI

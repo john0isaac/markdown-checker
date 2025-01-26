@@ -42,13 +42,13 @@ jobs:
       run: |
         cd azure-search-openai-demo
         markdown-checker -d . -f check_urls_locale -gu ''
- 
+
     - name: Test Check Broken URLs in azure-search-openai-demo
       if: always()
       run: |
         cd azure-search-openai-demo
         markdown-checker -d . -f check_broken_urls -gu ''
- 
+
   tests-phicookbook-repo:
     name: Python Tests on Phi-3CookBook
     runs-on: ubuntu-latest

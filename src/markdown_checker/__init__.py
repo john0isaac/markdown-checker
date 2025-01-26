@@ -76,32 +76,14 @@ def detect_issues(
         # currently these domains are known to have restrictions on the requests
         skip_domains.extend(
             [
-                "platform.openai.com",
-                "help.openai.com",
+                "openai.com",
                 "beta.openai.com",
-                "marketplace.visualstudio.com",
-                "huggingface.co",
-                "en.wikipedia.org",
-                "twitter.com",
-                "www.linkedin.com",
-                "make.powerautomate.com",
-                "make.powerapps.com",
-                "www.midjourney.com",
+                "help.openai.com",
+                "platform.openai.com",
                 "vscode.dev",
-                "rodtrent.substack.com",
-                "example.com",
-                "www.nuget.org",
-                "www.docker.com",
-                "build.nvidia.com",
-                "dotnet.microsoft.com",
-                "www.gemini.com",
-                "upload.wikimedia.org",
-                "medium.com",
-                "blogs.nvidia.com",
-                "blog.gopenai.com",
-                "towardsdatascience.com",
-                "code.visualstudio.com",
-                "opensource.org",
+                "en.wikipedia.org",
+                "www.midjourney.com",
+                "www.linkedin.com",
             ]
         )
         with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -260,7 +242,7 @@ class ListOfStrings(click.Option):
     "-to",
     "--timeout",
     type=click.IntRange(0, 50),
-    default=10,
+    default=15,
     help="Timeout in seconds for the requests.",
     required=False,
 )
@@ -289,7 +271,7 @@ class ListOfStrings(click.Option):
     required=False,
 )
 @click.version_option(
-    message=(f"%(prog)s, %(version)s\n" f"Python ({platform.python_implementation()}) {platform.python_version()}"),
+    message=(f"%(prog)s, %(version)s\nPython ({platform.python_implementation()}) {platform.python_version()}"),
 )
 def main(
     src: tuple[Path, ...],
