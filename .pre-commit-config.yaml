@@ -15,6 +15,7 @@ repos:
     hooks:
     - id: mypy
       args: [--strict, --ignore-missing-imports]
+      additional_dependencies: ["click", "types-requests"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.3.7
     hooks:
