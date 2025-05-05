@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v0.2.5] 5 May 2025
+
+- Disable GitHub.com URL checks (skipping until fixed)
+
 ## [v0.2.4] 26 Jan 2025
 
 - Increase timeout for requests to check web urls alive or not, defaults to 15 seconds.
