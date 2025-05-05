@@ -1,7 +1,7 @@
 [project]
 name = "markdown-checker"
 description= "A markdown link validation reporting tool."
-version = "0.2.4"
+version = "0.2.5"
 authors = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 maintainers = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 license = {file = "LICENSE"}
