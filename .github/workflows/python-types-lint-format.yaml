@@ -28,7 +28,7 @@ jobs:
         python_version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v5
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python_version }}
         architecture: x64
@@ -50,7 +50,7 @@ jobs:
         python_version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
     - uses: actions/checkout@v5
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python_version }}
         architecture: x64
