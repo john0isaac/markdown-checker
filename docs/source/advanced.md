@@ -3,31 +3,6 @@
 
 To further customize your experience with the Markdown Checker, you can utilize additional command-line interface (CLI) options.
 
-### Working with List Parameters
-
-Several CLI options accept lists of values (e.g., `--skip-domains`, `--skip-files`, `--extensions`, `--tracking-domains`, `--skip-urls-containing`).
-
-**How to provide multiple values:**
-
-Use **comma-separated values** without spaces:
-
-```bash
-markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,another-site.org
-```
-
-**Important formatting rules:**
-- Values must be separated by commas with **no spaces**
-- Do **not** use square brackets
-- Do **not** add spaces after commas
-- Quotes are optional but not required
-
-**Examples of correct and incorrect usage:**
-- ❌ Wrong: `--skip-domains=[example.com,test.com]` (square brackets not allowed)
-- ❌ Wrong: `--skip-domains=example.com, test.com` (spaces not allowed)
-- ❌ Wrong: `--skip-domains example.com test.com` (must use `=` and commas)
-- ✅ Correct: `--skip-domains=example.com,test.com`
-- ✅ Correct: `--skip-domains="example.com,test.com"` (quotes optional)
-
 ## Command Line Options
 
 ### `-d`, `--dir`
@@ -56,14 +31,6 @@ markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,a
   - `.md`
   - `.ipynb`
 - **Required**: No
-- **Usage Examples**:
-  ```bash
-  # Single value
-  markdown-checker -d . -f check_broken_paths --extensions=.md
-  
-  # Multiple values (comma-separated, no spaces)
-  markdown-checker -d . -f check_broken_paths --extensions=.md,.ipynb,.txt
-  ```
 
 ### `-td`, `--tracking-domains`
 
@@ -76,14 +43,6 @@ markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,a
   - `aka.ms`
   - `azure.com`
 - **Required**: No
-- **Usage Examples**:
-  ```bash
-  # Single value
-  markdown-checker -d . -f check_urls_tracking --tracking-domains=github.com
-  
-  # Multiple values (comma-separated, no spaces)
-  markdown-checker -d . -f check_urls_tracking --tracking-domains=github.com,microsoft.com,example.com
-  ```
 
 ### `-sf`, `--skip-files`
 
@@ -93,14 +52,6 @@ markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,a
   - `CODE_OF_CONDUCT.md`
   - `SECURITY.md`
 - **Required**: No
-- **Usage Examples**:
-  ```bash
-  # Single value
-  markdown-checker -d . -f check_broken_paths --skip-files=README.md
-  
-  # Multiple values (comma-separated, no spaces)
-  markdown-checker -d . -f check_broken_paths --skip-files=README.md,CHANGELOG.md,LICENSE.md
-  ```
 
 ### `-sd`, `--skip-domains`
 
@@ -108,14 +59,6 @@ markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,a
 - **Description**: List of domains to skip checking.
 - **Default**: `[]`
 - **Required**: No
-- **Usage Examples**:
-  ```bash
-  # Single value
-  markdown-checker -d . -f check_broken_urls --skip-domains=example.com
-  
-  # Multiple values (comma-separated, no spaces)
-  markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,another-site.org
-  ```
 
 ### `-suc`, `--skip-urls-containing`
 
@@ -125,14 +68,6 @@ markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,a
   - `https://www.microsoft.com/en-us/security/blog`
   - `video-embed.html`
 - **Required**: No
-- **Usage Examples**:
-  ```bash
-  # Single value
-  markdown-checker -d . -f check_broken_urls --skip-urls-containing=/embed/
-  
-  # Multiple values (comma-separated, no spaces)
-  markdown-checker -d . -f check_broken_urls --skip-urls-containing=/embed/,/preview/,video-embed.html
-  ```
 
 ### `-gu`, `--guide-url`
 
