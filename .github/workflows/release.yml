@@ -12,6 +12,8 @@ env:
 jobs:
   release-pypi:
     name: Upload release to PyPI
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Check out code from Github
