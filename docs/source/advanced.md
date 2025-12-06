@@ -12,7 +12,7 @@ Several CLI options accept lists of values (e.g., `--skip-domains`, `--skip-file
 Use **comma-separated values** without spaces:
 
 ```bash
-markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,another-site.org
+markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com
 ```
 
 **Important formatting rules:**
@@ -88,7 +88,7 @@ markdown-checker -d . -f check_broken_paths --extensions=.md,.ipynb,.txt
 markdown-checker -d . -f check_urls_tracking --tracking-domains=github.com
 
 # Multiple values (comma-separated, no spaces)
-markdown-checker -d . -f check_urls_tracking --tracking-domains=github.com,microsoft.com,example.com
+markdown-checker -d . -f check_urls_tracking --tracking-domains=github.com,microsoft.com
 ```
 
 ### `-sf`, `--skip-files`
@@ -124,7 +124,7 @@ markdown-checker -d . -f check_broken_paths --skip-files=README.md,CHANGELOG.md,
 markdown-checker -d . -f check_broken_urls --skip-domains=example.com
 
 # Multiple values (comma-separated, no spaces)
-markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com,another-site.org
+markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com
 ```
 
 ### `-suc`, `--skip-urls-containing`
