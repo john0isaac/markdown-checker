@@ -5,8 +5,11 @@ from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config, MarkdownLinkBase, MarkdownURL
 from markdown_checker.utils.extract_links import MarkdownLinks
 
-# Domains known to block automated requests; always skipped for URL checks.
-_BUILTIN_SKIP_DOMAINS: list[str] = []
+# Domains known to block automated requests (e.g. Cloudflare 403);
+# always skipped for URL checks.
+_BUILTIN_SKIP_DOMAINS: list[str] = [
+    "openai.com",
+]
 
 
 def _check_url(
