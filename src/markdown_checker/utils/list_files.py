@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 
-def get_files_paths_list(root_path: Path, extensions: list[str] = []) -> tuple[list[Path], list[Path]]:
+def get_files_paths_list(root_path: Path, extensions: list[str] | None = None) -> tuple[list[Path], list[Path]]:
     """
     Get a list of file paths from a root directory and its subdirectories, filtered by file extension.
 
@@ -18,6 +18,8 @@ def get_files_paths_list(root_path: Path, extensions: list[str] = []) -> tuple[l
     Returns:
         A tuple containing a list of subdirectories and a list of file paths.
     """
+
+    extensions = extensions or []
 
     sub_folders: list[Path] = []
     files_paths: list[Path] = []
