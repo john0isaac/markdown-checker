@@ -25,15 +25,13 @@ def format_links(links: list[MarkdownLinkBase]) -> str:
     # repo name is always target repo in PR not source
     # need more work in upcoming release
     if github_ci == "true":
-        for link in range(len(links)):
-            formatted_links += (
-                f"<tr><td>{link + 1}</td><td>`{links[link].link}`</td><td>`{links[link].line_number}`</td></tr>"
-            )
+        for i, item in enumerate(links, 1):
+            formatted_links += f"<tr><td>{i}</td><td>`{item.link}`</td><td>`{item.line_number}`</td></tr>"
     else:
-        for link in range(len(links)):
+        for i, item in enumerate(links, 1):
             formatted_links += (
-                f"<tr><td>{link + 1}</td><td>`{links[link].link}`</td>"
-                f"<td>[`{links[link].line_number}`]({links[link].file_path}#L{links[link].line_number})</td></tr>"
+                f"<tr><td>{i}</td><td>`{item.link}`</td>"
+                f"<td>[`{item.line_number}`]({item.file_path}#L{item.line_number})</td></tr>"
             )
 
     formatted_links += "</tbody></table>|\n"
