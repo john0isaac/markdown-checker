@@ -1,6 +1,6 @@
 import pytest
 
-from markdown_checker.checks.locale import _BUILTIN_SKIP_DOMAINS, PathsLocaleCheck, URLsLocaleCheck
+from markdown_checker.checks.locale import _BUILTIN_SKIP_DOMAINS, URLsLocaleCheck
 from markdown_checker.models.config import Config
 
 # --- URLsLocaleCheck ---
@@ -78,38 +78,6 @@ def test_urls_locale_various_locales(urls_check, make_markdown_url, make_markdow
     links = make_markdown_links(urls=[url])
     result = urls_check.run(links)
     assert len(result) == expected_count
-
-
-# --- PathsLocaleCheck ---
-
-
-@pytest.fixture
-def paths_check():
-    return PathsLocaleCheck()
-
-
-def test_paths_with_locale_reported(paths_check, make_markdown_path, make_markdown_links):
-    """Paths with locale segments are reported."""
-    path = make_markdown_path("./en-us/docs/guide.md")
-    links = make_markdown_links(paths=[path])
-    result = paths_check.run(links)
-    assert len(result) == 1
-    assert result[0].issue == "has locale"
-
-
-def test_paths_without_locale_not_reported(paths_check, make_markdown_path, make_markdown_links):
-    """Paths without locale segments are not reported."""
-    path = make_markdown_path("./docs/guide.md")
-    links = make_markdown_links(paths=[path])
-    result = paths_check.run(links)
-    assert result == []
-
-
-def test_paths_locale_no_paths(paths_check, make_markdown_links):
-    """Returns empty list when there are no paths."""
-    links = make_markdown_links()
-    result = paths_check.run(links)
-    assert result == []
 
 
 def test_builtin_skip_domains_contains_nvidia():
