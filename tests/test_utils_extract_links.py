@@ -95,3 +95,31 @@ def test_url_vs_path_classification(tmp_path: Path, link_text: str, expect_url: 
     result = get_links_from_md_file(md)
     assert (len(result.urls) > 0) == expect_url
     assert (len(result.paths) > 0) == expect_path
+
+
+def test_skips_links_inside_fenced_code_blocks(tmp_path: Path):
+    """Links inside fenced code blocks (``` or ~~~) are ignored."""
+    md = tmp_path / "fenced.md"
+    md.write_text(
+        "[before](https://before.com)\n"
+        "```\n"
+        "[inside](https://inside.com)\n"
+        "[path](./inside/file.md)\n"
+        "```\n"
+        "[after](https://after.com)\n"
+    )
+    result = get_links_from_md_file(md)
+    urls = [u.link for u in result.urls]
+    assert "https://before.com" in urls
+    assert "https://after.com" in urls
+    assert "https://inside.com" not in urls
+    assert len(result.paths) == 0
+
+
+def test_skips_links_inside_tilde_fenced_code_blocks(tmp_path: Path):
+    """Links inside ~~~ fenced code blocks are ignored."""
+    md = tmp_path / "tilde.md"
+    md.write_text("~~~\n[inside](https://inside.com)\n~~~\n[outside](https://outside.com)\n")
+    result = get_links_from_md_file(md)
+    assert len(result.urls) == 1
+    assert result.urls[0].link == "https://outside.com"
