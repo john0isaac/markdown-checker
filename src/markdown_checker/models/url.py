@@ -58,6 +58,10 @@ class MarkdownURL(MarkdownLinkBase):
                     response = _client.get(self.link, timeout=timeout)
                     if response.is_success:
                         return True
+                except httpx.UnsupportedProtocol:
+                    # Server redirected to a non-HTTP scheme (e.g. vscode://).
+                    # The original URL is reachable; treat it as alive.
+                    return True
                 except httpx.HTTPError:
                     pass
                 if attempt < retries - 1:
