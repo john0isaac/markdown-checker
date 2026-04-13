@@ -62,7 +62,7 @@ class MarkdownURL(MarkdownLinkBase):
                     # Server redirected to a non-HTTP scheme (e.g. vscode://).
                     # The original URL is reachable; treat it as alive.
                     return True
-                except httpx.HTTPError:
+                except (httpx.HTTPError, RuntimeError):
                     pass
                 if attempt < retries - 1:
                     time.sleep(0.5 * 2**attempt)

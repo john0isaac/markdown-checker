@@ -89,6 +89,16 @@ def test_is_alive_unsupported_protocol_redirect():
     assert url.is_alive(timeout=5, retries=1, client=mock_client) is True
 
 
+def test_is_alive_runtime_error_returns_false():
+    """Returns False when client raises RuntimeError (e.g. client closed)."""
+    url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
+    mock_client = MagicMock(spec=httpx.Client)
+    mock_client.head.side_effect = RuntimeError("Cannot send a request, as the client has been closed.")
+    with patch("markdown_checker.models.url.time.sleep"):
+        assert url.is_alive(timeout=5, retries=2, client=mock_client) is False
+    assert mock_client.head.call_count == 2
+
+
 def test_is_alive_creates_client_when_none():
     """Creates and closes its own httpx.Client when none is provided."""
     url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
