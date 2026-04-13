@@ -88,11 +88,6 @@ def paths_check():
     return PathsLocaleCheck()
 
 
-def test_paths_locale_check_name():
-    """Check name matches registry key."""
-    assert PathsLocaleCheck.name == "check_paths_locale"
-
-
 def test_paths_with_locale_reported(paths_check, make_markdown_path, make_markdown_links):
     """Paths with locale segments are reported."""
     path = make_markdown_path("./en-us/docs/guide.md")

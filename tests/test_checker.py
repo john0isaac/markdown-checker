@@ -127,7 +127,6 @@ def test_link_type_used_instead_of_path_checks():
     path_checks = {name for name, check in REGISTRY.items() if check.link_type == "paths"}
     assert "check_broken_paths" in path_checks
     assert "check_paths_tracking" in path_checks
-    assert "check_paths_locale" in path_checks
 
     url_checks = {name for name, check in REGISTRY.items() if check.link_type == "urls"}
     assert "check_broken_urls" in url_checks

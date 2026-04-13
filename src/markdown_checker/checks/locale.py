@@ -34,22 +34,3 @@ class URLsLocaleCheck(BaseCheck):
                 url.issue = "has locale"
                 detected_issues.append(url)
         return detected_issues
-
-
-class PathsLocaleCheck(BaseCheck):
-    """Check that relative paths do not contain a country/language locale segment."""
-
-    name = "check_paths_locale"
-    link_type = "paths"
-
-    def run(
-        self,
-        links: MarkdownLinks,
-        config: Config | None = None,
-    ) -> list[MarkdownLinkBase]:
-        detected_issues: list[MarkdownLinkBase] = []
-        for path in links.paths:
-            if path.has_locale():
-                path.issue = "has locale"
-                detected_issues.append(path)
-        return detected_issues

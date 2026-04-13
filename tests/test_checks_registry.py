@@ -12,7 +12,6 @@ def test_registry_contains_all_checks():
         "check_urls_tracking",
         "check_paths_tracking",
         "check_urls_locale",
-        "check_paths_locale",
     }
     assert set(REGISTRY.keys()) == expected
 
