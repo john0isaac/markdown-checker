@@ -1,21 +1,21 @@
 import itertools
 import sys
 import threading
-from typing import Any, TextIO, Union
+from typing import Any, TextIO
 
 
 class Spinner:
     spinner_cycle = itertools.cycle(["-", "/", "|", "\\"])
 
     def __init__(
-        self, beep: bool = False, disable: bool = False, force: bool = False, stream: Union[TextIO, Any] = sys.stdout
+        self, beep: bool = False, disable: bool = False, force: bool = False, stream: TextIO | Any = sys.stdout
     ):
         self.disable = disable
         self.beep = beep
         self.force = force
         self.stream = stream
-        self.stop_running: Union[threading.Event, None] = None
-        self.spin_thread: Union[threading.Thread, None] = None
+        self.stop_running: threading.Event | None = None
+        self.spin_thread: threading.Thread | None = None
 
     def start(self) -> None:
         if self.disable:
@@ -55,7 +55,7 @@ class Spinner:
 
 
 def spinner(
-    beep: bool = False, disable: bool = False, force: bool = False, stream: Union[TextIO, Any] = sys.stdout
+    beep: bool = False, disable: bool = False, force: bool = False, stream: TextIO | Any = sys.stdout
 ) -> Spinner:
     """This function creates a context manager that is used to display a
     spinner on stdout as long as the context has not exited.

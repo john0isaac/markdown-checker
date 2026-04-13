@@ -3,13 +3,12 @@ Module to format the output of the markdown checker.
 """
 
 import os
-from typing import Union
 
 from markdown_checker.paths import MarkdownPath
 from markdown_checker.urls import MarkdownURL
 
 
-def format_links(links: list[Union[MarkdownPath, MarkdownURL]]) -> str:
+def format_links(links: list[MarkdownPath | MarkdownURL]) -> str:
     """
     Formats a List of links into a string with numbered bullets.
 

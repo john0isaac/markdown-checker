@@ -1,5 +1,4 @@
 import pathlib
-from typing import Union
 
 from markdown_checker.reports.generator_base import GeneratorBase
 
@@ -9,7 +8,7 @@ class MarkdownGenerator(GeneratorBase):
 
     def __init__(
         self,
-        contributing_guide_url: Union[str, None] = None,
+        contributing_guide_url: str | None = None,
         output_file_name: str = "comment",
     ) -> None:
         self.templates = {

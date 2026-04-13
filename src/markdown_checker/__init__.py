@@ -9,7 +9,6 @@ import os
 import platform
 import sys
 from pathlib import Path
-from typing import Union
 
 import click
 
@@ -24,7 +23,7 @@ from markdown_checker.utils.spinner import spinner
 
 def check_url(
     url: MarkdownURL, skip_domains: list[str], skip_urls_containing: list[str], timeout: int, retries: int
-) -> Union[None, MarkdownURL]:
+) -> None | MarkdownURL:
     if any(url.host_name().lower() in domain.lower() for domain in skip_domains) or any(
         url.link in substring for substring in skip_urls_containing
     ):
@@ -43,7 +42,7 @@ def detect_issues(
     tracking_domains: list[str],
     timeout: int,
     retries: int,
-) -> tuple[list[Union[MarkdownPath, MarkdownURL]], int]:
+) -> tuple[list[MarkdownPath | MarkdownURL], int]:
     """
     Function to detect issues in the markdown file based on the function
 
@@ -59,7 +58,7 @@ def detect_issues(
     Returns:
         Detected issues and links count.
     """
-    detected_issues: list[Union[MarkdownPath, MarkdownURL]] = []
+    detected_issues: list[MarkdownPath | MarkdownURL] = []
     links_count = 0
     # Step 1: Extract all Links from file path
     all_links = get_links_from_md_file(file_path)
@@ -279,7 +278,7 @@ def main(
     src: tuple[Path, ...],
     dir: Path,
     func: str,
-    guide_url: Union[str, None],
+    guide_url: str | None,
     extensions: list[str],
     skip_files: list[str],
     skip_domains: list[str],
@@ -297,7 +296,7 @@ def main(
     files_paths = [file_path for file_path in files_paths if file_path.name not in skip_files]
 
     formatted_output = ""
-    all_files_issues: list[Union[MarkdownPath, MarkdownURL]] = []
+    all_files_issues: list[MarkdownPath | MarkdownURL] = []
     links_checked_count = 0
     github_ci = os.getenv("CI", "false")
 
