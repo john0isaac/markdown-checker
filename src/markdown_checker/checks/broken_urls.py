@@ -1,4 +1,7 @@
 import concurrent.futures
+from functools import partial
+
+import httpx
 
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models.base import MarkdownLinkBase
@@ -26,13 +29,14 @@ def _check_url(
     skip_urls_containing: list[str],
     timeout: int,
     retries: int,
+    client: httpx.Client,
 ) -> MarkdownURL | None:
-    """Top-level helper so it can be pickled by ProcessPoolExecutor."""
+    """Thread worker: checks a single URL using the shared httpx.Client."""
     if any(url.host_name().lower() in domain.lower() for domain in skip_domains) or any(
         url.link in substring for substring in skip_urls_containing
     ):
         return None
-    if not url.is_alive(timeout=timeout, retries=retries):
+    if not url.is_alive(timeout=timeout, retries=retries, client=client):
         url.issue = "is broken"
         return url
     return None
@@ -55,15 +59,18 @@ class BrokenURLsCheck(BaseCheck):
         effective_skip = [*(skip_domains or []), *_BUILTIN_SKIP_DOMAINS]
         skip_urls_containing = skip_urls_containing or []
 
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            results = list(
-                executor.map(
-                    _check_url,
-                    links.urls,
-                    [effective_skip] * len(links.urls),
-                    [skip_urls_containing] * len(links.urls),
-                    [timeout] * len(links.urls),
-                    [retries] * len(links.urls),
-                )
-            )
+        headers = {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        }
+        worker = partial(
+            _check_url,
+            skip_domains=effective_skip,
+            skip_urls_containing=skip_urls_containing,
+            timeout=timeout,
+            retries=retries,
+        )
+        with httpx.Client(follow_redirects=True, headers=headers) as client:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                results = list(executor.map(lambda url: worker(url, client=client), links.urls))
         return [r for r in results if r is not None]

@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "click==8.3.2",
-    "requests==2.33.1",
+    "httpx==0.28.1",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -41,7 +41,6 @@ Releases = "https://github.com/john0isaac/markdown-checker/releases"
 dev = [
     "pre-commit",
     "mypy",
-    "types-requests",
 ]
 lint = [
     "ruff"

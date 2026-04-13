@@ -2,7 +2,7 @@ import time
 from dataclasses import dataclass
 from urllib.parse import ParseResult, urlparse
 
-import requests
+import httpx
 
 from markdown_checker.models.base import MarkdownLinkBase
 
@@ -27,13 +27,14 @@ class MarkdownURL(MarkdownLinkBase):
         """
         return self.parsed_url.netloc
 
-    def is_alive(self, timeout: int = 15, retries: int = 3) -> bool:
+    def is_alive(self, timeout: int = 15, retries: int = 3, client: httpx.Client | None = None) -> bool:
         """
         Check if the URL is alive
 
         Args:
             timeout (int): Timeout for the request in seconds.
             retries (int): Number of retries if the request fails.
+            client (httpx.Client | None): Optional shared client for connection pooling.
 
         Returns:
             bool: True if the URL is alive, False otherwise
@@ -42,16 +43,21 @@ class MarkdownURL(MarkdownLinkBase):
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
         }
-        for _ in range(retries):
-            try:
-                response = requests.head(self.link, timeout=timeout, allow_redirects=True, headers=headers)
-                if 200 <= response.status_code < 300:
-                    return True
-                else:
-                    response = requests.get(self.link, timeout=timeout, allow_redirects=True, headers=headers)
-                    if 200 <= response.status_code < 300:
+        _client = client or httpx.Client(follow_redirects=True, headers=headers)
+        try:
+            for attempt in range(retries):
+                try:
+                    response = _client.head(self.link, timeout=timeout)
+                    if response.is_success:
                         return True
-            except requests.RequestException:
-                continue
-            time.sleep(1)
+                    response = _client.get(self.link, timeout=timeout)
+                    if response.is_success:
+                        return True
+                except httpx.HTTPError:
+                    pass
+                if attempt < retries - 1:
+                    time.sleep(0.5 * 2**attempt)
+        finally:
+            if client is None:
+                _client.close()
         return False
