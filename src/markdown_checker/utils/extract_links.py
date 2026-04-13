@@ -34,7 +34,7 @@ def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
     markdown_links = MarkdownLinks(urls=[], paths=[])
     fence_marker: str | None = None
 
-    with open(file_path, encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8", errors="replace") as file:
         for line_number, line in enumerate(file, start=1):
             # Track fenced code blocks (``` or ~~~)
             fence_match = _FENCE_OPEN.match(line)
