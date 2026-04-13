@@ -1,4 +1,4 @@
-name: Run Python Matrix Tests
+name: Live Repo Smoke Tests (Python Matrix)
 
 on:
   workflow_dispatch:
@@ -9,9 +9,9 @@ permissions:
   contents: read
 
 jobs:
-  python-matrix-tests:
+  live-repo-smoke-tests:
     if: ${{ always() }} # Always run even if a matrix candidate fails
-    name: Python ${{ matrix.python_version }}
+    name: Live Repo Smoke Tests - Python ${{ matrix.python_version }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

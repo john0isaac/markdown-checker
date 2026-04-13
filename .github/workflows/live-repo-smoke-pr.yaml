@@ -1,4 +1,4 @@
-name: Run Tests on Repositories
+name: Live Repo Smoke Tests (PR)
 
 on:
   workflow_dispatch:
@@ -8,14 +8,14 @@ on:
     branches: [ main, dev ]
     paths:
       - '**.py'
-      - ".github/workflows/python-tests.yaml"
+      - ".github/workflows/live-repo-smoke-pr.yaml"
 
 permissions:
   contents: read
 
 jobs:
-  tests-openai-repo:
-    name: Python Tests on azure-search-openai-demo
+  live-repo-smoke-openai:
+    name: Live Repo Smoke - azure-search-openai-demo
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -46,8 +46,8 @@ jobs:
         cd azure-search-openai-demo
         markdown-checker -d . -f check_broken_urls -gu ''
 
-  tests-markdown-checker-repo:
-    name: Python Tests on markdown-checker
+  live-repo-smoke-markdown-checker:
+    name: Live Repo Smoke - markdown-checker
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
