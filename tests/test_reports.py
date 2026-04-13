@@ -36,8 +36,10 @@ def test_contributing_guide_url_none():
 
 
 def test_templates_loaded():
-    """All expected templates are loaded."""
+    """Templates are lazy-loaded: empty at init, populated on first use."""
     gen = MarkdownGenerator()
+    assert gen.templates == {}
+
     expected_keys = {
         "check_broken_paths",
         "check_broken_urls",
@@ -45,7 +47,7 @@ def test_templates_loaded():
         "check_urls_tracking",
         "check_urls_locale",
     }
-    assert set(gen.templates.keys()) == expected_keys
+    assert set(MarkdownGenerator._TEMPLATE_PATHS.keys()) == expected_keys
 
 
 @pytest.mark.parametrize(

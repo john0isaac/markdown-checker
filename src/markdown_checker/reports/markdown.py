@@ -6,18 +6,20 @@ from markdown_checker.reports.base import GeneratorBase
 class MarkdownGenerator(GeneratorBase):
     current_dir = pathlib.Path(__file__).parent
 
+    _TEMPLATE_PATHS: dict[str, str] = {
+        "check_broken_paths": "templates/paths/broken.md",
+        "check_broken_urls": "templates/urls/broken.md",
+        "check_paths_tracking": "templates/paths/tracking.md",
+        "check_urls_tracking": "templates/urls/tracking.md",
+        "check_urls_locale": "templates/urls/locale.md",
+    }
+
     def __init__(
         self,
         contributing_guide_url: str | None = None,
         output_file_name: str = "comment",
     ) -> None:
-        self.templates = {
-            "check_broken_paths": open(self.current_dir / "templates/paths/broken.md").read(),
-            "check_broken_urls": open(self.current_dir / "templates/urls/broken.md").read(),
-            "check_paths_tracking": open(self.current_dir / "templates/paths/tracking.md").read(),
-            "check_urls_tracking": open(self.current_dir / "templates/urls/tracking.md").read(),
-            "check_urls_locale": open(self.current_dir / "templates/urls/locale.md").read(),
-        }
+        self.templates: dict[str, str] = {}
         self.output_file_name = output_file_name
         self.contributing_guide_line = (
             (f" For more details, check our [Contributing Guide]({contributing_guide_url}).\n\n")
@@ -41,11 +43,15 @@ class MarkdownGenerator(GeneratorBase):
             ValueError: If an invalid function name is provided.
 
         """
-        try:
-            formatted_output = self.templates[function_name] + self.contributing_guide_line + formatted_output
-            return formatted_output
-        except KeyError:
+        if function_name not in self._TEMPLATE_PATHS:
             raise ValueError("Invalid function name")
+
+        if function_name not in self.templates:
+            with open(self.current_dir / self._TEMPLATE_PATHS[function_name], encoding="utf-8") as f:
+                self.templates[function_name] = f.read()
+
+        formatted_output = self.templates[function_name] + self.contributing_guide_line + formatted_output
+        return formatted_output
 
     def generate(self, function_name: str, formatted_output: str) -> None:
         """
