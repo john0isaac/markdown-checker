@@ -4,7 +4,7 @@ from functools import partial
 import httpx
 
 from markdown_checker.checks.base import BaseCheck
-from markdown_checker.models import Config, MarkdownLinkBase, MarkdownURL
+from markdown_checker.models import Config, MarkdownLinkBase, MarkdownURL, create_http_client
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 # Domains known to block automated requests; always skipped for URL checks.
@@ -47,15 +47,6 @@ class BrokenURLsCheck(BaseCheck):
         effective_skip = [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]
         skip_urls_containing = config.skip_urls_containing
 
-        headers = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9",
-            "User-Agent": (
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/125.0.0.0 Safari/537.36"
-            ),
-        }
         worker = partial(
             _check_url,
             skip_domains=effective_skip,
@@ -64,7 +55,7 @@ class BrokenURLsCheck(BaseCheck):
             retries=config.retries,
         )
         if client is None:
-            client = httpx.Client(follow_redirects=True, max_redirects=10, headers=headers)
+            client = create_http_client()
         try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = {executor.submit(worker, url, client=client): url for url in links.urls}

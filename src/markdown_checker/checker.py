@@ -4,7 +4,7 @@ from pathlib import Path
 import httpx
 
 from markdown_checker.checks import REGISTRY
-from markdown_checker.models import Config, MarkdownLinkBase
+from markdown_checker.models import Config, MarkdownLinkBase, create_http_client
 from markdown_checker.utils import get_links_from_md_file
 
 
@@ -75,11 +75,7 @@ def run_check_on_files(
 
     # Create a shared httpx.Client for URL checks to reuse TCP connections.
     needs_client = check.link_type == "urls" and func == "check_broken_urls"
-    headers = {
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-    }
-    client = httpx.Client(follow_redirects=True, max_redirects=10, headers=headers) if needs_client else None
+    client = create_http_client() if needs_client else None
 
     try:
         for file_path in files_paths:

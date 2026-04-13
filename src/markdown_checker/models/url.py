@@ -5,6 +5,7 @@ from urllib.parse import ParseResult, urlparse
 import httpx
 
 from markdown_checker.models.base import MarkdownLinkBase
+from markdown_checker.models.config import create_http_client
 
 
 @dataclass(slots=True)
@@ -39,16 +40,7 @@ class MarkdownURL(MarkdownLinkBase):
         Returns:
             bool: True if the URL is alive, False otherwise
         """
-        headers = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9",
-            "User-Agent": (
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/125.0.0.0 Safari/537.36"
-            ),
-        }
-        _client = client or httpx.Client(follow_redirects=True, max_redirects=10, headers=headers)
+        _client = client or create_http_client()
         try:
             for attempt in range(retries):
                 try:
@@ -67,6 +59,6 @@ class MarkdownURL(MarkdownLinkBase):
                 if attempt < retries - 1:
                     time.sleep(0.5 * 2**attempt)
         finally:
-            if client is None:
+            if _client is not None:
                 _client.close()
         return False

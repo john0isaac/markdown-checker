@@ -1,6 +1,27 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
+import httpx
+
+DEFAULT_HEADERS: dict[str, str] = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/125.0.0.0 Safari/537.36"
+    ),
+}
+
+
+def create_http_client(headers: dict[str, str] | None = None) -> httpx.Client:
+    """Create a pre-configured httpx.Client for URL checking."""
+    return httpx.Client(
+        follow_redirects=True,
+        max_redirects=10,
+        headers=headers or DEFAULT_HEADERS,
+    )
+
 
 @dataclass(frozen=True)
 class Config:
