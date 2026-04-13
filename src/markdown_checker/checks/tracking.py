@@ -23,11 +23,12 @@ class URLsTrackingCheck(BaseCheck):
 
         detected_issues: list[MarkdownLinkBase] = []
         for url in links.urls:
-            if any(url.host_name().lower() in domain.lower() for domain in skip_domains) or any(
+            hostname = url.host_name().lower()
+            if any(hostname in domain.lower() for domain in skip_domains) or any(
                 substring in url.link for substring in skip_urls_containing
             ):
                 continue
-            if any(url.host_name().lower() in domain.lower() for domain in tracking_domains) and not url.has_tracking():
+            if any(hostname in domain.lower() for domain in tracking_domains) and not url.has_tracking():
                 url.issue = "is missing tracking id"
                 detected_issues.append(url)
         return detected_issues

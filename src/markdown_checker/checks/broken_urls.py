@@ -32,7 +32,8 @@ def _check_url(
     client: httpx.Client,
 ) -> MarkdownURL | None:
     """Thread worker: checks a single URL using the shared httpx.Client."""
-    if any(url.host_name().lower() in domain.lower() for domain in skip_domains) or any(
+    hostname = url.host_name().lower()
+    if any(hostname in domain.lower() for domain in skip_domains) or any(
         substring in url.link for substring in skip_urls_containing
     ):
         return None
