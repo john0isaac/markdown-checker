@@ -27,7 +27,7 @@ class MarkdownURL(MarkdownLinkBase):
         """
         return self.parsed_url.netloc
 
-    def is_alive(self, timeout: int = 15, retries: int = 3, client: httpx.Client | None = None) -> bool:
+    def is_alive(self, timeout: int = 20, retries: int = 3, client: httpx.Client | None = None) -> bool:
         """
         Check if the URL is alive
 

@@ -9,6 +9,6 @@ class Config:
     skip_domains: list[str] = field(default_factory=list)
     skip_urls_containing: list[str] = field(default_factory=list)
     tracking_domains: list[str] = field(default_factory=list)
-    timeout: int = 15
+    timeout: int = 20
     retries: int = 3
     output_mode: Literal["ci", "local"] = "local"
