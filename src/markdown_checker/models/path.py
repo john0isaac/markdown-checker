@@ -77,18 +77,31 @@ class MarkdownPath(MarkdownLinkBase):
         Returns:
             True if the path exists, False otherwise
         """
-        # Paths starting with / are considered absolute and not resolved
-        # so we need to strip the leading / for resolution without mutating self.link
-        original_link = self.link
-        link = original_link.lstrip("/") if original_link.startswith("/") else original_link
+        # For paths starting with /, strip the leading / to allow relative resolution
+        link = self.link.lstrip("/") if self.link.startswith("/") else self.link
+        cleaned = _TRACKING_QUERY_PATTERN.sub("", link)
+
+        # Strip fragments/anchors the same way remove_fragments() does
+        dot_index = cleaned.rfind(".")
+        if dot_index != -1:
+            slash_index = cleaned.find("/", dot_index)
+            fragment_index = cleaned.find("#", dot_index)
+            end_index = min(
+                slash_index if slash_index != -1 else len(cleaned),
+                fragment_index if fragment_index != -1 else len(cleaned),
+            )
+            cleaned = cleaned[:end_index]
+
+        # Check relative path resolution
+        relative_path = os.path.normpath(os.path.join(os.path.dirname(self.file_path), cleaned))
+        if os.path.exists(relative_path):
+            return True
+        # Check absolute path resolution
         try:
-            self.link = link
-            # Check if the path exists using the relative path resolution
-            if os.path.exists(self.get_full_path_relative()):
+            if Path(cleaned).resolve().exists():
                 return True
-            # Check if the path exists using the full path resolution recursively
-            if self.get_full_path().exists():
+        except (FileNotFoundError, RuntimeError):
+            resolved = Path(relative_path)
+            if resolved.exists():
                 return True
-            return False
-        finally:
-            self.link = original_link
+        return False
