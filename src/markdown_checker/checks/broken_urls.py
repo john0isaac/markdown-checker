@@ -9,6 +9,7 @@ from markdown_checker.utils.extract_links import MarkdownLinks
 # always skipped for URL checks.
 _BUILTIN_SKIP_DOMAINS: list[str] = [
     "openai.com",
+    "platform.openai.com",
 ]
 
 
