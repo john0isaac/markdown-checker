@@ -11,7 +11,7 @@ build:
     python: "3.10"
   jobs:
     pre_build:
-      -  pip install mkdocs-material mkdocstrings[python] pymdown-extensions
+      -  uv pip install mkdocs-material mkdocstrings[python] pymdown-extensions
 
 mkdocs:
   configuration: docs/mkdocs.yml
