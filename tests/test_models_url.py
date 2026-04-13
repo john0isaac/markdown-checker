@@ -79,6 +79,16 @@ def test_is_alive_http_error_retries():
     assert mock_client.head.call_count == 2
 
 
+def test_is_alive_unsupported_protocol_redirect():
+    """Returns True when redirect leads to a non-HTTP scheme (e.g. vscode://)."""
+    url = MarkdownURL(
+        link="https://vscode.dev/redirect?url=vscode://something", line_number=1, file_path=Path("test.md")
+    )
+    mock_client = MagicMock(spec=httpx.Client)
+    mock_client.head.side_effect = httpx.UnsupportedProtocol("Request URL has an unsupported protocol 'vscode://'.")
+    assert url.is_alive(timeout=5, retries=1, client=mock_client) is True
+
+
 def test_is_alive_creates_client_when_none():
     """Creates and closes its own httpx.Client when none is provided."""
     url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))

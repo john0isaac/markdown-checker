@@ -51,8 +51,9 @@ def test_builtin_skip_domains_skipped(check, make_markdown_url, make_markdown_li
     """URLs from builtin skip domains are not checked."""
     url = make_markdown_url("https://github.com/user/repo")
     links = make_markdown_links(urls=[url])
-    with patch.object(MarkdownURL, "is_alive") as mock_alive:
-        result = check.run(links)
+    with patch("markdown_checker.checks.broken_urls._BUILTIN_SKIP_DOMAINS", ["github.com"]):
+        with patch.object(MarkdownURL, "is_alive") as mock_alive:
+            result = check.run(links)
     mock_alive.assert_not_called()
     assert result == []
 
@@ -107,7 +108,6 @@ def test_check_url_returns_none_for_alive():
 
 
 def test_builtin_skip_domains_list():
-    """Builtin skip domains list is not empty and contains known domains."""
-    assert len(_BUILTIN_SKIP_DOMAINS) > 0
-    assert "github.com" in _BUILTIN_SKIP_DOMAINS
-    assert "openai.com" in _BUILTIN_SKIP_DOMAINS
+    """Builtin skip domains list is currently empty."""
+    assert isinstance(_BUILTIN_SKIP_DOMAINS, list)
+    assert len(_BUILTIN_SKIP_DOMAINS) == 0
