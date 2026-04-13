@@ -48,8 +48,13 @@ class BrokenURLsCheck(BaseCheck):
         skip_urls_containing = config.skip_urls_containing
 
         headers = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/125.0.0.0 Safari/537.36"
+            ),
         }
         worker = partial(
             _check_url,
@@ -58,8 +63,7 @@ class BrokenURLsCheck(BaseCheck):
             timeout=config.timeout,
             retries=config.retries,
         )
-        owns_client = client is None
-        if owns_client:
+        if client is None:
             client = httpx.Client(follow_redirects=True, max_redirects=10, headers=headers)
         try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -70,6 +74,6 @@ class BrokenURLsCheck(BaseCheck):
                     if result is not None:
                         results.append(result)
         finally:
-            if owns_client and client is not None:
+            if client is not None:
                 client.close()
         return results
