@@ -5,6 +5,12 @@ from pathlib import Path
 from markdown_checker.models.path import MarkdownPath
 from markdown_checker.models.url import MarkdownURL
 
+_LINK_PATTERN = re.compile(r"\]\((.*?)\)| \)")
+_URL_PATTERN = re.compile(
+    r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
+)
+_PATH_PATTERN = re.compile(r"(?:\.{1,2}\/|\/)+(?:[A-Za-z0-9-]+\/)*(?:.+\.[A-Za-z]+)")
+
 
 @dataclass
 class MarkdownLinks:
@@ -25,37 +31,26 @@ def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
         markdown_links (MarkdownLinks): Dataclass with urls and paths
     """
     markdown_links = MarkdownLinks(urls=[], paths=[])
-    link_pattern = re.compile(r"\]\((.*?)\)| \)")
-    url_pattern = re.compile(
-        r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
-    )
-    path_pattern = re.compile(r"(?:\.{1,2}\/|\/)+(?:[A-Za-z0-9-]+\/)*(?:.+\.[A-Za-z]+)")
 
     with open(file_path, encoding="utf-8") as file:
-        data = file.readlines()
-        line_count = 1
-        for line in data:
-            matches = re.finditer(link_pattern, line)
-            for matched_group in matches:
+        for line_number, line in enumerate(file, start=1):
+            for matched_group in _LINK_PATTERN.finditer(line):
                 matched_link = matched_group.group(1)
                 if matched_link:
-                    matched_url = re.findall(url_pattern, matched_link)
-                    matched_path = re.findall(path_pattern, matched_link)
-                    if matched_url:
+                    if _URL_PATTERN.findall(matched_link):
                         markdown_links.urls.append(
                             MarkdownURL(
                                 link=matched_link,
-                                line_number=line_count,
+                                line_number=line_number,
                                 file_path=file_path,
                             )
                         )
-                    elif matched_path:
+                    elif _PATH_PATTERN.findall(matched_link):
                         markdown_links.paths.append(
                             MarkdownPath(
                                 link=matched_link,
-                                line_number=line_count,
+                                line_number=line_number,
                                 file_path=file_path,
                             )
                         )
-            line_count += 1
     return markdown_links
