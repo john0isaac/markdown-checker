@@ -43,7 +43,7 @@ class MarkdownURL(MarkdownLinkBase):
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
         }
-        _client = client or httpx.Client(follow_redirects=True, headers=headers)
+        _client = client or httpx.Client(follow_redirects=True, max_redirects=10, headers=headers)
         try:
             for attempt in range(retries):
                 try:

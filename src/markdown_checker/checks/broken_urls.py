@@ -71,7 +71,7 @@ class BrokenURLsCheck(BaseCheck):
             timeout=timeout,
             retries=retries,
         )
-        with httpx.Client(follow_redirects=True, headers=headers) as client:
+        with httpx.Client(follow_redirects=True, max_redirects=10, headers=headers) as client:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = {executor.submit(worker, url, client=client): url for url in links.urls}
                 results: list[MarkdownLinkBase] = []
