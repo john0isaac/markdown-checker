@@ -10,7 +10,6 @@ DEFAULT_HEADERS: dict[str, str] = {
         "Chrome/122.0.0.0 Safari/537.36"
     ),
     "Accept": "*/*",
-    "Connection": "keep-alive",
 }
 
 
