@@ -4,7 +4,7 @@ from urllib.parse import ParseResult, urlparse
 
 import requests
 
-from markdown_checker.markdown_link_base import MarkdownLinkBase
+from markdown_checker.models.base import MarkdownLinkBase
 
 
 @dataclass

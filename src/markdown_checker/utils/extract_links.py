@@ -2,8 +2,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from markdown_checker.paths import MarkdownPath
-from markdown_checker.urls import MarkdownURL
+from markdown_checker.models.path import MarkdownPath
+from markdown_checker.models.url import MarkdownURL
 
 
 @dataclass

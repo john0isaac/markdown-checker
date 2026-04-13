@@ -1,6 +1,6 @@
 import pathlib
 
-from markdown_checker.reports.generator_base import GeneratorBase
+from markdown_checker.reports.base import GeneratorBase
 
 
 class MarkdownGenerator(GeneratorBase):

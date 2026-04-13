@@ -6,11 +6,6 @@ class GeneratorBase(ABC):
     """Base class for all report generators."""
 
     current_dir: Path
-    check_broken_paths_template: str
-    check_broken_urls_template: str
-    check_paths_tracking_template: str
-    check_urls_tracking_template: str
-    check_urls_locale_template: str
     templates: dict[str, str]
 
     @abstractmethod

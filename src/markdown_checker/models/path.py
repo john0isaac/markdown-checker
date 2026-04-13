@@ -3,7 +3,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from markdown_checker.markdown_link_base import MarkdownLinkBase
+from markdown_checker.models.base import MarkdownLinkBase
 
 
 @dataclass
