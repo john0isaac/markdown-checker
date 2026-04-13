@@ -4,8 +4,7 @@ from functools import partial
 import httpx
 
 from markdown_checker.checks.base import BaseCheck
-from markdown_checker.models.base import MarkdownLinkBase
-from markdown_checker.models.url import MarkdownURL
+from markdown_checker.models import Config, MarkdownLinkBase, MarkdownURL
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 # Domains known to block automated requests; always skipped for URL checks.
@@ -47,18 +46,16 @@ class BrokenURLsCheck(BaseCheck):
     """Check for URLs in markdown files that return non-2xx responses."""
 
     name = "check_broken_urls"
+    link_type = "urls"
 
     def run(
         self,
         links: MarkdownLinks,
-        skip_domains: list[str] | None = None,
-        skip_urls_containing: list[str] | None = None,
-        tracking_domains: list[str] | None = None,
-        timeout: int = 15,
-        retries: int = 3,
+        config: Config | None = None,
     ) -> list[MarkdownLinkBase]:
-        effective_skip = [*(skip_domains or []), *_BUILTIN_SKIP_DOMAINS]
-        skip_urls_containing = skip_urls_containing or []
+        config = config or Config()
+        effective_skip = [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]
+        skip_urls_containing = config.skip_urls_containing
 
         headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -68,8 +65,8 @@ class BrokenURLsCheck(BaseCheck):
             _check_url,
             skip_domains=effective_skip,
             skip_urls_containing=skip_urls_containing,
-            timeout=timeout,
-            retries=retries,
+            timeout=config.timeout,
+            retries=config.retries,
         )
         with httpx.Client(follow_redirects=True, max_redirects=10, headers=headers) as client:
             with concurrent.futures.ThreadPoolExecutor() as executor:

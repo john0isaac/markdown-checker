@@ -1,5 +1,5 @@
 from markdown_checker.checks.base import BaseCheck
-from markdown_checker.models.base import MarkdownLinkBase
+from markdown_checker.models import Config, MarkdownLinkBase
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 
@@ -7,19 +7,17 @@ class URLsTrackingCheck(BaseCheck):
     """Check that URLs on configured tracking domains include a tracking ID."""
 
     name = "check_urls_tracking"
+    link_type = "urls"
 
     def run(
         self,
         links: MarkdownLinks,
-        skip_domains: list[str] | None = None,
-        skip_urls_containing: list[str] | None = None,
-        tracking_domains: list[str] | None = None,
-        timeout: int = 15,
-        retries: int = 3,
+        config: Config | None = None,
     ) -> list[MarkdownLinkBase]:
-        skip_domains = skip_domains or []
-        skip_urls_containing = skip_urls_containing or []
-        tracking_domains = tracking_domains or []
+        config = config or Config()
+        skip_domains = config.skip_domains
+        skip_urls_containing = config.skip_urls_containing
+        tracking_domains = config.tracking_domains
 
         detected_issues: list[MarkdownLinkBase] = []
         for url in links.urls:
@@ -38,15 +36,12 @@ class PathsTrackingCheck(BaseCheck):
     """Check that relative paths include a tracking ID."""
 
     name = "check_paths_tracking"
+    link_type = "paths"
 
     def run(
         self,
         links: MarkdownLinks,
-        skip_domains: list[str] | None = None,
-        skip_urls_containing: list[str] | None = None,
-        tracking_domains: list[str] | None = None,
-        timeout: int = 15,
-        retries: int = 3,
+        config: Config | None = None,
     ) -> list[MarkdownLinkBase]:
         detected_issues: list[MarkdownLinkBase] = []
         for path in links.paths:

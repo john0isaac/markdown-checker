@@ -1,6 +1,7 @@
 import pytest
 
 from markdown_checker.checks.locale import _BUILTIN_SKIP_DOMAINS, PathsLocaleCheck, URLsLocaleCheck
+from markdown_checker.models.config import Config
 
 # --- URLsLocaleCheck ---
 
@@ -44,7 +45,7 @@ def test_urls_locale_custom_skip_domains(urls_check, make_markdown_url, make_mar
     """Custom skip domains are respected."""
     url = make_markdown_url("https://custom.com/en-us/page")
     links = make_markdown_links(urls=[url])
-    result = urls_check.run(links, skip_domains=["custom.com"])
+    result = urls_check.run(links, config=Config(skip_domains=["custom.com"]))
     assert result == []
 
 
@@ -52,7 +53,7 @@ def test_urls_locale_skip_urls_containing(urls_check, make_markdown_url, make_ma
     """URLs matching skip_urls_containing are not checked."""
     url = make_markdown_url("https://example.com/en-us/video-embed.html")
     links = make_markdown_links(urls=[url])
-    result = urls_check.run(links, skip_urls_containing=["https://example.com/en-us/video-embed.html"])
+    result = urls_check.run(links, config=Config(skip_urls_containing=["https://example.com/en-us/video-embed.html"]))
     assert result == []
 
 

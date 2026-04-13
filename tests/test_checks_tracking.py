@@ -1,6 +1,7 @@
 import pytest
 
 from markdown_checker.checks.tracking import PathsTrackingCheck, URLsTrackingCheck
+from markdown_checker.models.config import Config
 
 # --- URLsTrackingCheck ---
 
@@ -19,7 +20,7 @@ def test_url_on_tracking_domain_without_id_reported(urls_check, make_markdown_ur
     """URLs on tracking domains without tracking ID are reported."""
     url = make_markdown_url("https://learn.microsoft.com/azure")
     links = make_markdown_links(urls=[url])
-    result = urls_check.run(links, tracking_domains=["learn.microsoft.com"])
+    result = urls_check.run(links, config=Config(tracking_domains=["learn.microsoft.com"]))
     assert len(result) == 1
     assert result[0].issue == "is missing tracking id"
 
@@ -28,7 +29,7 @@ def test_url_on_tracking_domain_with_id_not_reported(urls_check, make_markdown_u
     """URLs on tracking domains with tracking ID are not reported."""
     url = make_markdown_url("https://learn.microsoft.com/azure?WT.mc_id=test")
     links = make_markdown_links(urls=[url])
-    result = urls_check.run(links, tracking_domains=["learn.microsoft.com"])
+    result = urls_check.run(links, config=Config(tracking_domains=["learn.microsoft.com"]))
     assert result == []
 
 
@@ -36,7 +37,7 @@ def test_url_not_on_tracking_domain_not_reported(urls_check, make_markdown_url, 
     """URLs not on tracking domains are not reported."""
     url = make_markdown_url("https://example.com/page")
     links = make_markdown_links(urls=[url])
-    result = urls_check.run(links, tracking_domains=["learn.microsoft.com"])
+    result = urls_check.run(links, config=Config(tracking_domains=["learn.microsoft.com"]))
     assert result == []
 
 
@@ -44,7 +45,9 @@ def test_urls_tracking_skip_domains(urls_check, make_markdown_url, make_markdown
     """URLs on skip domains are not checked for tracking."""
     url = make_markdown_url("https://learn.microsoft.com/azure")
     links = make_markdown_links(urls=[url])
-    result = urls_check.run(links, skip_domains=["learn.microsoft.com"], tracking_domains=["learn.microsoft.com"])
+    result = urls_check.run(
+        links, config=Config(skip_domains=["learn.microsoft.com"], tracking_domains=["learn.microsoft.com"])
+    )
     assert result == []
 
 
@@ -54,8 +57,10 @@ def test_urls_tracking_skip_urls_containing(urls_check, make_markdown_url, make_
     links = make_markdown_links(urls=[url])
     result = urls_check.run(
         links,
-        skip_urls_containing=["https://learn.microsoft.com/azure"],
-        tracking_domains=["microsoft.com"],
+        config=Config(
+            skip_urls_containing=["https://learn.microsoft.com/azure"],
+            tracking_domains=["microsoft.com"],
+        ),
     )
     assert result == []
 
@@ -63,7 +68,7 @@ def test_urls_tracking_skip_urls_containing(urls_check, make_markdown_url, make_
 def test_urls_tracking_no_urls(urls_check, make_markdown_links):
     """Returns empty list when there are no URLs."""
     links = make_markdown_links()
-    result = urls_check.run(links, tracking_domains=["microsoft.com"])
+    result = urls_check.run(links, config=Config(tracking_domains=["microsoft.com"]))
     assert result == []
 
 
@@ -71,7 +76,7 @@ def test_urls_tracking_no_tracking_domains(urls_check, make_markdown_url, make_m
     """No issues when tracking_domains is empty."""
     url = make_markdown_url("https://learn.microsoft.com/azure")
     links = make_markdown_links(urls=[url])
-    result = urls_check.run(links, tracking_domains=[])
+    result = urls_check.run(links, config=Config(tracking_domains=[]))
     assert result == []
 
 
@@ -88,7 +93,7 @@ def test_urls_tracking_id_detection(urls_check, make_markdown_url, make_markdown
     """Detects both WT.mc_id and wt.mc_id tracking patterns."""
     url = make_markdown_url(link)
     links = make_markdown_links(urls=[url])
-    result = urls_check.run(links, tracking_domains=["learn.microsoft.com"])
+    result = urls_check.run(links, config=Config(tracking_domains=["learn.microsoft.com"]))
     assert (len(result) == 0) == has_tracking
 
 

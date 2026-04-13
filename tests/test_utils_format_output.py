@@ -4,7 +4,7 @@ import pytest
 
 from markdown_checker.models.path import MarkdownPath
 from markdown_checker.models.url import MarkdownURL
-from markdown_checker.utils.format_output import format_links
+from markdown_checker.reports.format_output import format_links
 
 
 @pytest.fixture
@@ -67,17 +67,15 @@ def test_format_links_ends_with_pipe_newline(sample_urls):
     assert result.endswith("|\n")
 
 
-def test_format_links_local_mode_has_file_links(sample_urls, monkeypatch):
+def test_format_links_local_mode_has_file_links(sample_urls):
     """In non-CI mode, line numbers are rendered as file links."""
-    monkeypatch.delenv("CI", raising=False)
-    result = format_links(sample_urls)
+    result = format_links(sample_urls, output_mode="local")
     assert "file.md#L10" in result
 
 
-def test_format_links_ci_mode_no_file_links(sample_urls, monkeypatch):
+def test_format_links_ci_mode_no_file_links(sample_urls):
     """In CI mode, line numbers are plain text without file links."""
-    monkeypatch.setenv("CI", "true")
-    result = format_links(sample_urls)
+    result = format_links(sample_urls, output_mode="ci")
     assert "file.md#L" not in result
 
 

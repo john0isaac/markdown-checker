@@ -5,6 +5,7 @@ import httpx
 import pytest
 
 from markdown_checker.checks.broken_urls import _BUILTIN_SKIP_DOMAINS, BrokenURLsCheck, _check_url
+from markdown_checker.models.config import Config
 from markdown_checker.models.url import MarkdownURL
 
 
@@ -30,7 +31,7 @@ def test_alive_url_not_reported(check, make_markdown_url, make_markdown_links):
     url = make_markdown_url("https://example.com")
     links = make_markdown_links(urls=[url])
     with patch.object(MarkdownURL, "is_alive", return_value=True):
-        result = check.run(links, skip_domains=list(_BUILTIN_SKIP_DOMAINS))
+        result = check.run(links, config=Config(skip_domains=list(_BUILTIN_SKIP_DOMAINS)))
     # example.com not in builtin skip, so it gets checked
     # Since we mock is_alive to True, nothing should be returned
     assert result == []
@@ -61,7 +62,7 @@ def test_custom_skip_domains(check, make_markdown_url, make_markdown_links):
     url = make_markdown_url("https://custom-skip.com/page")
     links = make_markdown_links(urls=[url])
     with patch.object(MarkdownURL, "is_alive") as mock_alive:
-        result = check.run(links, skip_domains=["custom-skip.com"])
+        result = check.run(links, config=Config(skip_domains=["custom-skip.com"]))
     mock_alive.assert_not_called()
     assert result == []
 
@@ -71,7 +72,7 @@ def test_skip_urls_containing(check, make_markdown_url, make_markdown_links):
     url = make_markdown_url("https://example.com/video-embed.html")
     links = make_markdown_links(urls=[url])
     with patch.object(MarkdownURL, "is_alive") as mock_alive:
-        check.run(links, skip_urls_containing=["https://example.com/video-embed.html"])
+        check.run(links, config=Config(skip_urls_containing=["https://example.com/video-embed.html"]))
     mock_alive.assert_not_called()
 
 

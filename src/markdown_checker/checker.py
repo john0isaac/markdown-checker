@@ -1,21 +1,14 @@
 from pathlib import Path
 
 from markdown_checker.checks import REGISTRY
-from markdown_checker.models.base import MarkdownLinkBase
-from markdown_checker.utils.extract_links import get_links_from_md_file
-
-# Checks that count paths (not URLs) toward the links_count total.
-_PATH_CHECKS = {"check_broken_paths", "check_paths_tracking", "check_paths_locale"}
+from markdown_checker.models import Config, MarkdownLinkBase
+from markdown_checker.utils import get_links_from_md_file
 
 
 def detect_issues(
     func: str,
     file_path: Path,
-    skip_urls_containing: list[str],
-    skip_domains: list[str],
-    tracking_domains: list[str],
-    timeout: int,
-    retries: int,
+    config: Config,
 ) -> tuple[list[MarkdownLinkBase], int]:
     """
     Detect issues in a single markdown file using the named check.
@@ -23,11 +16,7 @@ def detect_issues(
     Args:
         func (str): Name of the check to run (must be a key in REGISTRY).
         file_path (Path): Path to the markdown file to check.
-        skip_urls_containing (list[str]): URL substrings to skip.
-        skip_domains (list[str]): Domain names to skip.
-        tracking_domains (list[str]): Domains that require tracking IDs.
-        timeout (int): HTTP request timeout in seconds.
-        retries (int): Number of HTTP request retries.
+        config (Config): Runtime configuration for the check.
 
     Returns:
         A tuple of (detected_issues, links_checked_count).
@@ -43,14 +32,36 @@ def detect_issues(
     if not all_links.paths and not all_links.urls:
         return [], 0
 
-    detected_issues = check.run(
-        links=all_links,
-        skip_domains=skip_domains,
-        skip_urls_containing=skip_urls_containing,
-        tracking_domains=tracking_domains,
-        timeout=timeout,
-        retries=retries,
-    )
+    detected_issues = check.run(links=all_links, config=config)
 
-    links_count = len(all_links.paths) if func in _PATH_CHECKS else len(all_links.urls)
+    links_count = len(all_links.paths) if check.link_type == "paths" else len(all_links.urls)
     return detected_issues, links_count
+
+
+def run_check_on_files(
+    func: str,
+    files_paths: list[Path],
+    config: Config,
+) -> tuple[list[tuple[Path, list[MarkdownLinkBase]]], int]:
+    """
+    Run a named check across multiple files.
+
+    Args:
+        func: Name of the check to run (must be a key in REGISTRY).
+        files_paths: List of markdown file paths to check.
+        config: Runtime configuration for the check.
+
+    Returns:
+        A tuple of (per_file_issues, total_links_checked).
+        per_file_issues is a list of (file_path, issues) tuples for files with issues.
+    """
+    per_file_issues: list[tuple[Path, list[MarkdownLinkBase]]] = []
+    total_links_checked = 0
+
+    for file_path in files_paths:
+        detected_issues, links_count = detect_issues(func=func, file_path=file_path, config=config)
+        total_links_checked += links_count
+        if detected_issues:
+            per_file_issues.append((file_path, detected_issues))
+
+    return per_file_issues, total_links_checked

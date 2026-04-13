@@ -4,10 +4,10 @@ from pathlib import Path
 
 import click
 
-from markdown_checker.checker import detect_issues
-from markdown_checker.models.base import MarkdownLinkBase
+from markdown_checker.checker import run_check_on_files
+from markdown_checker.models.config import Config
+from markdown_checker.reports.format_output import format_issues_table
 from markdown_checker.reports.markdown import MarkdownGenerator
-from markdown_checker.utils.format_output import format_links
 from markdown_checker.utils.list_files import get_files_paths_list
 from markdown_checker.utils.spinner import spinner
 
@@ -157,40 +157,34 @@ def main(
     # remove files from skip_files list
     files_paths = [file_path for file_path in files_paths if file_path.name not in skip_files]
 
-    formatted_output = ""
-    all_files_issues: list[MarkdownLinkBase] = []
-    links_checked_count = 0
-    github_ci = os.getenv("CI", "false")
+    config = Config(
+        skip_domains=skip_domains,
+        skip_urls_containing=skip_urls_containing,
+        tracking_domains=tracking_domains,
+        timeout=timeout,
+        retries=retries,
+        output_mode="ci" if os.getenv("CI", "false") == "true" else "local",
+    )
 
-    for file_path in files_paths:
-        detected_issues, links_count = detect_issues(
-            func=func,
-            file_path=file_path,
-            skip_urls_containing=skip_urls_containing,
-            skip_domains=skip_domains,
-            tracking_domains=tracking_domains,
-            timeout=timeout,
-            retries=retries,
-        )
-        links_checked_count += links_count
-        if len(detected_issues) > 0:
-            if github_ci == "true":
-                formatted_output += f"| `{file_path}` |" + format_links(detected_issues)
-            else:
-                formatted_output += f"| [`{file_path}`]({file_path}) |" + format_links(detected_issues)
-            all_files_issues.extend(detected_issues)
+    per_file_issues, links_checked_count = run_check_on_files(
+        func=func,
+        files_paths=files_paths,
+        config=config,
+    )
 
     click.echo(
         click.style(f"\n🔍 Checked {links_checked_count} links in {len(files_paths)} files.", fg="blue"), err=False
     )
 
-    if len(all_files_issues) > 0:
-        formatted_output = "| File Full Path | Issues |\n|--------|--------|\n" + formatted_output
+    if per_file_issues:
+        formatted_output = format_issues_table(per_file_issues, config.output_mode)
         generator = MarkdownGenerator(contributing_guide_url=guide_url, output_file_name=output_file_name)
         generator.generate(func, formatted_output)
-        click.echo(click.style(f"😭 Found {len(all_files_issues)} issues in the following files:", fg="red"), err=True)
-        for markdown_path in all_files_issues:
-            if github_ci == "true":
+
+        all_issues = [issue for _, issues in per_file_issues for issue in issues]
+        click.echo(click.style(f"😭 Found {len(all_issues)} issues in the following files:", fg="red"), err=True)
+        for markdown_path in all_issues:
+            if config.output_mode == "ci":
                 # Ref: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-a-warning-message
                 click.echo(
                     click.style(
