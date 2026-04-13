@@ -7,10 +7,10 @@ maintainers = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 license = {file = "LICENSE"}
 readme = "README.md"
 
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-    "click",
-    "requests",
+    "click==8.3.2",
+    "requests==2.33.1",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -19,10 +19,10 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Quality Assurance",
 ]
@@ -60,14 +60,14 @@ docs = [
 [tool.ruff]
 lint.select = ["E", "F", "I", "UP"]
 line-length = 120
-target-version = "py39"
+target-version = "py310"
 src = ["src"]
 lint.isort.known-first-party = ["markdown_checker"]
 output-format = "full"
 
 [tool.mypy]
 check_untyped_defs = true
-python_version = 3.9
+python_version = '3.10'
 exclude = [".venv/*"]
 
 [project.scripts]
