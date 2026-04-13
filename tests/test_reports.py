@@ -99,5 +99,8 @@ def test_generate_creates_output_file(tmp_path, monkeypatch):
 def test_templates_are_non_empty():
     """All templates contain content."""
     gen = MarkdownGenerator()
+    for key in MarkdownGenerator._TEMPLATE_PATHS:
+        gen._generate_text(key, "dummy")
     for key, template in gen.templates.items():
         assert len(template) > 0, f"Template for {key} is empty"
+    assert len(gen.templates) == len(MarkdownGenerator._TEMPLATE_PATHS)
