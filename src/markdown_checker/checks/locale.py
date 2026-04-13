@@ -28,7 +28,7 @@ class URLsLocaleCheck(BaseCheck):
         detected_issues: list[MarkdownLinkBase] = []
         for url in links.urls:
             if any(url.host_name().lower() in domain.lower() for domain in effective_skip) or any(
-                url.link in substring for substring in skip_urls_containing
+                substring in url.link for substring in skip_urls_containing
             ):
                 continue
             if url.has_locale():

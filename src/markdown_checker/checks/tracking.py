@@ -24,7 +24,7 @@ class URLsTrackingCheck(BaseCheck):
         detected_issues: list[MarkdownLinkBase] = []
         for url in links.urls:
             if any(url.host_name().lower() in domain.lower() for domain in skip_domains) or any(
-                url.link in substring for substring in skip_urls_containing
+                substring in url.link for substring in skip_urls_containing
             ):
                 continue
             if any(url.host_name().lower() in domain.lower() for domain in tracking_domains) and not url.has_tracking():
