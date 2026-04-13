@@ -100,7 +100,7 @@ class MarkdownPath(MarkdownLinkBase):
         try:
             if Path(cleaned).resolve().exists():
                 return True
-        except (FileNotFoundError, RuntimeError):
+        except (FileNotFoundError, RuntimeError, OSError):
             resolved = Path(relative_path)
             if resolved.exists():
                 return True
