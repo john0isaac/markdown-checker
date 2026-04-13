@@ -19,6 +19,7 @@ def create_http_client(headers: dict[str, str] | None = None) -> httpx.Client:
     return httpx.Client(
         follow_redirects=True,
         max_redirects=10,
+        http2=True,
         headers=headers or DEFAULT_HEADERS,
     )
 
