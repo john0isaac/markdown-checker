@@ -1,3 +1,5 @@
-::: markdown_checker.reports.md_reports.generator
+<!-- markdownlint-disable MD041 -->
 
-::: markdown_checker.reports.generator_base
+::: markdown_checker.reports.base
+
+::: markdown_checker.reports.markdown

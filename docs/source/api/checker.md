@@ -1,3 +1,3 @@
 <!-- markdownlint-disable MD041 -->
 
-::: markdown_checker
+::: markdown_checker.checker
