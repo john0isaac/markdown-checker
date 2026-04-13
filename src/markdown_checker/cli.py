@@ -98,7 +98,7 @@ class ListOfStrings(click.Option):
     "--skip-urls-containing",
     cls=ListOfStrings,
     type=list[str],
-    default=["https://www.microsoft.com/en-us/security/blog", "video-embed.html"],
+    default=[],
     help="List of urls to skip check.",
     required=False,
 )

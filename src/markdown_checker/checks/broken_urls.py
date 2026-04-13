@@ -8,18 +8,7 @@ from markdown_checker.models import Config, MarkdownLinkBase, MarkdownURL
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 # Domains known to block automated requests; always skipped for URL checks.
-_BUILTIN_SKIP_DOMAINS: list[str] = [
-    "openai.com",
-    "beta.openai.com",
-    "help.openai.com",
-    "platform.openai.com",
-    "vscode.dev",
-    "en.wikipedia.org",
-    "www.midjourney.com",
-    "www.linkedin.com",
-    "rodtrent.substack.com",
-    "github.com",
-]
+_BUILTIN_SKIP_DOMAINS: list[str] = []
 
 
 def _check_url(
