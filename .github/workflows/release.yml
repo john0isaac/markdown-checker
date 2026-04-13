@@ -7,28 +7,25 @@ on:
   workflow_dispatch:
 
 env:
-  DEFAULT_PYTHON: 3.9
+  DEFAULT_PYTHON: 3.10
 
+permissions:
+  contents: read
 jobs:
   release-pypi:
     name: Upload release to PyPI
     runs-on: ubuntu-latest
     steps:
       - name: Check out code from Github
-        uses: actions/checkout@v4
-      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/checkout@v6
+      - name: Set up uv
         id: python
-        uses: actions/setup-python@v5
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
-      - name: Install requirements
-        run: python3 -m pip install build twine
       - name: Build distributions
-        run: python3 -m build
+        run: uv build
       - name: Upload to PyPI
         env:
-          TWINE_REPOSITORY: pypi
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          twine upload --verbose dist/*
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: uv publish

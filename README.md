@@ -27,6 +27,8 @@ pip install markdown-checker
 
 For more customizations read the docs.
 
+> **Note:** When using list parameters (like `--skip-domains`, `--skip-files`, etc.), provide values as comma-separated without spaces: `--skip-domains=example.com,test.com`. Do not use square brackets or spaces after commas. See the [Advanced Usage](https://markdown-checker.readthedocs.io/en/latest/advanced/) documentation for detailed examples.
+
 ## Using `markdown-checker` in GitHub Actions
 
 You can run this tool within a GitHub workflow using the [action-check-markdown](https://github.com/marketplace/actions/check-markdown) GitHub action.

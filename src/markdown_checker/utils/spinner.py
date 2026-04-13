@@ -44,7 +44,7 @@ class Spinner:
         self.start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
         if self.disable:
             return False
         self.stop()

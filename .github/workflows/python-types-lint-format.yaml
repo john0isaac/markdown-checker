@@ -25,17 +25,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python_version: ["3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v6
+    - uses: astral-sh/setup-uv@v5
       with:
         python-version: ${{ matrix.python_version }}
-        architecture: x64
     - name: Install dependencies
-      run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install -e '.[dev]'
+      run: uv sync --extra dev
 
     - name: Run type check
       run: python3 -m mypy .
@@ -47,17 +44,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python_version: ["3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v6
+    - uses: astral-sh/setup-uv@v5
       with:
         python-version: ${{ matrix.python_version }}
-        architecture: x64
     - name: Install dependencies
-      run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install -e '.[lint]'
+      run: uv sync --extra lint
 
     - name: Run lint check
       run: python3 -m ruff check .

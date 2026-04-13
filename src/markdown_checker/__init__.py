@@ -85,6 +85,7 @@ def detect_issues(
                 "www.midjourney.com",
                 "www.linkedin.com",
                 "rodtrent.substack.com",
+                "github.com",
             ]
         )
         with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -148,7 +149,7 @@ class ListOfStrings(click.Option):
     Ref: https://stackoverflow.com/questions/47631914/how-to-pass-several-list-of-arguments-to-click-option
     """
 
-    def type_cast_value(self, ctx, value):
+    def type_cast_value(self, ctx, value) -> list[str]:  # type: ignore
         try:
             if isinstance(value, str):
                 # split the string by comma and remove empty strings

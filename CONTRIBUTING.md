@@ -11,7 +11,7 @@ This repository is open for everyone to contribute and is maintained by [John Az
 To run the the package locally (Lean more: [here](https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#working-in-development-mode)):
 
 ```shell
-pip install -e .
+uv sync
 ```
 
 Any changes you do will take effect immediately.
