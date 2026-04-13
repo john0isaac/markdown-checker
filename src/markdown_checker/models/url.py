@@ -7,7 +7,7 @@ import httpx
 from markdown_checker.models.base import MarkdownLinkBase
 
 
-@dataclass
+@dataclass(slots=True)
 class MarkdownURL(MarkdownLinkBase):
     """Dataclass to store info about a url"""
 

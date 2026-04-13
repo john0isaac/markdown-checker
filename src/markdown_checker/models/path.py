@@ -6,7 +6,7 @@ from pathlib import Path
 from markdown_checker.models.base import MarkdownLinkBase
 
 
-@dataclass
+@dataclass(slots=True)
 class MarkdownPath(MarkdownLinkBase):
     """Dataclass to store info about a path"""
 
