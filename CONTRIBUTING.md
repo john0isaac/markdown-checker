@@ -19,8 +19,8 @@ Any changes you do will take effect immediately.
 ## Run Tests
 
 Test files are located in the [resources](./tests/resources/) folder.
-You can run tests by running [this file](./tests/test_markdown_checker.py) in your terminal.
+You can run tests by running the [test files](./tests/) in your terminal.
 
 ```shell
-python ./tests/test_markdown_checker.py
+python -m pytest ./tests/
 ```

@@ -8,5 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  python-test:
-    uses: ./.github/workflows/python-tests.yaml
+  live-repo-smoke:
+    uses: ./.github/workflows/live-repo-smoke-pr.yaml
+  unit-and-smoke-tests:
+    uses: ./.github/workflows/python-unit-tests.yaml

@@ -10,5 +10,14 @@
         "__pycache__": true,
         ".ruff_cache": true,
         ".mypy_cache": true,
-    }
+    },
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": false,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "ruff.lint.select": ["E", "F", "I", "UP"],
+    "ruff.lineLength": 120,
 }

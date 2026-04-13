@@ -1,7 +1,7 @@
 [project]
 name = "markdown-checker"
 description= "A markdown link validation reporting tool."
-version = "0.2.5"
+version = "1.0.0"
 authors = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 maintainers = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 license = {file = "LICENSE"}
@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "click==8.3.2",
-    "requests==2.33.1",
+    "httpx==0.28.1",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -41,7 +41,6 @@ Releases = "https://github.com/john0isaac/markdown-checker/releases"
 dev = [
     "pre-commit",
     "mypy",
-    "types-requests",
 ]
 lint = [
     "ruff"
@@ -66,9 +65,25 @@ lint.isort.known-first-party = ["markdown_checker"]
 output-format = "full"
 
 [tool.mypy]
+strict_optional = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
 check_untyped_defs = true
 python_version = '3.10'
-exclude = [".venv/*"]
+exclude = [".venv/*", "tests/*", "smoke/*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "smoke: end-to-end smoke tests that run the CLI against sample files",
+]
+addopts = "-ra"
+testpaths = ["tests"]
+pythonpath = ['src']
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.report]
+show_missing = true
 
 [project.scripts]
 markdown-checker = "markdown_checker:main_with_spinner"

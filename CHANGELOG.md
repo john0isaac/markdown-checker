@@ -12,6 +12,58 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v1.0.0] 13 April 2026
+
+### Features Added
+
+- Add check registry system with pluggable `BaseCheck` classes (`BrokenPathsCheck`, `BrokenURLsCheck`, `URLsTrackingCheck`, `PathsTrackingCheck`, `URLsLocaleCheck`).
+- Add `Config` frozen dataclass unifying all runtime options.
+- Add `CheckResult` structured result type with `issues` and `links_checked` fields.
+- Add fenced code block detection to skip links inside code blocks during extraction.
+- Add handling for unsupported protocol redirects (e.g., `vscode://`) — treated as alive instead of broken.
+- Add `format_issues_table()` for formatting per-file issues into a complete markdown table.
+- Add `openai.com` as a builtin skip domain that is always skipped during URL checks.
+- Add lazy template loading for report generation.
+- Add encoding error handling with `errors="replace"` for file reading.
+- Add `OSError` handling for path existence checks.
+- Add max redirect limit (10) for HTTP requests.
+- Add exponential backoff for URL retry logic (`0.5 * 2^attempt`).
+- Increase default timeout from 15s to 20s for URL checks.
+
+### Breaking Changes
+
+- Replace `requests` with `httpx` for all HTTP operations, using connection pooling and per-thread clients.
+- Raise minimum Python version from 3.9 to 3.10.
+- Pin dependencies: `click==8.3.2`, `httpx==0.28.1`.
+- Restructure package modules:
+  - `markdown_checker.markdown_link_base` → `markdown_checker.models.base`
+  - `markdown_checker.paths` → `markdown_checker.models.path`
+  - `markdown_checker.urls` → `markdown_checker.models.url`
+  - `markdown_checker.utils.format_output` → `markdown_checker.reports.format_output`
+  - `markdown_checker.reports.generator_base` → `markdown_checker.reports.base`
+  - `markdown_checker.reports.md_reports.generator` → `markdown_checker.reports.markdown`
+  - CLI logic extracted to `markdown_checker.cli`
+  - Check logic extracted to `markdown_checker.checker`
+- Remove `markdown_checker.utils.logging` module.
+- Clear default skip domains from CLI options (builtin skip domains still applied internally).
+
+### Bugs Fixed
+
+- Fix mutation bugs and improve code safety.
+- Fix substring check logic in URL validation.
+
+### Other Changes
+
+- Migrate from pip/setuptools to uv for dependency management.
+- Replace single test file (~135 lines) with 16 dedicated test files (~1,500+ lines).
+- Add separate unit test CI workflow (`python-unit-tests.yaml`) across Python 3.10–3.13.
+- Migrate CI workflows to `astral-sh/setup-uv@v5` with `uv sync`/`uv run`.
+- Update pre-commit hooks: `pre-commit-hooks` v6.0.0, `mirrors-mypy` v1.20.0, `ruff-pre-commit` v0.15.10.
+- Add `slots=True` to `MarkdownPath` and `MarkdownURL` dataclasses for memory efficiency.
+- Pre-compile regex patterns at module level for performance.
+- Update API docs to reflect new module structure.
+- Add `advanced.md` documentation page.
+
 ## [v0.2.5] 5 May 2025
 
 - Disable GitHub.com URL checks (skipping until fixed)

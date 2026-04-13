@@ -3,10 +3,12 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from markdown_checker.markdown_link_base import MarkdownLinkBase
+from markdown_checker.models.base import MarkdownLinkBase
+
+_TRACKING_QUERY_PATTERN = re.compile(r"(\?|\&)(WT|wt)\.mc_id=.*")
 
 
-@dataclass
+@dataclass(slots=True)
 class MarkdownPath(MarkdownLinkBase):
     """Dataclass to store info about a path"""
 
@@ -27,24 +29,25 @@ class MarkdownPath(MarkdownLinkBase):
         Returns:
             The path without the fragment
         """
+        cleaned = _TRACKING_QUERY_PATTERN.sub("", self.link)
+
         # Find the last occurrence of the dot
-        dot_index = self.link.rfind(".")
-        self.link = re.sub(r"(\?|\&)(WT|wt)\.mc_id=.*", "", self.link)
+        dot_index = cleaned.rfind(".")
 
         # If a dot is found, slice the string up to the end of the extension
         if dot_index != -1:
             # Find the next slash or fragment after the dot
-            slash_index = self.link.find("/", dot_index)
-            fragment_index = self.link.find("#", dot_index)
+            slash_index = cleaned.find("/", dot_index)
+            fragment_index = cleaned.find("#", dot_index)
 
             # Determine the earliest occurrence of either slash or fragment or query
             end_index = min(
-                slash_index if slash_index != -1 else len(self.link),
-                fragment_index if fragment_index != -1 else len(self.link),
+                slash_index if slash_index != -1 else len(cleaned),
+                fragment_index if fragment_index != -1 else len(cleaned),
             )
-            return self.link[:end_index]
+            return cleaned[:end_index]
         else:
-            return self.link
+            return cleaned
 
     def get_full_path(self) -> Path:
         """
@@ -74,19 +77,31 @@ class MarkdownPath(MarkdownLinkBase):
         Returns:
             True if the path exists, False otherwise
         """
-        # Paths starting with / are considered absolute and not resolved
-        # so we need to remove the / and check if the path exists
-        changed = False
-        if self.link.startswith("/"):
-            self.link = self.link[1:]
-            changed = True
-        # Check if the path exists using the relative path resolution
-        if os.path.exists(self.get_full_path_relative()):
+        # For paths starting with /, strip the leading / to allow relative resolution
+        link = self.link.lstrip("/") if self.link.startswith("/") else self.link
+        cleaned = _TRACKING_QUERY_PATTERN.sub("", link)
+
+        # Strip fragments/anchors the same way remove_fragments() does
+        dot_index = cleaned.rfind(".")
+        if dot_index != -1:
+            slash_index = cleaned.find("/", dot_index)
+            fragment_index = cleaned.find("#", dot_index)
+            end_index = min(
+                slash_index if slash_index != -1 else len(cleaned),
+                fragment_index if fragment_index != -1 else len(cleaned),
+            )
+            cleaned = cleaned[:end_index]
+
+        # Check relative path resolution
+        relative_path = os.path.normpath(os.path.join(os.path.dirname(self.file_path), cleaned))
+        if os.path.exists(relative_path):
             return True
-        # Check if the path exists using the full path resolution recursively
-        if self.get_full_path().exists():
-            return True
-        # Change the link back to the original value
-        if changed:
-            self.link = "/" + self.link
+        # Check absolute path resolution
+        try:
+            if Path(cleaned).resolve().exists():
+                return True
+        except (FileNotFoundError, RuntimeError, OSError):
+            resolved = Path(relative_path)
+            if resolved.exists():
+                return True
         return False
