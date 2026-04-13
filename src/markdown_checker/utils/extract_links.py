@@ -33,6 +33,7 @@ def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
     """
     markdown_links = MarkdownLinks(urls=[], paths=[])
     fence_marker: str | None = None
+    fence_len: int = 0
 
     with open(file_path, encoding="utf-8", errors="replace") as file:
         for line_number, line in enumerate(file, start=1):
@@ -40,13 +41,15 @@ def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
             fence_match = _FENCE_OPEN.match(line)
             if fence_match:
                 marker = fence_match.group(1)[0]  # '`' or '~'
-                min_len = len(fence_match.group(1))
+                match_len = len(fence_match.group(1))
                 if fence_marker is None:
-                    # Opening fence
+                    # Opening fence – remember char and length
                     fence_marker = marker
-                elif line.strip().startswith(marker * min_len) and marker == fence_marker:
-                    # Closing fence (same char, at least as many)
+                    fence_len = match_len
+                elif marker == fence_marker and match_len >= fence_len:
+                    # Closing fence (same char, at least as long as opening)
                     fence_marker = None
+                    fence_len = 0
                 continue
             if fence_marker is not None:
                 continue
