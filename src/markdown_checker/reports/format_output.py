@@ -19,19 +19,19 @@ def format_links(links: list[MarkdownLinkBase], output_mode: Literal["ci", "loca
     Returns:
         formatted_links (str): The formatted string with numbered bullets.
     """
-    formatted_links = "<table><thead><tr><th>#</th><th>Link</th><th>Line Number</th></tr></thead><tbody>"
+    parts: list[str] = ["<table><thead><tr><th>#</th><th>Link</th><th>Line Number</th></tr></thead><tbody>"]
     if output_mode == "ci":
         for i, item in enumerate(links, 1):
-            formatted_links += f"<tr><td>{i}</td><td>`{item.link}`</td><td>`{item.line_number}`</td></tr>"
+            parts.append(f"<tr><td>{i}</td><td>`{item.link}`</td><td>`{item.line_number}`</td></tr>")
     else:
         for i, item in enumerate(links, 1):
-            formatted_links += (
+            parts.append(
                 f"<tr><td>{i}</td><td>`{item.link}`</td>"
                 f"<td>[`{item.line_number}`]({item.file_path}#L{item.line_number})</td></tr>"
             )
 
-    formatted_links += "</tbody></table>|\n"
-    return formatted_links
+    parts.append("</tbody></table>|\n")
+    return "".join(parts)
 
 
 def format_issues_table(

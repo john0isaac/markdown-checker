@@ -166,22 +166,23 @@ def main(
         output_mode="ci" if os.getenv("CI", "false") == "true" else "local",
     )
 
-    per_file_issues, links_checked_count = run_check_on_files(
+    check_result = run_check_on_files(
         func=func,
         files_paths=files_paths,
         config=config,
     )
 
     click.echo(
-        click.style(f"\n🔍 Checked {links_checked_count} links in {len(files_paths)} files.", fg="blue"), err=False
+        click.style(f"\n🔍 Checked {check_result.links_checked} links in {len(files_paths)} files.", fg="blue"),
+        err=False,
     )
 
-    if per_file_issues:
-        formatted_output = format_issues_table(per_file_issues, config.output_mode)
+    if check_result.issues:
+        formatted_output = format_issues_table(check_result.issues, config.output_mode)
         generator = MarkdownGenerator(contributing_guide_url=guide_url, output_file_name=output_file_name)
         generator.generate(func, formatted_output)
 
-        all_issues = [issue for _, issues in per_file_issues for issue in issues]
+        all_issues = [issue for _, issues in check_result.issues for issue in issues]
         click.echo(click.style(f"😭 Found {len(all_issues)} issues in the following files:", fg="red"), err=True)
         for markdown_path in all_issues:
             if config.output_mode == "ci":

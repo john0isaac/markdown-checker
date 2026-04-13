@@ -52,6 +52,7 @@ class BrokenURLsCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
+        client: httpx.Client | None = None,
     ) -> list[MarkdownLinkBase]:
         config = config or Config()
         effective_skip = [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]
@@ -68,7 +69,10 @@ class BrokenURLsCheck(BaseCheck):
             timeout=config.timeout,
             retries=config.retries,
         )
-        with httpx.Client(follow_redirects=True, max_redirects=10, headers=headers) as client:
+        owns_client = client is None
+        if owns_client:
+            client = httpx.Client(follow_redirects=True, max_redirects=10, headers=headers)
+        try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = {executor.submit(worker, url, client=client): url for url in links.urls}
                 results: list[MarkdownLinkBase] = []
@@ -76,4 +80,7 @@ class BrokenURLsCheck(BaseCheck):
                     result = future.result()
                     if result is not None:
                         results.append(result)
+        finally:
+            if owns_client and client is not None:
+                client.close()
         return results

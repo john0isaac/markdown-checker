@@ -141,11 +141,11 @@ def test_run_check_on_files(tmp_path):
     md1.write_text("[link](./missing.md)\n")
     md2 = tmp_path / "b.md"
     md2.write_text("# No links\n")
-    per_file, total = run_check_on_files(
+    result = run_check_on_files(
         func="check_broken_paths",
         files_paths=[md1, md2],
         config=Config(),
     )
-    assert len(per_file) == 1
-    assert per_file[0][0] == md1
-    assert total == 1
+    assert len(result.issues) == 1
+    assert result.issues[0][0] == md1
+    assert result.links_checked == 1
