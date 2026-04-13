@@ -72,5 +72,10 @@ class BrokenURLsCheck(BaseCheck):
         )
         with httpx.Client(follow_redirects=True, headers=headers) as client:
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                results = list(executor.map(lambda url: worker(url, client=client), links.urls))
-        return [r for r in results if r is not None]
+                futures = {executor.submit(worker, url, client=client): url for url in links.urls}
+                results: list[MarkdownLinkBase] = []
+                for future in concurrent.futures.as_completed(futures):
+                    result = future.result()
+                    if result is not None:
+                        results.append(result)
+        return results
