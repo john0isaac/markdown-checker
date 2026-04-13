@@ -1,6 +1,5 @@
 import os
 import platform
-import sys
 from pathlib import Path
 
 import click
@@ -134,19 +133,12 @@ class ListOfStrings(click.Option):
     help="Name of the output file.",
     required=False,
 )
-@click.argument(
-    "src",
-    nargs=-1,
-    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=True, readable=True),
-    is_eager=True,
-    metavar="SRC ...",
-    required=False,
-)
 @click.version_option(
     message=(f"%(prog)s, %(version)s\nPython ({platform.python_implementation()}) {platform.python_version()}"),
 )
+@click.pass_context
 def main(
-    src: tuple[Path, ...],
+    ctx: click.Context,
     dir: Path,
     func: str,
     guide_url: str | None,
@@ -160,7 +152,6 @@ def main(
     output_file_name: str,
 ) -> None:
     """A markdown link validation reporting tool."""
-    _ = src or (Path("./"),)  # default to current directory
     _, files_paths = get_files_paths_list(dir, extensions)
 
     # remove files from skip_files list
@@ -219,10 +210,10 @@ def main(
                     ),
                     err=True,
                 )
-        sys.exit(1)
+        ctx.exit(1)
 
     click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
-    sys.exit(0)
+    ctx.exit(0)
 
 
 def main_with_spinner() -> None:
