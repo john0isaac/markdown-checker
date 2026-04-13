@@ -1,7 +1,6 @@
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import httpx
 import pytest
 
 from markdown_checker.checks.broken_urls import _BUILTIN_SKIP_DOMAINS, BrokenURLsCheck, _check_url
@@ -83,17 +82,15 @@ def test_skip_urls_containing(check, make_markdown_url, make_markdown_links):
 def test_check_url_returns_none_for_skipped_domain():
     """Returns None for URLs on skipped domains."""
     url = MarkdownURL(link="https://github.com/page", line_number=1, file_path=Path("test.md"))
-    client = MagicMock(spec=httpx.Client)
-    result = _check_url(url, skip_domains=["github.com"], skip_urls_containing=[], timeout=5, retries=1, client=client)
+    result = _check_url(url, skip_domains=["github.com"], skip_urls_containing=[], timeout=5, retries=1)
     assert result is None
 
 
 def test_check_url_returns_url_for_broken():
     """Returns the URL with issue set when it is not alive."""
     url = MarkdownURL(link="https://broken.example.com", line_number=1, file_path=Path("test.md"))
-    client = MagicMock(spec=httpx.Client)
     with patch.object(MarkdownURL, "is_alive", return_value=False):
-        result = _check_url(url, skip_domains=[], skip_urls_containing=[], timeout=5, retries=1, client=client)
+        result = _check_url(url, skip_domains=[], skip_urls_containing=[], timeout=5, retries=1)
     assert result is not None
     assert result.issue == "is broken"
 
@@ -101,9 +98,8 @@ def test_check_url_returns_url_for_broken():
 def test_check_url_returns_none_for_alive():
     """Returns None for alive URLs."""
     url = MarkdownURL(link="https://alive.example.com", line_number=1, file_path=Path("test.md"))
-    client = MagicMock(spec=httpx.Client)
     with patch.object(MarkdownURL, "is_alive", return_value=True):
-        result = _check_url(url, skip_domains=[], skip_urls_containing=[], timeout=5, retries=1, client=client)
+        result = _check_url(url, skip_domains=[], skip_urls_containing=[], timeout=5, retries=1)
     assert result is None
 
 

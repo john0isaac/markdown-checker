@@ -1,10 +1,8 @@
 import concurrent.futures
 from functools import partial
 
-import httpx
-
 from markdown_checker.checks.base import BaseCheck
-from markdown_checker.models import Config, MarkdownLinkBase, MarkdownURL, create_http_client
+from markdown_checker.models import Config, MarkdownLinkBase, MarkdownURL
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 # Domains known to block automated requests; always skipped for URL checks.
@@ -17,15 +15,15 @@ def _check_url(
     skip_urls_containing: list[str],
     timeout: int,
     retries: int,
-    client: httpx.Client,
 ) -> MarkdownURL | None:
-    """Thread worker: checks a single URL using the shared httpx.Client."""
+    """Thread worker: checks a single URL with its own httpx client."""
     hostname = url.host_name().lower()
     if any(hostname in domain.lower() for domain in skip_domains) or any(
         substring in url.link for substring in skip_urls_containing
     ):
         return None
-    if not url.is_alive(timeout=timeout, retries=retries, client=client):
+    # Each worker creates its own client via is_alive(client=None).
+    if not url.is_alive(timeout=timeout, retries=retries):
         url.issue = "is broken"
         return url
     return None
@@ -41,7 +39,6 @@ class BrokenURLsCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-        client: httpx.Client | None = None,
     ) -> list[MarkdownLinkBase]:
         config = config or Config()
         effective_skip = [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]
@@ -54,17 +51,14 @@ class BrokenURLsCheck(BaseCheck):
             timeout=config.timeout,
             retries=config.retries,
         )
-        if client is None:
-            client = create_http_client()
-        try:
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = {executor.submit(worker, url, client=client): url for url in links.urls}
-                results: list[MarkdownLinkBase] = []
-                for future in concurrent.futures.as_completed(futures):
-                    result = future.result()
-                    if result is not None:
-                        results.append(result)
-        finally:
-            if client is not None:
-                client.close()
+        # NOTE: httpx.Client is NOT thread-safe. Do not share a single client
+        # across ThreadPoolExecutor workers. Each worker creates its own
+        # client via is_alive(client=None) to avoid RuntimeError crashes.
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = {executor.submit(worker, url): url for url in links.urls}
+            results: list[MarkdownLinkBase] = []
+            for future in concurrent.futures.as_completed(futures):
+                result = future.result()
+                if result is not None:
+                    results.append(result)
         return results

@@ -1,5 +1,3 @@
-import httpx
-
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config, MarkdownLinkBase
 from markdown_checker.utils.extract_links import MarkdownLinks
@@ -15,7 +13,6 @@ class URLsTrackingCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-        client: httpx.Client | None = None,
     ) -> list[MarkdownLinkBase]:
         config = config or Config()
         skip_domains = config.skip_domains
@@ -45,7 +42,6 @@ class PathsTrackingCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-        client: httpx.Client | None = None,
     ) -> list[MarkdownLinkBase]:
         detected_issues: list[MarkdownLinkBase] = []
         for path in links.paths:

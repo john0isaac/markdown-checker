@@ -1,10 +1,8 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import httpx
-
 from markdown_checker.checks import REGISTRY
-from markdown_checker.models import Config, MarkdownLinkBase, create_http_client
+from markdown_checker.models import Config, MarkdownLinkBase
 from markdown_checker.utils import get_links_from_md_file
 
 
@@ -20,7 +18,6 @@ def detect_issues(
     func: str,
     file_path: Path,
     config: Config,
-    client: httpx.Client | None = None,
 ) -> tuple[list[MarkdownLinkBase], int]:
     """
     Detect issues in a single markdown file using the named check.
@@ -29,7 +26,6 @@ def detect_issues(
         func (str): Name of the check to run (must be a key in REGISTRY).
         file_path (Path): Path to the markdown file to check.
         config (Config): Runtime configuration for the check.
-        client: Optional shared HTTP client for URL checks.
 
     Returns:
         A tuple of (detected_issues, links_checked_count).
@@ -45,7 +41,7 @@ def detect_issues(
     if not all_links.paths and not all_links.urls:
         return [], 0
 
-    detected_issues = check.run(links=all_links, config=config, client=client)
+    detected_issues = check.run(links=all_links, config=config)
 
     links_count = len(all_links.paths) if check.link_type == "paths" else len(all_links.urls)
     return detected_issues, links_count
@@ -73,18 +69,10 @@ def run_check_on_files(
 
     result = CheckResult()
 
-    # Create a shared httpx.Client for URL checks to reuse TCP connections.
-    needs_client = check.link_type == "urls" and func == "check_broken_urls"
-    client = create_http_client() if needs_client else None
-
-    try:
-        for file_path in files_paths:
-            detected_issues, links_count = detect_issues(func=func, file_path=file_path, config=config, client=client)
-            result.links_checked += links_count
-            if detected_issues:
-                result.issues.append((file_path, detected_issues))
-    finally:
-        if client is not None:
-            client.close()
+    for file_path in files_paths:
+        detected_issues, links_count = detect_issues(func=func, file_path=file_path, config=config)
+        result.links_checked += links_count
+        if detected_issues:
+            result.issues.append((file_path, detected_issues))
 
     return result

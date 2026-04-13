@@ -1,5 +1,3 @@
-import httpx
-
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config, MarkdownLinkBase
 from markdown_checker.utils.extract_links import MarkdownLinks
@@ -20,7 +18,6 @@ class URLsLocaleCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-        client: httpx.Client | None = None,
     ) -> list[MarkdownLinkBase]:
         config = config or Config()
         effective_skip = [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]
@@ -49,7 +46,6 @@ class PathsLocaleCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-        client: httpx.Client | None = None,
     ) -> list[MarkdownLinkBase]:
         detected_issues: list[MarkdownLinkBase] = []
         for path in links.paths:
