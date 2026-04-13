@@ -9,7 +9,6 @@ from markdown_checker.utils.extract_links import MarkdownLinks
 # always skipped for URL checks.
 _BUILTIN_SKIP_DOMAINS: list[str] = [
     "openai.com",
-    "platform.openai.com",
 ]
 
 
@@ -22,7 +21,7 @@ def _check_url(
 ) -> MarkdownURL | None:
     """Thread worker: checks a single URL with its own httpx client."""
     hostname = url.host_name().lower()
-    if any(hostname in domain.lower() for domain in skip_domains) or any(
+    if any(domain.lower() in hostname for domain in skip_domains) or any(
         substring in url.link for substring in skip_urls_containing
     ):
         return None

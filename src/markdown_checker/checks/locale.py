@@ -26,7 +26,7 @@ class URLsLocaleCheck(BaseCheck):
         detected_issues: list[MarkdownLinkBase] = []
         for url in links.urls:
             hostname = url.host_name().lower()
-            if any(hostname in domain.lower() for domain in effective_skip) or any(
+            if any(domain.lower() in hostname for domain in effective_skip) or any(
                 substring in url.link for substring in skip_urls_containing
             ):
                 continue
