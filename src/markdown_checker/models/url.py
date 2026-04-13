@@ -59,6 +59,6 @@ class MarkdownURL(MarkdownLinkBase):
                 if attempt < retries - 1:
                     time.sleep(0.5 * 2**attempt)
         finally:
-            if _client is not None:
+            if client is None:
                 _client.close()
         return False
