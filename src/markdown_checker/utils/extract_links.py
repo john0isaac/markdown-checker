@@ -9,7 +9,7 @@ _LINK_PATTERN = re.compile(r"\]\((.*?)\)| \)")
 _URL_PATTERN = re.compile(
     r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
 )
-_PATH_PATTERN = re.compile(r"(?:\.{1,2}\/|\/)+(?:[A-Za-z0-9-]+\/)*(?:.+\.[A-Za-z]+)")
+_PATH_PATTERN = re.compile(r"(?:\.{1,2}\/|\/)*(?:[A-Za-z0-9-]+\/)*(?:.+\.[A-Za-z]+)")
 _FENCE_OPEN = re.compile(r"^\s*(`{3,}|~{3,})")
 
 

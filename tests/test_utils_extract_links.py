@@ -29,6 +29,16 @@ def test_extracts_paths_from_file_with_relative_paths(tmp_path: Path):
     assert result.paths[1].link == "../other/file.txt"
 
 
+def test_extracts_bare_relative_paths(tmp_path: Path):
+    """Extracts bare filenames and unprefixed relative paths."""
+    md = tmp_path / "test.md"
+    md.write_text("[link](file.md)\n[link2](docs/shared/file.txt)\n")
+    result = get_links_from_md_file(md)
+    assert len(result.paths) == 2
+    assert result.paths[0].link == "file.md"
+    assert result.paths[1].link == "docs/shared/file.txt"
+
+
 def test_no_links_returns_empty(tmp_path: Path):
     """Returns empty lists when the file has no links."""
     md = tmp_path / "empty.md"
@@ -86,6 +96,8 @@ def test_markdown_links_dataclass():
         ("[link](http://example.com/page)", True, False),
         ("[link](./docs/file.md)", False, True),
         ("[link](../README.md)", False, True),
+        ("[link](file.md)", False, True),
+        ("[link](docs/shared/file.md)", False, True),
     ],
 )
 def test_url_vs_path_classification(tmp_path: Path, link_text: str, expect_url: bool, expect_path: bool):
