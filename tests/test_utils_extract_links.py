@@ -98,6 +98,9 @@ def test_markdown_links_dataclass():
         ("[link](../README.md)", False, True),
         ("[link](file.md)", False, True),
         ("[link](docs/shared/file.md)", False, True),
+        ("[link](mailto:user@example.com)", False, False),
+        ("[link](ftp://example.com/file.txt)", False, False),
+        ("[link](tel:+1234567890)", False, False),
     ],
 )
 def test_url_vs_path_classification(tmp_path: Path, link_text: str, expect_url: bool, expect_path: bool):

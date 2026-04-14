@@ -10,6 +10,7 @@ _URL_PATTERN = re.compile(
     r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
 )
 _PATH_PATTERN = re.compile(r"(?:\.{1,2}\/|\/)*(?:[A-Za-z0-9-]+\/)*(?:.+\.[A-Za-z]+)")
+_SCHEME_PATTERN = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.\-]*:")
 _FENCE_OPEN = re.compile(r"^\s*(`{3,}|~{3,})")
 
 
@@ -65,7 +66,7 @@ def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
                                 file_path=file_path,
                             )
                         )
-                    elif _PATH_PATTERN.findall(matched_link):
+                    elif not _SCHEME_PATTERN.match(matched_link) and _PATH_PATTERN.findall(matched_link):
                         markdown_links.paths.append(
                             MarkdownPath(
                                 link=matched_link,
