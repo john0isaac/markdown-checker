@@ -152,3 +152,66 @@ def test_cli_ci_mode(runner, resources_dir, monkeypatch, tmp_path):
         ["-d", str(resources_dir), "-f", "check_broken_paths", "-o", str(tmp_path / "ci_output")],
     )
     assert result.exit_code == 0
+
+
+# --- SRC positional argument ---
+
+
+def test_cli_src_single_file(runner, resources_dir):
+    """Runs check on a single file passed as SRC."""
+    sample = resources_dir / "sample1.md"
+    result = runner.invoke(main, [str(sample), "-f", "check_broken_paths"])
+    assert result.exit_code == 0
+    assert "Checked" in result.output
+    assert "1 files" in result.output
+
+
+def test_cli_src_multiple_files(runner, resources_dir):
+    """Runs check on multiple files passed as SRC."""
+    s1 = resources_dir / "sample1.md"
+    s2 = resources_dir / "sample2.md"
+    result = runner.invoke(main, [str(s1), str(s2), "-f", "check_broken_paths"])
+    assert result.exit_code == 0
+    assert "Checked" in result.output
+    assert "2 files" in result.output
+
+
+def test_cli_src_directory(runner, resources_dir):
+    """Passing a directory as SRC recursively discovers files."""
+    result = runner.invoke(main, [str(resources_dir), "-f", "check_broken_paths"])
+    assert result.exit_code == 0
+    assert "Checked" in result.output
+
+
+def test_cli_src_mixed_file_and_dir(runner, resources_dir, tmp_path):
+    """Passing both a file and a directory as SRC combines results."""
+    extra = tmp_path / "extra.md"
+    extra.write_text("# Extra\n[link](https://example.com)\n")
+    result = runner.invoke(main, [str(extra), str(resources_dir), "-f", "check_broken_paths"])
+    assert result.exit_code == 0
+    assert "Checked" in result.output
+
+
+def test_cli_src_filters_by_extension(runner, tmp_path):
+    """SRC files not matching --extensions are ignored."""
+    md_file = tmp_path / "valid.md"
+    md_file.write_text("# Hello\n")
+    txt_file = tmp_path / "ignored.txt"
+    txt_file.write_text("# Not checked\n")
+    result = runner.invoke(main, [str(md_file), str(txt_file), "-f", "check_broken_paths", "-ext", ".md"])
+    assert result.exit_code == 0
+    assert "1 files" in result.output
+
+
+def test_cli_src_takes_precedence_over_dir(runner, resources_dir, tmp_path):
+    """When SRC is provided, --dir is ignored."""
+    sample = resources_dir / "sample1.md"
+    result = runner.invoke(main, [str(sample), "-d", str(resources_dir), "-f", "check_broken_paths"])
+    assert result.exit_code == 0
+    assert "1 files" in result.output
+
+
+def test_cli_no_src_no_dir_fails(runner):
+    """Fails when neither SRC nor --dir is provided."""
+    result = runner.invoke(main, ["-f", "check_broken_paths"])
+    assert result.exit_code != 0

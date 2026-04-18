@@ -32,12 +32,19 @@ class ListOfStrings(click.Option):
 
 
 @click.command()
+@click.argument(
+    "src",
+    nargs=-1,
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=True, readable=True),
+    metavar="SRC ...",
+    required=False,
+)
 @click.option(
     "-d",
     "--dir",
     type=click.Path(path_type=Path, exists=True, file_okay=False, dir_okay=True, readable=True),
     help="Path to the root directory to check.",
-    required=True,
+    required=False,
 )
 @click.option(
     "-f",
@@ -139,7 +146,8 @@ class ListOfStrings(click.Option):
 @click.pass_context
 def main(
     ctx: click.Context,
-    dir: Path,
+    src: tuple[Path, ...],
+    dir: Path | None,
     func: str,
     guide_url: str | None,
     extensions: list[str],
@@ -152,7 +160,18 @@ def main(
     output_file_name: str,
 ) -> None:
     """A markdown link validation reporting tool."""
-    _, files_paths = get_files_paths_list(dir, extensions)
+    if src:
+        files_paths = []
+        for p in src:
+            if p.is_dir():
+                _, dir_files = get_files_paths_list(p, extensions)
+                files_paths.extend(dir_files)
+            elif p.suffix.lower() in extensions:
+                files_paths.append(p)
+    elif dir is not None:
+        _, files_paths = get_files_paths_list(dir, extensions)
+    else:
+        raise click.UsageError("Either SRC or --dir must be provided.")
 
     # remove files from skip_files list
     files_paths = [file_path for file_path in files_paths if file_path.name not in skip_files]
