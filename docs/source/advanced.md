@@ -160,7 +160,7 @@ markdown-checker -d . -f check_broken_urls --skip-urls-containing=/embed/,/previ
 
 - **Type**: `Click.IntRange`
 - **Description**: Timeout in seconds for the requests before retrying.
-- **Default**: `15`
+- **Default**: `20`
 - **Range**: `0-50`
 - **Required**: No
 

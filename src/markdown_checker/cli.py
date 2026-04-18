@@ -119,7 +119,7 @@ class ListOfStrings(click.Option):
     "-to",
     "--timeout",
     type=click.IntRange(0, 50),
-    default=15,
+    default=20,
     help="Timeout in seconds for the requests.",
     required=False,
 )
