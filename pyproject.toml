@@ -86,7 +86,7 @@ filterwarnings = ["ignore::DeprecationWarning"]
 show_missing = true
 
 [project.scripts]
-markdown-checker = "markdown_checker:main_with_spinner"
+markdown-checker = "markdown_checker:main"
 
 [build-system]
 requires = ["setuptools", "wheel"]

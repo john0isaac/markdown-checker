@@ -9,7 +9,6 @@ from markdown_checker.models.config import Config
 from markdown_checker.reports.format_output import format_issues_table
 from markdown_checker.reports.markdown import MarkdownGenerator
 from markdown_checker.utils.list_files import get_files_paths_list
-from markdown_checker.utils.spinner import spinner
 
 
 class ListOfStrings(click.Option):
@@ -185,11 +184,13 @@ def main(
         output_mode="ci" if os.getenv("CI", "false") == "true" else "local",
     )
 
-    check_result = run_check_on_files(
-        func=func,
-        files_paths=files_paths,
-        config=config,
-    )
+    with click.progressbar(length=len(files_paths), label="Checking", hidden=config.output_mode == "ci") as bar:
+        check_result = run_check_on_files(
+            func=func,
+            files_paths=files_paths,
+            config=config,
+            progress_callback=lambda: bar.update(1),
+        )
 
     click.echo(
         click.style(f"\n🔍 Checked {check_result.links_checked} links in {len(files_paths)} files.", fg="blue"),
@@ -228,8 +229,3 @@ def main(
 
     click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
     ctx.exit(0)
-
-
-def main_with_spinner() -> None:
-    with spinner():
-        main()

@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -51,6 +52,7 @@ def run_check_on_files(
     func: str,
     files_paths: list[Path],
     config: Config,
+    progress_callback: Callable[[], None],
 ) -> CheckResult:
     """
     Run a named check across multiple files.
@@ -59,6 +61,7 @@ def run_check_on_files(
         func: Name of the check to run (must be a key in REGISTRY).
         files_paths: List of markdown file paths to check.
         config: Runtime configuration for the check.
+        progress_callback: Callback invoked after each file is checked.
 
     Returns:
         A CheckResult with per-file issues and total links checked.
@@ -74,5 +77,6 @@ def run_check_on_files(
         result.links_checked += links_count
         if detected_issues:
             result.issues.append((file_path, detected_issues))
+        progress_callback()
 
     return result
