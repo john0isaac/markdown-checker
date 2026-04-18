@@ -9,7 +9,6 @@ from markdown_checker.models.config import Config
 from markdown_checker.reports.format_output import format_issues_table
 from markdown_checker.reports.markdown import MarkdownGenerator
 from markdown_checker.utils.list_files import get_files_paths_list
-from markdown_checker.utils.spinner import spinner
 
 
 class ListOfStrings(click.Option):
@@ -32,12 +31,19 @@ class ListOfStrings(click.Option):
 
 
 @click.command()
+@click.argument(
+    "src",
+    nargs=-1,
+    type=click.Path(path_type=Path, exists=True, file_okay=True, dir_okay=True, readable=True),
+    metavar="SRC ...",
+    required=False,
+)
 @click.option(
     "-d",
     "--dir",
     type=click.Path(path_type=Path, exists=True, file_okay=False, dir_okay=True, readable=True),
     help="Path to the root directory to check.",
-    required=True,
+    required=False,
 )
 @click.option(
     "-f",
@@ -113,7 +119,7 @@ class ListOfStrings(click.Option):
     "-to",
     "--timeout",
     type=click.IntRange(0, 50),
-    default=15,
+    default=20,
     help="Timeout in seconds for the requests.",
     required=False,
 )
@@ -139,7 +145,8 @@ class ListOfStrings(click.Option):
 @click.pass_context
 def main(
     ctx: click.Context,
-    dir: Path,
+    src: tuple[Path, ...],
+    dir: Path | None,
     func: str,
     guide_url: str | None,
     extensions: list[str],
@@ -152,7 +159,18 @@ def main(
     output_file_name: str,
 ) -> None:
     """A markdown link validation reporting tool."""
-    _, files_paths = get_files_paths_list(dir, extensions)
+    if src:
+        files_paths = []
+        for p in src:
+            if p.is_dir():
+                _, dir_files = get_files_paths_list(p, extensions)
+                files_paths.extend(dir_files)
+            elif p.suffix.lower() in extensions:
+                files_paths.append(p)
+    elif dir is not None:
+        _, files_paths = get_files_paths_list(dir, extensions)
+    else:
+        raise click.UsageError("Either SRC or --dir must be provided.")
 
     # remove files from skip_files list
     files_paths = [file_path for file_path in files_paths if file_path.name not in skip_files]
@@ -166,11 +184,13 @@ def main(
         output_mode="ci" if os.getenv("CI", "false") == "true" else "local",
     )
 
-    check_result = run_check_on_files(
-        func=func,
-        files_paths=files_paths,
-        config=config,
-    )
+    with click.progressbar(length=len(files_paths), label="Checking", hidden=config.output_mode == "ci") as bar:
+        check_result = run_check_on_files(
+            func=func,
+            files_paths=files_paths,
+            config=config,
+            progress_callback=lambda: bar.update(1),
+        )
 
     click.echo(
         click.style(f"\n🔍 Checked {check_result.links_checked} links in {len(files_paths)} files.", fg="blue"),
@@ -209,8 +229,3 @@ def main(
 
     click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
     ctx.exit(0)
-
-
-def main_with_spinner() -> None:
-    with spinner():
-        main()

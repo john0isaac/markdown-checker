@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v1.0.1] 18 April 2026
+
+- Add positional `SRC` argument as alternative to `--dir`, allowing users to pass individual files or directories directly.
+- Replace spinner with Click's built-in progress bar for checking progress.
+- Update default timeout from 15s to 20s for better reliability.
+
 ## [v1.0.0] 13 April 2026
 
 ### Features Added
