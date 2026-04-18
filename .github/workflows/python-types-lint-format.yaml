@@ -35,7 +35,7 @@ jobs:
       run: uv sync --extra dev
 
     - name: Run type check
-      run: python3 -m mypy .
+      run: uv run mypy .
 
   python-lint-format-check:
     if: ${{ always() }} # Always run even if a matrix candidate fails
@@ -54,7 +54,7 @@ jobs:
       run: uv sync --extra lint
 
     - name: Run lint check
-      run: python3 -m ruff check .
+      run: uv run ruff check .
 
     - name: Run format check
-      run: python3 -m ruff format . --check
+      run: uv run ruff format . --check
