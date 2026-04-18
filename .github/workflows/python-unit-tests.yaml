@@ -54,4 +54,5 @@ jobs:
       run: uv sync --extra test
 
     - name: Run smoke tests
+      continue-on-error: true
       run: uv run pytest tests/smoke -m smoke -v

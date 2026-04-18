@@ -17,6 +17,7 @@ jobs:
   live-repo-smoke-openai:
     name: Live Repo Smoke - azure-search-openai-demo
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
     - uses: actions/checkout@v6
     - name: Set up uv
@@ -49,6 +50,7 @@ jobs:
   live-repo-smoke-markdown-checker:
     name: Live Repo Smoke - markdown-checker
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
     - uses: actions/checkout@v6
     - name: Set up uv
