@@ -32,11 +32,17 @@ markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com
 
 ## Command Line Options
 
+### `SRC ...`
+
+- **Type**: `click.Path`
+- **Description**: Source files or directories to check.
+- **Required**: No (either `SRC` or `--dir` must be provided)
+
 ### `-d`, `--dir`
 
 - **Type**: `click.Path`
 - **Description**: Path to the root directory to check.
-- **Required**: Yes
+- **Required**: No (either `SRC` or `--dir` must be provided)
 
 ### `-f`, `--func`
 
@@ -130,10 +136,8 @@ markdown-checker -d . -f check_broken_urls --skip-domains=example.com,test.com
 ### `-suc`, `--skip-urls-containing`
 
 - **Type**: `list[str]`
-- **Description**: List of strings to skip checking if their urls are working or not.
-- **Default**:
-  - `https://www.microsoft.com/en-us/security/blog`
-  - `video-embed.html`
+- **Description**: List of urls to skip check.
+- **Default**: `[]`
 - **Required**: No
 
 **Usage Examples:**
@@ -156,7 +160,7 @@ markdown-checker -d . -f check_broken_urls --skip-urls-containing=/embed/,/previ
 
 - **Type**: `Click.IntRange`
 - **Description**: Timeout in seconds for the requests before retrying.
-- **Default**: `15`
+- **Default**: `20`
 - **Range**: `0-50`
 - **Required**: No
 
@@ -173,12 +177,6 @@ markdown-checker -d . -f check_broken_urls --skip-urls-containing=/embed/,/previ
 - **Type**: `str`
 - **Description**: Name of the output file.
 - **Default**: `comment`
-- **Required**: No
-
-### `SRC ...`
-
-- **Type**: `click.Path`
-- **Description**: Source files or directories to check.
 - **Required**: No
 
 ## Other Options

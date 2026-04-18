@@ -144,6 +144,7 @@ def test_run_check_on_files(tmp_path):
         func="check_broken_paths",
         files_paths=[md1, md2],
         config=Config(),
+        progress_callback=lambda: None,
     )
     assert len(result.issues) == 1
     assert result.issues[0][0] == md1

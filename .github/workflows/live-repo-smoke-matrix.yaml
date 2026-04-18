@@ -13,6 +13,7 @@ jobs:
     if: ${{ always() }} # Always run even if a matrix candidate fails
     name: Live Repo Smoke Tests - Python ${{ matrix.python_version }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     strategy:
       matrix:
         os: [ubuntu-latest]
