@@ -12,6 +12,11 @@ All notable changes to this project will be documented in this file.
 
 ### Other Changes
 
+## [v1.0.2] 4 May 2026
+
+- Relax pinned dependencies to allow for patch updates: `click>=8.3.3`, `httpx>=0.28.1`.
+
+
 ## [v1.0.1] 18 April 2026
 
 - Add positional `SRC` argument as alternative to `--dir`, allowing users to pass individual files or directories directly.
