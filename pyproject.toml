@@ -1,7 +1,7 @@
 [project]
 name = "markdown-checker"
 description= "A markdown link validation reporting tool."
-version = "1.0.1"
+version = "1.0.2"
 authors = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 maintainers = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 license = {file = "LICENSE"}
@@ -9,8 +9,8 @@ readme = "README.md"
 
 requires-python = ">=3.10"
 dependencies = [
-    "click==8.3.2",
-    "httpx==0.28.1",
+    "click>=8.3.3",
+    "httpx>=0.28.1",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
