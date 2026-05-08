@@ -4,18 +4,18 @@ description= "A markdown link validation reporting tool."
 version = "1.0.2"
 authors = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 maintainers = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
 
 requires-python = ">=3.10"
 dependencies = [
-    "click>=8.3.3",
+    "click>=8.3.1",
     "httpx>=0.28.1",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Quality Assurance",
 ]
@@ -34,20 +35,12 @@ Issues = "https://github.com/john0isaac/markdown-checker/issues"
 Contributing = "https://github.com/john0isaac/markdown-checker/pulls"
 Releases = "https://github.com/john0isaac/markdown-checker/releases"
 
-[tool.setuptools.package-data]
-"*" = ["*.html", "*.txt", "*.xml", "*.md"]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "pre-commit",
-    "mypy",
-]
-lint = [
-    "ruff"
-]
-test = [
-    "pytest",
-    "pytest-cov"
+    "ruff",
+    "tox",
+    "tox-uv",
 ]
 docs = [
     "mkdocs",
@@ -55,23 +48,74 @@ docs = [
     "mkdocstrings[python]",
     "pymdown-extensions"
 ]
+gha-update = [
+    "gha-update ; python_full_version >= '3.12'",
+]
+pre-commit = [
+    "pre-commit",
+    "pre-commit-uv",
+]
+tests = [
+    "pytest",
+    "pytest-cov"
+]
+typing = [
+    "mypy"
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[project.scripts]
+markdown-checker = "markdown_checker:main"
+
+[tool.flit.sdist]
+include = [
+    "docs/",
+    "tests/",
+    "uv.lock"
+]
+exclude = [
+    "docs/_build/",
+]
+
+[tool.uv]
+default-groups = ["dev", "pre-commit", "tests", "typing"]
 
 [tool.ruff]
-lint.select = ["E", "F", "I", "UP"]
 line-length = 120
 target-version = "py310"
 src = ["src"]
-lint.isort.known-first-party = ["markdown_checker"]
+fix = true
+show-fixes = true
 output-format = "full"
 
+[tool.ruff.lint]
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle error
+    "F",  # pyflakes
+    "I",  # isort
+    "UP",  # pyupgrade
+    "W",  # pycodestyle warning
+]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+order-by-type = false
+known-first-party = ["markdown_checker"]
+
 [tool.mypy]
-strict_optional = true
+python_version = '3.10'
+files = ["src"]
+show_error_codes = true
+pretty = true
+strict = true
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 check_untyped_defs = true
-python_version = '3.10'
-exclude = [".venv/*", "tests/*", "smoke/*"]
 
 [tool.pytest.ini_options]
 markers = [
@@ -82,12 +126,88 @@ testpaths = ["tests"]
 pythonpath = ['src']
 filterwarnings = ["ignore::DeprecationWarning"]
 
+[tool.coverage.run]
+branch = true
+source = ["markdown_checker", "tests"]
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
 [tool.coverage.report]
 show_missing = true
+exclude_also = [
+    "if t.TYPE_CHECKING",
+    "raise NotImplementedError",
+    ": \\.{3}",
+]
 
-[project.scripts]
-markdown-checker = "markdown_checker:main"
+[tool.tox]
+env_list = [
+    "py3.14", "py3.13", "py3.12", "py3.11", "py3.10",
+    "style",
+    "typing",
+    "docs",
+]
 
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+[tool.tox.env_run_base]
+description = "pytest on latest dependency versions"
+runner = "uv-venv-lock-runner"
+package = "wheel"
+wheel_build_env = ".pkg"
+constrain_package_deps = true
+use_frozen_constraints = true
+dependency_groups = ["tests"]
+set_env = { TMPDIR = "{env_tmp_dir}" }
+commands = [
+    [
+        "pytest", "-v", "-rs", "--tb=short",
+        "--capture=tee-sys", "--basetemp={env_tmp_dir}",
+        { replace = "posargs", default = [], extend = true },
+    ],
+    ["python", "{envtmpdir}/return_pytest_exit_code.py"],
+]
+
+[tool.tox.env.style]
+description = "run all pre-commit hooks on all files"
+dependency_groups = ["pre-commit"]
+skip_install = true
+commands = [["pre-commit", "run", "--all-files"]]
+
+[tool.tox.env.typing]
+description = "run static type checkers"
+dependency_groups = ["tests", "typing"]
+commands = [
+    ["mypy"],
+]
+
+[tool.tox.env.docs]
+description = "build docs"
+dependency_groups = ["docs"]
+commands = [["mkdocs", "build", "--strict", "--config-file", "docs/mkdocs.yml"]]
+
+[tool.tox.env.docs-auto]
+description = "continuously rebuild docs and start a local server"
+dependency_groups = ["docs"]
+commands = [["mkdocs", "serve", "--config-file", "docs/mkdocs.yml"]]
+
+[tool.tox.env.update-actions]
+description = "update GitHub Actions pins"
+labels = ["update"]
+dependency_groups = ["gha-update"]
+skip_install = true
+commands = [["gha-update"]]
+
+[tool.tox.env.update-pre_commit]
+description = "update pre-commit pins"
+labels = ["update"]
+dependency_groups = ["pre-commit"]
+skip_install = true
+commands = [["pre-commit", "autoupdate", "--freeze", "-j4"]]
+
+[tool.tox.env.update-requirements]
+description = "update uv lock"
+labels = ["update"]
+dependency_groups = []
+no_default_groups = true
+skip_install = true
+commands = [["uv", "lock", {replace = "posargs", default = ["-U"], extend = true}]]

@@ -26,8 +26,8 @@ class ListOfStrings(click.Option):
                 return value
             else:
                 raise Exception
-        except Exception:
-            raise click.BadParameter(str(value))
+        except Exception as err:
+            raise click.BadParameter(str(value)) from err
 
 
 @click.command()

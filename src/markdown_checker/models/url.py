@@ -1,6 +1,7 @@
 import time
 from dataclasses import dataclass
-from urllib.parse import ParseResult, urlparse
+from urllib.parse import ParseResult
+from urllib.parse import urlparse
 
 import httpx
 

@@ -1,9 +1,11 @@
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from pathlib import Path
 
 from markdown_checker.checks import REGISTRY
-from markdown_checker.models import Config, MarkdownLinkBase
+from markdown_checker.models import Config
+from markdown_checker.models import MarkdownLinkBase
 from markdown_checker.utils import get_links_from_md_file
 
 

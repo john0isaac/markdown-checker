@@ -1,7 +1,9 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from typing import Literal
 
-from markdown_checker.models import Config, MarkdownLinkBase
+from markdown_checker.models import Config
+from markdown_checker.models import MarkdownLinkBase
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 

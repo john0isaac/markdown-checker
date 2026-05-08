@@ -1,6 +1,7 @@
 import pytest
 
-from markdown_checker.checks.locale import _BUILTIN_SKIP_DOMAINS, URLsLocaleCheck
+from markdown_checker.checks.locale import _BUILTIN_SKIP_DOMAINS
+from markdown_checker.checks.locale import URLsLocaleCheck
 from markdown_checker.models.config import Config
 
 # --- URLsLocaleCheck ---
