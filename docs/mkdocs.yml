@@ -45,6 +45,6 @@ nav:
     - Utilities: ./api/utils.md
     - Reports: ./api/reports.md
   - Automate: automate.md
-  - Changelog: changelog.md
-  - Contributing: contributing.md
-  - Code of Conduct: code_of_conduct.md
+  - Changelog: CHANGELOG.md
+  - Contributing: CONTRIBUTING.md
+  - Code of Conduct: CODE_OF_CONDUCT.md
