@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   release-pypi:
@@ -27,6 +28,4 @@ jobs:
       - name: Build distributions
         run: uv build
       - name: Upload to PyPI
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: uv publish
+        run: uv publish --trusted-publishing always
