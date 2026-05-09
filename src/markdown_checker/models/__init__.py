@@ -1,5 +1,7 @@
 from markdown_checker.models.base import MarkdownLinkBase
-from markdown_checker.models.config import DEFAULT_HEADERS, Config, create_http_client
+from markdown_checker.models.config import Config
+from markdown_checker.models.config import create_http_client
+from markdown_checker.models.config import DEFAULT_HEADERS
 from markdown_checker.models.path import MarkdownPath
 from markdown_checker.models.url import MarkdownURL
 

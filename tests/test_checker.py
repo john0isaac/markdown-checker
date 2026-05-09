@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from markdown_checker.checker import detect_issues, run_check_on_files
+from markdown_checker.checker import detect_issues
+from markdown_checker.checker import run_check_on_files
 from markdown_checker.models.config import Config
 
 

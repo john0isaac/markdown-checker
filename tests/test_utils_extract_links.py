@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from markdown_checker.utils.extract_links import MarkdownLinks, get_links_from_md_file
+from markdown_checker.utils.extract_links import get_links_from_md_file
+from markdown_checker.utils.extract_links import MarkdownLinks
 
 
 def test_get_links_from_md_file_returns_markdown_links(sample1_path: Path):

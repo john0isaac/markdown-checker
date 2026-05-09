@@ -104,7 +104,7 @@ All notable changes to this project will be documented in this file.
 - Expose options for external users to allow for more customization.
 - Increase coverage for paths by including paths that start with `/` or nothing.
 - Add retires for URLs before flagging them as broken.
-- Preform head request on URL which falls back to get if both not working flag as broken after retries count finishes.
+- Perform head request on URL which falls back to get if both not working flag as broken after retries count finishes.
 - Analyze all web URLs except the ones in skip_domains list.
 - Change Syntax of terminal comments to improve readability.
 - Add Spinner to indicate that the tool is working (Not compatible with all terminals)

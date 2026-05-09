@@ -1,6 +1,7 @@
 import io
 
-from markdown_checker.utils.spinner import Spinner, spinner
+from markdown_checker.utils.spinner import Spinner
+from markdown_checker.utils.spinner import spinner
 
 
 def test_spinner_factory_returns_spinner():

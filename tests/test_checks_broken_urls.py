@@ -3,7 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
-from markdown_checker.checks.broken_urls import _BUILTIN_SKIP_DOMAINS, BrokenURLsCheck, _check_url
+from markdown_checker.checks.broken_urls import _BUILTIN_SKIP_DOMAINS
+from markdown_checker.checks.broken_urls import _check_url
+from markdown_checker.checks.broken_urls import BrokenURLsCheck
 from markdown_checker.models.config import Config
 from markdown_checker.models.url import MarkdownURL
 

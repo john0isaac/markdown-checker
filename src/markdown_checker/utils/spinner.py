@@ -1,7 +1,8 @@
 import itertools
 import sys
 import threading
-from typing import Any, TextIO
+from typing import Any
+from typing import TextIO
 
 
 class Spinner:

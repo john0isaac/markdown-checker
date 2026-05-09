@@ -1,6 +1,7 @@
 import pytest
 
-from markdown_checker.checks.tracking import PathsTrackingCheck, URLsTrackingCheck
+from markdown_checker.checks.tracking import PathsTrackingCheck
+from markdown_checker.checks.tracking import URLsTrackingCheck
 from markdown_checker.models.config import Config
 
 # --- URLsTrackingCheck ---

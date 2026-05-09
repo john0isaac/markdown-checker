@@ -6,26 +6,26 @@ on:
       - published
   workflow_dispatch:
 
-env:
-  DEFAULT_PYTHON: '3.10'
-
 permissions:
   contents: read
+  id-token: write
+
 jobs:
   release-pypi:
     name: Upload release to PyPI
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code from Github
-        uses: actions/checkout@v6
-      - name: Set up uv
-        id: python
-        uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          python-version: ${{ env.DEFAULT_PYTHON }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: false
+          prune-cache: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version-file: pyproject.toml
       - name: Build distributions
         run: uv build
       - name: Upload to PyPI
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: uv publish
+        run: uv publish --trusted-publishing always

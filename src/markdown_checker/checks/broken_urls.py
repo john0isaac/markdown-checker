@@ -2,7 +2,9 @@ import concurrent.futures
 from functools import partial
 
 from markdown_checker.checks.base import BaseCheck
-from markdown_checker.models import Config, MarkdownLinkBase, MarkdownURL
+from markdown_checker.models import Config
+from markdown_checker.models import MarkdownLinkBase
+from markdown_checker.models import MarkdownURL
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 # Domains known to block automated requests (e.g. Cloudflare 403);

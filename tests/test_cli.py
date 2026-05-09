@@ -4,7 +4,8 @@ import click
 import pytest
 from click.testing import CliRunner
 
-from markdown_checker.cli import ListOfStrings, main
+from markdown_checker.cli import ListOfStrings
+from markdown_checker.cli import main
 
 
 @pytest.fixture
