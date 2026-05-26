@@ -21,7 +21,7 @@ def _check_url(
     timeout: int,
     retries: int,
 ) -> MarkdownURL | None:
-    """Thread worker: checks a single URL with its own httpx client."""
+    """Thread worker: checks a single URL with its own httpx2 client."""
     hostname = url.host_name().lower()
     if any(domain.lower() in hostname for domain in skip_domains) or any(
         substring in url.link for substring in skip_urls_containing
@@ -56,7 +56,7 @@ class BrokenURLsCheck(BaseCheck):
             timeout=config.timeout,
             retries=config.retries,
         )
-        # NOTE: httpx.Client is NOT thread-safe. Do not share a single client
+        # NOTE: httpx2.Client is NOT thread-safe. Do not share a single client
         # across ThreadPoolExecutor workers. Each worker creates its own
         # client via is_alive(client=None) to avoid RuntimeError crashes.
         with concurrent.futures.ThreadPoolExecutor() as executor:

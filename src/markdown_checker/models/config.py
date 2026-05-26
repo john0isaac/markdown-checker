@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import Literal
 
-import httpx
+import httpx2
 
 DEFAULT_HEADERS: dict[str, str] = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -10,9 +10,9 @@ DEFAULT_HEADERS: dict[str, str] = {
 }
 
 
-def create_http_client(headers: dict[str, str] | None = None) -> httpx.Client:
-    """Create a pre-configured httpx.Client for URL checking."""
-    return httpx.Client(
+def create_http_client(headers: dict[str, str] | None = None) -> httpx2.Client:
+    """Create a pre-configured httpx2.Client for URL checking."""
+    return httpx2.Client(
         follow_redirects=True,
         max_redirects=10,
         headers=headers or DEFAULT_HEADERS,
