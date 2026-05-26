@@ -17,6 +17,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinxcontrib.log_cabinet",
     "sphinx_tabs.tabs",
+    "sphinx_copybutton",
     "pallets_sphinx_themes",
 ]
 autodoc_member_order = "bysource"

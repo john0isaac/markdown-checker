@@ -47,6 +47,7 @@ docs = [
     "sphinx",
     "sphinxcontrib-log-cabinet",
     "sphinx-tabs",
+    "sphinx-copybutton",
 ]
 docs-auto = [
     "sphinx-autobuild",
