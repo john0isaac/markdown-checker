@@ -2,6 +2,7 @@
 -------------------
 
 - Migrate to ``httpx2``.
+- Support following ``Retry-After`` headers for rate-limited requests.
 
 
 [v1.0.2] 4 May 2026

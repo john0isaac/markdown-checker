@@ -231,6 +231,60 @@ Range
 Required
   No.
 
+``--retry-on-429`` / ``--no-retry-on-429``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Type
+  ``bool``
+Description
+  When enabled, the checker honours the ``Retry-After`` response header on
+  ``429 Too Many Requests`` (and any other non-success, non-redirect response
+  that carries the header). The indicated wait time is used instead of the
+  normal exponential backoff. Disable with ``--no-retry-on-429`` to fall back
+  to standard retry behaviour.
+Default
+  Enabled (``--retry-on-429``)
+Required
+  No.
+
+Usage examples
+^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+  # Enabled (default)
+  markdown-checker -d . -f check_broken_urls --retry-on-429
+
+  # Disabled
+  markdown-checker -d . -f check_broken_urls --no-retry-on-429
+
+``-frd``, ``--fallback-retry-delay``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Type
+  ``Click.IntRange``
+Description
+  Number of seconds to wait before retrying when a ``429`` response is
+  received but carries no ``Retry-After`` header. Only applies when
+  ``--retry-on-429`` is enabled.
+Default
+  ``30``
+Range
+  ``0-300``
+Required
+  No.
+
+Usage examples
+^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+  # Use a custom fallback delay of 45 seconds
+  markdown-checker -d . -f check_broken_urls --fallback-retry-delay=45
+
+  # Short-form alias
+  markdown-checker -d . -f check_broken_urls -frd 45
+
 ``-o``, ``--output-file-name``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
