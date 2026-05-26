@@ -20,6 +20,8 @@ def _check_url(
     skip_urls_containing: list[str],
     timeout: int,
     retries: int,
+    retry_on_429: bool,
+    fallback_retry_delay: int,
 ) -> MarkdownURL | None:
     """Thread worker: checks a single URL with its own httpx2 client."""
     hostname = url.host_name().lower()
@@ -28,7 +30,12 @@ def _check_url(
     ):
         return None
     # Each worker creates its own client via is_alive(client=None).
-    if not url.is_alive(timeout=timeout, retries=retries):
+    if not url.is_alive(
+        timeout=timeout,
+        retries=retries,
+        retry_on_429=retry_on_429,
+        fallback_retry_delay=fallback_retry_delay,
+    ):
         url.issue = "is broken"
         return url
     return None
@@ -55,6 +62,8 @@ class BrokenURLsCheck(BaseCheck):
             skip_urls_containing=skip_urls_containing,
             timeout=config.timeout,
             retries=config.retries,
+            retry_on_429=config.retry_on_429,
+            fallback_retry_delay=config.fallback_retry_delay,
         )
         # NOTE: httpx2.Client is NOT thread-safe. Do not share a single client
         # across ThreadPoolExecutor workers. Each worker creates its own

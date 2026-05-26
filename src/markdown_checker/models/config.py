@@ -28,4 +28,6 @@ class Config:
     tracking_domains: list[str] = field(default_factory=list)
     timeout: int = 20
     retries: int = 3
+    retry_on_429: bool = True
+    fallback_retry_delay: int = 30
     output_mode: Literal["ci", "local"] = "local"

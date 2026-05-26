@@ -83,7 +83,15 @@ def test_skip_urls_containing(check, make_markdown_url, make_markdown_links):
 def test_check_url_returns_none_for_skipped_domain():
     """Returns None for URLs on skipped domains."""
     url = MarkdownURL(link="https://github.com/page", line_number=1, file_path=Path("test.md"))
-    result = _check_url(url, skip_domains=["github.com"], skip_urls_containing=[], timeout=5, retries=1)
+    result = _check_url(
+        url,
+        skip_domains=["github.com"],
+        skip_urls_containing=[],
+        timeout=5,
+        retries=1,
+        retry_on_429=True,
+        fallback_retry_delay=60,
+    )
     assert result is None
 
 
@@ -91,7 +99,15 @@ def test_check_url_returns_url_for_broken():
     """Returns the URL with issue set when it is not alive."""
     url = MarkdownURL(link="https://broken.example.com", line_number=1, file_path=Path("test.md"))
     with patch.object(MarkdownURL, "is_alive", return_value=False):
-        result = _check_url(url, skip_domains=[], skip_urls_containing=[], timeout=5, retries=1)
+        result = _check_url(
+            url,
+            skip_domains=[],
+            skip_urls_containing=[],
+            timeout=5,
+            retries=1,
+            retry_on_429=True,
+            fallback_retry_delay=60,
+        )
     assert result is not None
     assert result.issue == "is broken"
 
@@ -100,7 +116,15 @@ def test_check_url_returns_none_for_alive():
     """Returns None for alive URLs."""
     url = MarkdownURL(link="https://alive.example.com", line_number=1, file_path=Path("test.md"))
     with patch.object(MarkdownURL, "is_alive", return_value=True):
-        result = _check_url(url, skip_domains=[], skip_urls_containing=[], timeout=5, retries=1)
+        result = _check_url(
+            url,
+            skip_domains=[],
+            skip_urls_containing=[],
+            timeout=5,
+            retries=1,
+            retry_on_429=True,
+            fallback_retry_delay=60,
+        )
     assert result is None
 
 

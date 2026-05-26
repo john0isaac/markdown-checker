@@ -132,6 +132,19 @@ class ListOfStrings(click.Option):
     required=False,
 )
 @click.option(
+    "--retry-on-429/--no-retry-on-429",
+    default=True,
+    help="Honour Retry-After headers when a 429 response is received.",
+)
+@click.option(
+    "-frd",
+    "--fallback-retry-delay",
+    type=click.IntRange(0, 300),
+    default=30,
+    help="Fallback delay in seconds when a 429 response has no Retry-After header.",
+    required=False,
+)
+@click.option(
     "-o",
     "--output-file-name",
     type=str,
@@ -156,6 +169,8 @@ def main(
     tracking_domains: list[str],
     timeout: int,
     retries: int,
+    retry_on_429: bool,
+    fallback_retry_delay: int,
     output_file_name: str,
 ) -> None:
     """A markdown link validation reporting tool."""
@@ -181,6 +196,8 @@ def main(
         tracking_domains=tracking_domains,
         timeout=timeout,
         retries=retries,
+        retry_on_429=retry_on_429,
+        fallback_retry_delay=fallback_retry_delay,
         output_mode="ci" if os.getenv("CI", "false") == "true" else "local",
     )
 
