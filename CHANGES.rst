@@ -1,23 +1,15 @@
-[v0.0.0] Date
--------------
+[v1.0.3] Unreleased
+-------------------
 
-Features Added
-~~~~~~~~~~~~~~
+- Migrate to ``httpx2``.
 
-Breaking Changes
-~~~~~~~~~~~~~~~~
-
-Bugs Fixed
-~~~~~~~~~~
-
-Other Changes
-~~~~~~~~~~~~~
 
 [v1.0.2] 4 May 2026
 -------------------
 
 - Relax pinned dependencies to allow for patch updates: ``click>=8.3.3``,
   ``httpx>=0.28.1``.
+
 
 [v1.0.1] 18 April 2026
 ----------------------
@@ -26,6 +18,7 @@ Other Changes
   to pass individual files or directories directly.
 - Replace spinner with Click's built-in progress bar for checking progress.
 - Update default timeout from 15s to 20s for better reliability.
+
 
 [v1.0.0] 13 April 2026
 ----------------------
@@ -104,10 +97,12 @@ Other Changes
 - Update API docs to reflect new module structure.
 - Add ``advanced.md`` documentation page.
 
+
 [v0.2.5] 5 May 2025
 -------------------
 
 - Disable GitHub.com URL checks (skipping until fixed).
+
 
 [v0.2.4] 26 Jan 2025
 --------------------
@@ -118,10 +113,12 @@ Other Changes
 - Add ``Accept`` and ``User-Agent`` headers to the requests, which are
   required by some websites.
 
+
 [v0.2.3] 26 Nov 2024
 --------------------
 
 - Skip another domain by @IsuminI.
+
 
 [v0.2.2] 8 Nov 2024
 -------------------
@@ -129,11 +126,13 @@ Other Changes
 - Change broken URL flagging to always try HEAD and GET on any URL before
   flagging it as broken.
 
+
 [v0.2.1] 7 Aug 2024
 -------------------
 
 - Fix command line ``list[str]`` type issue and use ``Click.IntRange`` for
   retries and timeout.
+
 
 [v0.2.0] 7 Aug 2024
 -------------------
@@ -155,11 +154,13 @@ Other Changes
   50%.
 - Add support for GitHub automatic annotations.
 
+
 [v0.1.5] 8 Jul 2024
 -------------------
 
 - Increase timeout for requests to check web URLs alive or not.
   https://github.com/john0isaac/markdown-checker/pull/52
+
 
 [v0.1.4] 6 May 2024
 -------------------
@@ -175,11 +176,13 @@ Other Changes
 - Add docs in Read the Docs:
   https://markdown-checker.readthedocs.io/en/latest/
 
+
 [v0.1.3] 15 March 2024
 ----------------------
 
 - Change lessons to files.
 - Remove IDs from the end of relative paths.
+
 
 [v0.1.2] 06 March 2024
 ----------------------
@@ -189,11 +192,13 @@ Other Changes
 - Skip VS Code redirect URLs.
 - Fix typos.
 
+
 [v0.1.1] 06 March 2024
 ----------------------
 
 - Fix: add requests to required packages by @john0isaac in
   https://github.com/john0isaac/markdown-checker/pull/19
+
 
 [v0.1.0] 06 March 2024
 ----------------------
@@ -209,11 +214,13 @@ Other Changes
 - Skip Microsoft security blog by @john0isaac in
   https://github.com/john0isaac/markdown-checker/pull/17
 
+
 [v0.0.9] 05 March 2024
 ----------------------
 
 - Fix: skip video URLs.
 - Feat: add devcontainer.
+
 
 [v0.0.8] 30 December 2023
 -------------------------
@@ -223,12 +230,14 @@ Other Changes
 - Define tests to execute functions.
 - Docs: add instructions for local development.
 
+
 [v0.0.7] 26 November 2023
 -------------------------
 
 - Rename ``get_input_args`` to ``inputs`` module with no change.
 - Improve paths reading using recursion.
 - Improve script output format.
+
 
 [v0.0.5] 22 November 2023
 -------------------------
@@ -238,6 +247,7 @@ Other Changes
 - Configure GitHub Actions on release.
 - Add contributing guidance, code of conduct, and templates for issues and
   pull requests.
+
 
 [v0.0.4] 21 November 2023
 -------------------------
