@@ -17,7 +17,7 @@ from markdown_checker.models.config import create_http_client
 class URLCheckResult:
     """Typed outcome of checking whether a URL is reachable."""
 
-    status: Literal["alive", "broken", "rate_limited", "transient_error"]
+    status: Literal["alive", "broken", "rate_limited", "transient_error", "unverifiable"]
     http_status_code: int | None = None
     retry_after: int | None = None
 
@@ -99,6 +99,7 @@ class MarkdownURL(MarkdownLinkBase):
         last_retry_after: int | None = None
         saw_hard_failure = False
         saw_rate_limit = False
+        saw_auth_error = False
         try:
             for attempt in range(retries):
                 sleep_override: float | None = None
@@ -113,7 +114,7 @@ class MarkdownURL(MarkdownLinkBase):
                         saw_rate_limit = True
                         last_retry_after = int(sleep_override)
                     else:
-                        saw_hard_failure = True
+                        # Fall back to GET — some servers reject HEAD but allow GET.
                         response = _client.get(self.link, timeout=timeout)
                         last_status_code = response.status_code
                         if response.is_success:
@@ -123,6 +124,10 @@ class MarkdownURL(MarkdownLinkBase):
                         if sleep_override is not None:
                             saw_rate_limit = True
                             last_retry_after = int(sleep_override)
+                        elif response.status_code in (401, 403):
+                            # 401/403 means the server exists but is blocking automated access.
+                            # We cannot determine the real status of the resource.
+                            saw_auth_error = True
                         else:
                             saw_hard_failure = True
                 except httpx2.UnsupportedProtocol:
@@ -145,4 +150,6 @@ class MarkdownURL(MarkdownLinkBase):
             return URLCheckResult(
                 status="rate_limited", http_status_code=last_status_code, retry_after=last_retry_after
             )
+        if saw_auth_error:
+            return URLCheckResult(status="unverifiable", http_status_code=last_status_code)
         return URLCheckResult(status="transient_error", http_status_code=None)

@@ -43,6 +43,8 @@ def _check_url(
         return url
     if result.status == "rate_limited":
         url.issue = "was skipped due to rate limiting"
+    elif result.status == "unverifiable":
+        url.issue = "could not be verified (access was forbidden by the server)"
     else:
         # transient_error
         url.issue = "could not be reached due to a network error"

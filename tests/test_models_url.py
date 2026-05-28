@@ -316,3 +316,47 @@ def test_check_returns_transient_error_on_network_failure():
         result = url.check(timeout=5, retries=2, client=mock_client)
     assert result.status == "transient_error"
     assert result.http_status_code is None
+
+
+def test_check_returns_unverifiable_when_head_and_get_both_return_403():
+    """check() returns status='unverifiable' when both HEAD and GET return 403."""
+    url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
+    mock_client = MagicMock(spec=httpx2.Client)
+    mock_client.head.return_value = _make_response(403)
+    mock_client.get.return_value = _make_response(403)
+    result = url.check(timeout=5, retries=1, client=mock_client)
+    assert result.status == "unverifiable"
+    assert result.http_status_code == 403
+
+
+def test_check_returns_unverifiable_when_head_and_get_both_return_401():
+    """check() returns status='unverifiable' when both HEAD and GET return 401."""
+    url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
+    mock_client = MagicMock(spec=httpx2.Client)
+    mock_client.head.return_value = _make_response(401)
+    mock_client.get.return_value = _make_response(401)
+    result = url.check(timeout=5, retries=1, client=mock_client)
+    assert result.status == "unverifiable"
+    assert result.http_status_code == 401
+
+
+def test_check_returns_alive_when_head_returns_403_but_get_succeeds():
+    """check() falls back to GET and returns alive when HEAD is 403 but GET succeeds."""
+    url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
+    mock_client = MagicMock(spec=httpx2.Client)
+    mock_client.head.return_value = _make_response(403)
+    mock_client.get.return_value = _make_response(200)
+    result = url.check(timeout=5, retries=1, client=mock_client)
+    assert result.status == "alive"
+    assert result.http_status_code == 200
+
+
+def test_check_returns_broken_when_head_returns_403_but_get_returns_404():
+    """check() returns broken when HEAD is 403 but GET reveals the resource is gone (404)."""
+    url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
+    mock_client = MagicMock(spec=httpx2.Client)
+    mock_client.head.return_value = _make_response(403)
+    mock_client.get.return_value = _make_response(404)
+    result = url.check(timeout=5, retries=1, client=mock_client)
+    assert result.status == "broken"
+    assert result.http_status_code == 404
