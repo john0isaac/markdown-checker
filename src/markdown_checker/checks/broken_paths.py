@@ -1,10 +1,10 @@
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config
-from markdown_checker.models import MarkdownLinkBase
+from markdown_checker.models import MarkdownPath
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 
-class BrokenPathsCheck(BaseCheck):
+class BrokenPathsCheck(BaseCheck[MarkdownPath]):
     """Check for relative paths in markdown files that do not exist on disk."""
 
     name = "check_broken_paths"
@@ -14,8 +14,8 @@ class BrokenPathsCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-    ) -> list[MarkdownLinkBase]:
-        detected_issues: list[MarkdownLinkBase] = []
+    ) -> list[MarkdownPath]:
+        detected_issues: list[MarkdownPath] = []
         for path in links.paths:
             if not path.exists():
                 path.issue = "is broken"

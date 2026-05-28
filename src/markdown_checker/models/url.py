@@ -3,6 +3,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from datetime import timezone
+from typing import Literal
 from urllib.parse import ParseResult
 from urllib.parse import urlparse
 
@@ -10,6 +11,15 @@ import httpx2
 
 from markdown_checker.models.base import MarkdownLinkBase
 from markdown_checker.models.config import create_http_client
+
+
+@dataclass(slots=True)
+class URLCheckResult:
+    """Typed outcome of checking whether a URL is reachable."""
+
+    status: Literal["alive", "broken", "rate_limited", "transient_error", "unverifiable"]
+    http_status_code: int | None = None
+    retry_after: int | None = None
 
 
 def _retry_after_delay(response: httpx2.Response, fallback: int) -> float | None:
@@ -32,9 +42,9 @@ def _retry_after_delay(response: httpx2.Response, fallback: int) -> float | None
             pass
         # Try HTTP-date format (e.g. "Wed, 21 Oct 2015 07:28:00 GMT").
         try:
-            dt = email.utils.parsedate_to_datetime(header)
-            now = datetime.now(timezone.utc)
-            delay = (dt - now).total_seconds()
+            dt: datetime = email.utils.parsedate_to_datetime(header)
+            now: datetime = datetime.now(timezone.utc)
+            delay: float = (dt - now).total_seconds()
             return max(0.0, delay)
         except Exception:
             pass
@@ -62,16 +72,16 @@ class MarkdownURL(MarkdownLinkBase):
         """
         return self.parsed_url.netloc
 
-    def is_alive(
+    def check(
         self,
         timeout: int = 20,
         retries: int = 3,
         client: httpx2.Client | None = None,
         retry_on_429: bool = True,
         fallback_retry_delay: int = 30,
-    ) -> bool:
+    ) -> URLCheckResult:
         """
-        Check if the URL is alive
+        Check whether the URL is reachable and return a typed outcome.
 
         Args:
             timeout (int): Timeout for the request in seconds.
@@ -81,28 +91,49 @@ class MarkdownURL(MarkdownLinkBase):
             fallback_retry_delay (int): Seconds to wait when a 429 carries no Retry-After header.
 
         Returns:
-            bool: True if the URL is alive, False otherwise
+            URLCheckResult with status one of: ``alive``, ``broken``,
+            ``rate_limited``, or ``transient_error``.
         """
         _client = client or create_http_client()
+        last_status_code: int | None = None
+        last_retry_after: int | None = None
+        saw_hard_failure = False
+        saw_rate_limit = False
+        saw_auth_error = False
         try:
             for attempt in range(retries):
                 sleep_override: float | None = None
                 try:
                     response = _client.head(self.link, timeout=timeout)
+                    last_status_code = response.status_code
                     if response.is_success:
-                        return True
+                        return URLCheckResult(status="alive", http_status_code=response.status_code)
                     if retry_on_429:
                         sleep_override = _retry_after_delay(response, fallback_retry_delay)
-                    if sleep_override is None:
+                    if sleep_override is not None:
+                        saw_rate_limit = True
+                        last_retry_after = int(sleep_override)
+                    else:
+                        # Fall back to GET — some servers reject HEAD but allow GET.
                         response = _client.get(self.link, timeout=timeout)
+                        last_status_code = response.status_code
                         if response.is_success:
-                            return True
+                            return URLCheckResult(status="alive", http_status_code=response.status_code)
                         if retry_on_429:
                             sleep_override = _retry_after_delay(response, fallback_retry_delay)
+                        if sleep_override is not None:
+                            saw_rate_limit = True
+                            last_retry_after = int(sleep_override)
+                        elif response.status_code in (401, 403):
+                            # 401/403 means the server exists but is blocking automated access.
+                            # We cannot determine the real status of the resource.
+                            saw_auth_error = True
+                        else:
+                            saw_hard_failure = True
                 except httpx2.UnsupportedProtocol:
                     # Server redirected to a non-HTTP scheme (e.g. vscode://).
                     # The original URL is reachable; treat it as alive.
-                    return True
+                    return URLCheckResult(status="alive", http_status_code=None)
                 except (httpx2.HTTPError, RuntimeError):
                     pass
                 if attempt < retries - 1:
@@ -113,4 +144,12 @@ class MarkdownURL(MarkdownLinkBase):
         finally:
             if client is None:
                 _client.close()
-        return False
+        if saw_hard_failure:
+            return URLCheckResult(status="broken", http_status_code=last_status_code)
+        if saw_rate_limit:
+            return URLCheckResult(
+                status="rate_limited", http_status_code=last_status_code, retry_after=last_retry_after
+            )
+        if saw_auth_error:
+            return URLCheckResult(status="unverifiable", http_status_code=last_status_code)
+        return URLCheckResult(status="transient_error", http_status_code=None)

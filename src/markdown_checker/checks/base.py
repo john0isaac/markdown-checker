@@ -1,13 +1,17 @@
 from abc import ABC
 from abc import abstractmethod
+from typing import Generic
 from typing import Literal
+from typing import TypeVar
 
 from markdown_checker.models import Config
 from markdown_checker.models import MarkdownLinkBase
 from markdown_checker.utils.extract_links import MarkdownLinks
 
+TLink = TypeVar("TLink", bound=MarkdownLinkBase, covariant=True)
 
-class BaseCheck(ABC):
+
+class BaseCheck(Generic[TLink], ABC):
     """Abstract base class for all link checks."""
 
     name: str
@@ -18,7 +22,7 @@ class BaseCheck(ABC):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-    ) -> list[MarkdownLinkBase]:
+    ) -> list[TLink]:
         """
         Run the check against the extracted links.
 

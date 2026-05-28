@@ -65,3 +65,15 @@ def test_issue_can_be_set():
     """Issue field can be set on construction."""
     obj = MarkdownPath(link="./docs/guide.md", line_number=1, file_path=Path("test.md"), issue="is broken")
     assert obj.issue == "is broken"
+
+
+def test_issue_level_defaults_to_error():
+    """issue_level defaults to 'error'."""
+    obj = MarkdownPath(link="./docs/guide.md", line_number=1, file_path=Path("test.md"))
+    assert obj.issue_level == "error"
+
+
+def test_issue_level_can_be_set_to_warning():
+    """issue_level can be explicitly set to 'warning'."""
+    obj = MarkdownPath(link="./docs/guide.md", line_number=1, file_path=Path("test.md"), issue_level="warning")
+    assert obj.issue_level == "warning"

@@ -1,11 +1,14 @@
 from pathlib import Path
+from unittest.mock import patch
 
 import click
 import pytest
 from click.testing import CliRunner
 
+from markdown_checker.checker import CheckResult
 from markdown_checker.cli import ListOfStrings
 from markdown_checker.cli import main
+from markdown_checker.models.url import MarkdownURL
 
 
 @pytest.fixture
@@ -153,6 +156,90 @@ def test_cli_ci_mode(runner, resources_dir, monkeypatch, tmp_path):
         ["-d", str(resources_dir), "-f", "check_broken_paths", "-o", str(tmp_path / "ci_output")],
     )
     assert result.exit_code == 0
+
+
+def test_cli_warning_only_run_does_not_print_compliant_message(runner, tmp_path, monkeypatch):
+    """Warning-only runs exit successfully without claiming all files are compliant."""
+    sample = tmp_path / "sample.md"
+    sample.write_text("# Sample\n")
+    warning_issue = MarkdownURL(
+        link="https://example.com",
+        line_number=1,
+        file_path=sample,
+        issue="was skipped due to rate limiting",
+        issue_level="warning",
+    )
+    check_result = CheckResult(issues=[(sample, [warning_issue])], links_checked=1)
+
+    with (
+        patch("markdown_checker.cli.run_check_on_files", return_value=check_result),
+        patch("markdown_checker.cli.MarkdownGenerator.generate") as mock_generate,
+    ):
+        result = runner.invoke(main, [str(sample), "-f", "check_broken_urls"])
+
+    assert result.exit_code == 0
+    assert "links had warnings" in result.output
+    assert "All files are compliant" not in result.output
+    mock_generate.assert_not_called()
+
+
+def test_cli_local_issues_prints_all_issues_before_exiting(runner, tmp_path):
+    """Local mode prints every issue before exiting with an error."""
+    sample = tmp_path / "sample.md"
+    sample.write_text("# Sample\n")
+    error_issue = MarkdownURL(
+        link="https://broken.example.com",
+        line_number=1,
+        file_path=sample,
+        issue="is broken",
+        issue_level="error",
+    )
+    warning_issue = MarkdownURL(
+        link="https://rate-limited.example.com",
+        line_number=2,
+        file_path=sample,
+        issue="was skipped due to rate limiting",
+        issue_level="warning",
+    )
+    check_result = CheckResult(issues=[(sample, [error_issue, warning_issue])], links_checked=2)
+
+    with (
+        patch("markdown_checker.cli.run_check_on_files", return_value=check_result),
+        patch("markdown_checker.cli.MarkdownGenerator.generate") as mock_generate,
+    ):
+        result = runner.invoke(main, [str(sample), "-f", "check_broken_urls"])
+
+    assert result.exit_code == 1
+    assert "https://broken.example.com is broken." in result.output
+    assert "https://rate-limited.example.com was skipped due to rate limiting." in result.output
+    assert "All files are compliant" not in result.output
+    mock_generate.assert_called_once()
+
+
+def test_cli_ci_issues_do_not_fall_through_to_success(runner, tmp_path, monkeypatch):
+    """CI mode emits annotations and does not print the success message when issues exist."""
+    monkeypatch.setenv("CI", "true")
+    sample = tmp_path / "sample.md"
+    sample.write_text("# Sample\n")
+    error_issue = MarkdownURL(
+        link="https://broken.example.com",
+        line_number=1,
+        file_path=sample,
+        issue="is broken",
+        issue_level="error",
+    )
+    check_result = CheckResult(issues=[(sample, [error_issue])], links_checked=1)
+
+    with (
+        patch("markdown_checker.cli.run_check_on_files", return_value=check_result),
+        patch("markdown_checker.cli.MarkdownGenerator.generate") as mock_generate,
+    ):
+        result = runner.invoke(main, [str(sample), "-f", "check_broken_urls"])
+
+    assert result.exit_code == 1
+    assert "::error file=" in result.output
+    assert "All files are compliant" not in result.output
+    mock_generate.assert_called_once()
 
 
 # --- SRC positional argument ---

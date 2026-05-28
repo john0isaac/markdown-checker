@@ -3,6 +3,10 @@
 
 - Migrate to ``httpx2``.
 - Support following ``Retry-After`` headers for rate-limited requests.
+- Adds granular URL check outcomes with warning-level issues for
+  rate-limited URLs instead of treating them as broken.
+- Treat 401 and 403 responses as unverifiable with appropriate issue messages instead
+  of flagging as broken.
 
 
 [v1.0.2] 4 May 2026

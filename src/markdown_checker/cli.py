@@ -215,34 +215,57 @@ def main(
     )
 
     if check_result.issues:
-        formatted_output = format_issues_table(check_result.issues, config.output_mode)
-        generator = MarkdownGenerator(contributing_guide_url=guide_url, output_file_name=output_file_name)
-        generator.generate(func, formatted_output)
+        error_by_file = []
+        rendered_issues = []
+        error_count = 0
+        warning_count = 0
 
-        all_issues = [issue for _, issues in check_result.issues for issue in issues]
-        click.echo(click.style(f"😭 Found {len(all_issues)} issues in the following files:", fg="red"), err=True)
-        for markdown_path in all_issues:
-            if config.output_mode == "ci":
-                # Ref: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-a-warning-message
-                click.echo(
-                    click.style(
-                        f"::error file={markdown_path.file_path},line={markdown_path.line_number}::"
-                        f"File {markdown_path.file_path}, line {markdown_path.line_number}, "
-                        f"Link {markdown_path} {markdown_path.issue}.",
-                        fg="red",
-                    ),
-                    err=True,
-                )
-            else:
-                click.echo(
-                    click.style(
-                        f"\tFile '{markdown_path.file_path.resolve()}', line {markdown_path.line_number}"
-                        f"\n{markdown_path} {markdown_path.issue}.\n",
-                        fg="red",
-                    ),
-                    err=True,
-                )
-        ctx.exit(1)
+        for path, issues in check_result.issues:
+            file_errors = []
+            resolved_path = path.resolve() if config.output_mode == "local" else None
+            for issue in issues:
+                is_warning = issue.issue_level == "warning"
+                if issue.issue_level == "error":
+                    error_count += 1
+                    file_errors.append(issue)
+                else:
+                    warning_count += 1
+                if config.output_mode == "ci":
+                    level = "warning" if is_warning else "error"
+                    rendered_issues.append(
+                        (
+                            f"::{level} file={issue.file_path},line={issue.line_number}::"
+                            f"File {issue.file_path}, line {issue.line_number}, "
+                            f"Link {issue} {issue.issue}.",
+                            "yellow" if is_warning else "red",
+                        )
+                    )
+                else:
+                    rendered_issues.append(
+                        (
+                            f"\tFile '{resolved_path}', line {issue.line_number}\n{issue} {issue.issue}.\n",
+                            "yellow" if is_warning else "red",
+                        )
+                    )
+            if file_errors:
+                error_by_file.append((path, file_errors))
+
+        if error_count:
+            formatted_output = format_issues_table(error_by_file, config.output_mode)
+            generator = MarkdownGenerator(contributing_guide_url=guide_url, output_file_name=output_file_name)
+            generator.generate(func, formatted_output)
+            click.echo(click.style(f"😭 Found {error_count} issues in the following files:", fg="red"), err=True)
+
+        if warning_count:
+            click.echo(
+                click.style(f"⚠ {warning_count} links had warnings:", fg="yellow"),
+                err=True,
+            )
+
+        for message, color in rendered_issues:
+            click.echo(click.style(message, fg=color), err=True)
+
+        ctx.exit(1 if error_count else 0)
 
     click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
     ctx.exit(0)

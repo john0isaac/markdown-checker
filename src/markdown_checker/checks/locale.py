@@ -1,6 +1,6 @@
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config
-from markdown_checker.models import MarkdownLinkBase
+from markdown_checker.models import MarkdownURL
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 # Domains where locale is required in the URL path; always skipped for locale checks.
@@ -9,7 +9,7 @@ _BUILTIN_SKIP_DOMAINS: list[str] = [
 ]
 
 
-class URLsLocaleCheck(BaseCheck):
+class URLsLocaleCheck(BaseCheck[MarkdownURL]):
     """Check that URLs do not contain a country/language locale segment."""
 
     name = "check_urls_locale"
@@ -19,12 +19,12 @@ class URLsLocaleCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-    ) -> list[MarkdownLinkBase]:
+    ) -> list[MarkdownURL]:
         config = config or Config()
         effective_skip = [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]
         skip_urls_containing = config.skip_urls_containing
 
-        detected_issues: list[MarkdownLinkBase] = []
+        detected_issues: list[MarkdownURL] = []
         for url in links.urls:
             hostname = url.host_name().lower()
             if any(domain.lower() in hostname for domain in effective_skip) or any(
