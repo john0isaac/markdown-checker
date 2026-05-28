@@ -4,5 +4,14 @@ from markdown_checker.models.config import create_http_client
 from markdown_checker.models.config import DEFAULT_HEADERS
 from markdown_checker.models.path import MarkdownPath
 from markdown_checker.models.url import MarkdownURL
+from markdown_checker.models.url import URLCheckResult
 
-__all__ = ["Config", "DEFAULT_HEADERS", "create_http_client", "MarkdownLinkBase", "MarkdownPath", "MarkdownURL"]
+__all__ = [
+    "Config",
+    "DEFAULT_HEADERS",
+    "create_http_client",
+    "MarkdownLinkBase",
+    "MarkdownPath",
+    "MarkdownURL",
+    "URLCheckResult",
+]

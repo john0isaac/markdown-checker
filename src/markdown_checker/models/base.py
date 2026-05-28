@@ -2,6 +2,7 @@ import re
 from abc import ABC
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 _LOCALE_PATTERN = re.compile(r"\/[a-z]{2}-[a-z]{2}\/")
 _TRACKING_PATTERN = re.compile(r"(\?|\&)(WT|wt)\.mc_id=")
@@ -15,6 +16,7 @@ class MarkdownLinkBase(ABC):
     line_number: int
     file_path: Path
     issue: str = ""
+    issue_level: Literal["error", "warning"] = "error"
 
     def has_locale(self) -> bool:
         """

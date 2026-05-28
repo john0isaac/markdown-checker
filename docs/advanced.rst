@@ -297,6 +297,63 @@ Default
 Required
   No.
 
+URL Check Outcomes
+------------------
+
+When ``check_broken_urls`` runs, each URL is evaluated by
+``MarkdownURL.check()``, which returns a ``URLCheckResult`` with one of four
+statuses.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Status
+     - Meaning
+   * - ``alive``
+     - A ``2xx`` HTTP response was received. The link is healthy.
+   * - ``broken``
+     - All retries returned non-``2xx`` responses (e.g. ``404 Not Found``).
+       The link is reported as an issue.
+   * - ``rate_limited``
+     - No hard HTTP failure was observed, and at least one retry encountered
+       ``429 Too Many Requests`` (with or without a ``Retry-After`` header).
+       The link is reported as a **warning-level issue**
+       (``issue_level="warning"``). It does not cause the CLI to exit with a
+       non-zero code.
+   * - ``transient_error``
+     - No hard HTTP failure or rate-limit response was observed, and the
+       attempts failed with network-level exceptions (e.g. DNS failure,
+       connection timeout). The link is reported as a **warning-level issue**
+       and does not cause the CLI to exit with a non-zero code.
+
+Rate limiting
+~~~~~~~~~~~~~
+
+When one or more URLs are rate-limited or cannot be reached due to transient
+network failures, the CLI prints a yellow warning summary followed by one
+warning line per affected link, after the error-level issues (if any).
+
+In local mode::
+
+  🔍 Checked 42 links in 10 files.
+  ⚠ 3 links had warnings:
+  	File '/path/to/file.md', line 12
+  https://example.com/api was skipped due to rate limiting.
+
+In CI mode (``$CI=true``), GitHub Actions ``::warning::`` annotations are
+emitted instead::
+
+  🔍 Checked 42 links in 10 files.
+  ::warning file=path/to/file.md,line=12::File path/to/file.md, line 12, Link https://example.com/api was skipped due to rate limiting.
+
+Warning-level issues do **not** cause the CLI to exit with a non-zero code.
+Only error-level issues (broken links) cause a non-zero exit.
+
+If a run mixes rate-limited responses with transient network failures, the
+outcome is reported as ``rate_limited`` unless a hard HTTP failure is also
+observed. Any hard HTTP failure causes the final outcome to be ``broken``.
+
 Other Options
 -------------
 
