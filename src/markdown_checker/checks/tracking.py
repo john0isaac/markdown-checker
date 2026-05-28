@@ -1,10 +1,11 @@
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config
-from markdown_checker.models import MarkdownLinkBase
+from markdown_checker.models import MarkdownPath
+from markdown_checker.models import MarkdownURL
 from markdown_checker.utils.extract_links import MarkdownLinks
 
 
-class URLsTrackingCheck(BaseCheck):
+class URLsTrackingCheck(BaseCheck[MarkdownURL]):
     """Check that URLs on configured tracking domains include a tracking ID."""
 
     name = "check_urls_tracking"
@@ -14,13 +15,13 @@ class URLsTrackingCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-    ) -> list[MarkdownLinkBase]:
+    ) -> list[MarkdownURL]:
         config = config or Config()
         skip_domains = config.skip_domains
         skip_urls_containing = config.skip_urls_containing
         tracking_domains = config.tracking_domains
 
-        detected_issues: list[MarkdownLinkBase] = []
+        detected_issues: list[MarkdownURL] = []
         for url in links.urls:
             hostname = url.host_name().lower()
             if any(domain.lower() in hostname for domain in skip_domains) or any(
@@ -33,7 +34,7 @@ class URLsTrackingCheck(BaseCheck):
         return detected_issues
 
 
-class PathsTrackingCheck(BaseCheck):
+class PathsTrackingCheck(BaseCheck[MarkdownPath]):
     """Check that relative paths include a tracking ID."""
 
     name = "check_paths_tracking"
@@ -43,8 +44,8 @@ class PathsTrackingCheck(BaseCheck):
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-    ) -> list[MarkdownLinkBase]:
-        detected_issues: list[MarkdownLinkBase] = []
+    ) -> list[MarkdownPath]:
+        detected_issues: list[MarkdownPath] = []
         for path in links.paths:
             if not path.has_tracking():
                 path.issue = "is missing tracking id"
