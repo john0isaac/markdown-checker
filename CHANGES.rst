@@ -1,4 +1,4 @@
-[v1.0.3] Unreleased
+[v1.0.3]
 -------------------
 
 - Migrate to ``httpx2``.
