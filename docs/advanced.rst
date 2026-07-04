@@ -285,6 +285,57 @@ Usage examples
   # Short-form alias
   markdown-checker -d . -f check_broken_urls -frd 45
 
+``-mw``, ``--max-workers``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Type
+  ``Click.IntRange``
+Description
+  Maximum number of concurrent URL-check workers.
+Default
+  ``10``, or the number of available CPUs when running in GitHub Actions
+  (``$GITHUB_ACTIONS=true``).
+Range
+  ``1`` or greater.
+Required
+  No.
+
+Usage examples
+^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+  # Use a custom worker count
+  markdown-checker -d . -f check_broken_urls --max-workers=20
+
+  # Short-form alias
+  markdown-checker -d . -f check_broken_urls -mw 20
+
+``-phd``, ``--per-host-delay``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Type
+  ``Click.FloatRange``
+Description
+  Minimum delay in seconds between requests to the same host.
+Default
+  ``0.5``
+Range
+  ``0.0-10.0``
+Required
+  No.
+
+Usage examples
+^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+  # Use a custom per-host delay of 1 second
+  markdown-checker -d . -f check_broken_urls --per-host-delay=1.0
+
+  # Short-form alias
+  markdown-checker -d . -f check_broken_urls -phd 1.0
+
 ``-o``, ``--output-file-name``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -15,6 +15,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",
     "sphinxcontrib.log_cabinet",
     "sphinx_tabs.tabs",
     "sphinx_copybutton",
@@ -23,6 +24,9 @@ extensions = [
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 autodoc_preserve_defaults = True
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+napoleon_use_rtype = False
 extlinks = {
     "issue": ("https://github.com/john0isaac/markdown-checker/issues/%s", "#%s"),
     "pr": ("https://github.com/john0isaac/markdown-checker/pull/%s", "#%s"),

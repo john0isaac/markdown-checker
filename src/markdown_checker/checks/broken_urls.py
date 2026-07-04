@@ -1,38 +1,24 @@
-import concurrent.futures
-from functools import partial
+from concurrent.futures import Future
+from typing import cast
 
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config
 from markdown_checker.models import MarkdownURL
+from markdown_checker.models.url import URLCheckResult
 from markdown_checker.utils.extract_links import MarkdownLinks
+from markdown_checker.utils.url_pipeline import URLCheckService
 
 # Domains known to block automated requests (e.g. Cloudflare 403);
 # always skipped for URL checks.
 _BUILTIN_SKIP_DOMAINS: list[str] = []
 
+# Opaque token handed from submit() to collect(): the submitted jobs, plus the
+# service to close afterwards if this check created a private one for itself.
+_Pending = tuple[list[tuple[MarkdownURL, "Future[URLCheckResult]"]], URLCheckService | None]
 
-def _check_url(
-    url: MarkdownURL,
-    skip_domains: list[str],
-    skip_urls_containing: list[str],
-    timeout: int,
-    retries: int,
-    retry_on_429: bool,
-    fallback_retry_delay: int,
-) -> MarkdownURL | None:
-    """Thread worker: checks a single URL with its own httpx2 client."""
-    hostname = url.host_name().lower()
-    if any(domain in hostname for domain in skip_domains) or any(
-        substring in url.link for substring in skip_urls_containing
-    ):
-        return None
-    # Each worker creates its own client via check(client=None).
-    result = url.check(
-        timeout=timeout,
-        retries=retries,
-        retry_on_429=retry_on_429,
-        fallback_retry_delay=fallback_retry_delay,
-    )
+
+def _to_issue(url: MarkdownURL, result: URLCheckResult) -> MarkdownURL | None:
+    """Map a URLCheckResult onto a MarkdownURL's issue fields."""
     if result.status == "alive":
         return None
     if result.status == "broken":
@@ -56,29 +42,47 @@ class BrokenURLsCheck(BaseCheck[MarkdownURL]):
     name = "check_broken_urls"
     link_type = "urls"
 
-    def run(
+    def submit(
         self,
         links: MarkdownLinks,
         config: Config | None = None,
-    ) -> list[MarkdownURL]:
+        service: URLCheckService | None = None,
+    ) -> object:
         config = config or Config()
         effective_skip = [domain.lower() for domain in [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]]
         skip_urls_containing = config.skip_urls_containing
 
-        worker = partial(
-            _check_url,
-            skip_domains=effective_skip,
-            skip_urls_containing=skip_urls_containing,
-            timeout=config.timeout,
-            retries=config.retries,
-            retry_on_429=config.retry_on_429,
-            fallback_retry_delay=config.fallback_retry_delay,
-        )
-        # NOTE: httpx2.Client is NOT thread-safe. Do not share a single client
-        # across ThreadPoolExecutor workers. Each worker creates its own
-        # client via check(client=None) to avoid RuntimeError crashes.
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            results: list[MarkdownURL] = [
-                outcome for outcome in executor.map(worker, links.urls) if outcome is not None
-            ]
-        return results
+        # Standalone fallback (direct calls, tests): own a private service for this run only.
+        owns_service = service is None
+        _service = service or URLCheckService(config)
+
+        pending: list[tuple[MarkdownURL, Future[URLCheckResult]]] = []
+        for url in links.urls:
+            hostname = url.host_name().lower()
+            if any(domain in hostname for domain in effective_skip) or any(
+                substring in url.link for substring in skip_urls_containing
+            ):
+                continue
+            pending.append((url, _service.submit(url)))
+        return (pending, _service if owns_service else None)
+
+    def collect(self, pending: object) -> list[MarkdownURL]:
+        jobs, owned_service = cast(_Pending, pending)
+        try:
+            results: list[MarkdownURL] = []
+            for url, future in jobs:
+                issue = _to_issue(url, future.result())
+                if issue is not None:
+                    results.append(issue)
+            return results
+        finally:
+            if owned_service is not None:
+                owned_service.close()
+
+    def run(
+        self,
+        links: MarkdownLinks,
+        config: Config | None = None,
+        service: URLCheckService | None = None,
+    ) -> list[MarkdownURL]:
+        return self.collect(self.submit(links, config=config, service=service))

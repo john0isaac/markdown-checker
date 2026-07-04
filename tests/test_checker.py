@@ -1,10 +1,15 @@
+import threading
+import time
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
 from markdown_checker.checker import detect_issues
 from markdown_checker.checker import run_check_on_files
 from markdown_checker.models.config import Config
+from markdown_checker.models.url import MarkdownURL
+from markdown_checker.models.url import URLCheckResult
 
 
 def test_detect_issues_unknown_func_raises():
@@ -150,3 +155,113 @@ def test_run_check_on_files(tmp_path):
     assert len(result.issues) == 1
     assert result.issues[0][0] == md1
     assert result.links_checked == 1
+
+
+# --- Stage 2: bounded file-window pipelining ---
+
+
+def test_run_check_on_files_overlaps_url_checks_across_files(tmp_path):
+    """URL checks for multiple files are submitted concurrently instead of one file at a time."""
+    files = []
+    for i in range(3):
+        md = tmp_path / f"file{i}.md"
+        md.write_text(f"[link](https://host{i}.example.com/page)\n")
+        files.append(md)
+
+    def slow_check(self: MarkdownURL, **kwargs: object) -> URLCheckResult:
+        time.sleep(0.2)
+        return URLCheckResult(status="alive", http_status_code=200)
+
+    config = Config(max_workers=3, per_host_delay=0.0)
+    start = time.monotonic()
+    with patch.object(MarkdownURL, "check", slow_check):
+        result = run_check_on_files(
+            func="check_broken_urls",
+            files_paths=files,
+            config=config,
+            progress_callback=lambda: None,
+        )
+    elapsed = time.monotonic() - start
+
+    assert result.links_checked == 3
+    assert result.issues == []
+    # Sequential (Stage 1) would take ~3 * 0.2s = 0.6s; overlapping submission keeps it near 0.2s.
+    assert elapsed < 0.4, f"expected overlapping checks (~0.2s), took {elapsed:.2f}s"
+
+
+def test_run_check_on_files_smaller_than_window_size_still_correct(tmp_path, monkeypatch):
+    """More files than the window still produce complete, correctly ordered results."""
+    monkeypatch.setattr("markdown_checker.checker._MIN_FILE_WINDOW", 1)
+    monkeypatch.setattr("markdown_checker.checker._MAX_FILE_WINDOW", 2)
+    files = []
+    for i in range(5):
+        md = tmp_path / f"f{i}.md"
+        md.write_text(f"[link](https://broken{i}.example.com/page)\n")
+        files.append(md)
+
+    broken_result = URLCheckResult(status="broken", http_status_code=404)
+    with patch.object(MarkdownURL, "check", return_value=broken_result):
+        result = run_check_on_files(
+            func="check_broken_urls",
+            files_paths=files,
+            config=Config(),
+            progress_callback=lambda: None,
+        )
+
+    assert result.links_checked == 5
+    assert len(result.issues) == 5
+    assert [path for path, _ in result.issues] == files
+
+
+def test_window_admits_more_files_when_max_workers_is_larger(tmp_path, monkeypatch):
+    """The adaptive window scales with max_workers: more files get submitted (and their
+    checks dispatched) before the producer blocks collecting the oldest one."""
+    monkeypatch.setattr("markdown_checker.checker._MIN_FILE_WINDOW", 1)
+    monkeypatch.setattr("markdown_checker.checker._MAX_FILE_WINDOW", 100)
+
+    def make_files(prefix: str, n: int) -> list[Path]:
+        paths = []
+        for i in range(n):
+            md = tmp_path / f"{prefix}{i}.md"
+            md.write_text(f"[link](https://{prefix}-host{i}.example.com/page)\n")
+            paths.append(md)
+        return paths
+
+    def dispatched_before_block(max_workers: int, prefix: str) -> int:
+        files = make_files(prefix, 6)
+        release = threading.Event()
+        lock = threading.Lock()
+        calls: list[float] = []
+
+        def blocking_check(self: MarkdownURL, **kwargs: object) -> URLCheckResult:
+            with lock:
+                calls.append(time.monotonic())
+            release.wait(timeout=5)
+            return URLCheckResult(status="alive", http_status_code=200)
+
+        done = threading.Event()
+
+        def run() -> None:
+            with patch.object(MarkdownURL, "check", blocking_check):
+                run_check_on_files(
+                    func="check_broken_urls",
+                    files_paths=files,
+                    config=Config(max_workers=max_workers, per_host_delay=0.0),
+                    progress_callback=lambda: None,
+                )
+            done.set()
+
+        thread = threading.Thread(target=run)
+        thread.start()
+        time.sleep(0.3)  # let dispatch race ahead while every check() call is blocked
+        with lock:
+            observed = len(calls)
+        release.set()
+        thread.join(timeout=5)
+        assert done.is_set()
+        return observed
+
+    low = dispatched_before_block(max_workers=1, prefix="low")
+    high = dispatched_before_block(max_workers=6, prefix="high")
+
+    assert high > low

@@ -9,6 +9,14 @@ Extract Links
 	:undoc-members:
 	:show-inheritance:
 
+GitHub Environment
+-------------------
+
+.. automodule:: markdown_checker.utils.github_env
+	:members:
+	:undoc-members:
+	:show-inheritance:
+
 List Files
 ----------
 
@@ -21,6 +29,14 @@ Spinner
 -------
 
 .. automodule:: markdown_checker.utils.spinner
+	:members:
+	:undoc-members:
+	:show-inheritance:
+
+URL Pipeline
+------------
+
+.. automodule:: markdown_checker.utils.url_pipeline
 	:members:
 	:undoc-members:
 	:show-inheritance:

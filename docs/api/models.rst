@@ -9,6 +9,14 @@ Base
 	:undoc-members:
 	:show-inheritance:
 
+Config
+------
+
+.. automodule:: markdown_checker.models.config
+	:members:
+	:undoc-members:
+	:show-inheritance:
+
 Path
 ----
 

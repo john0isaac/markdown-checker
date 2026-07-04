@@ -4,6 +4,9 @@
 - Improve regex for matching URLs and paths.
 - Drop support for Python 3.10.
 - No longer built in skipping of domains.
+- Dedupe URL checks across files instead of checking the same link repeatedly.
+- Add per-host request pacing and a circuit breaker for rate limiting.
+- Overlap file checks with an adaptive in-flight window.
 
 
 [v1.0.3] 28 May 2026

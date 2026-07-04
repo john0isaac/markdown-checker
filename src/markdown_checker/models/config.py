@@ -30,4 +30,7 @@ class Config:
     retries: int = 3
     retry_on_429: bool = True
     fallback_retry_delay: int = 30
+    max_workers: int = 10
+    per_host_delay: float = 0.5
+    max_pending: int = 200
     output_mode: Literal["ci", "local"] = "local"
