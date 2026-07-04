@@ -8,9 +8,7 @@ from markdown_checker.utils.extract_links import MarkdownLinks
 
 # Domains known to block automated requests (e.g. Cloudflare 403);
 # always skipped for URL checks.
-_BUILTIN_SKIP_DOMAINS: list[str] = [
-    "openai.com",
-]
+_BUILTIN_SKIP_DOMAINS: list[str] = []
 
 
 def _check_url(

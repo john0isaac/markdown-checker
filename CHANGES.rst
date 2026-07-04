@@ -3,6 +3,7 @@
 
 - Improve regex for matching URLs and paths.
 - Drop support for Python 3.10.
+- No longer built in skipping of domains.
 
 
 [v1.0.3] 28 May 2026
