@@ -1,0 +1,7 @@
+{
+  "name": "markdown-checker-devcontainer-ci",
+  "private": true,
+  "devDependencies": {
+    "@devcontainers/cli": "0.87.0"
+  }
+}

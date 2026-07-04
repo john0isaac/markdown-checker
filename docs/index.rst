@@ -24,7 +24,7 @@ Requirements
 
 You will need the following prerequisites in order to use this library:
 
-- Python >= 3.10
+- Python >= 3.11
 - `httpx2 <https://pypi.org/project/httpx2/>`_
 - `click <https://pypi.org/project/click/>`_
 
