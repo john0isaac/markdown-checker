@@ -83,6 +83,13 @@ class MarkdownURL(MarkdownLinkBase):
         """
         Check whether the URL is reachable and return a typed outcome.
 
+        Rate-limit signals (429, or any non-success response carrying a
+        Retry-After header) and auth errors (401/403) are returned
+        immediately without sleeping or retrying: retrying them wastes
+        traffic against hosts that are already blocking or throttling us.
+        Callers that want to wait out a rate limit (e.g. a host-level
+        circuit breaker) should do so themselves using ``retry_after``.
+
         Args:
             timeout (int): Timeout for the request in seconds.
             retries (int): Number of retries if the request fails.
@@ -92,44 +99,40 @@ class MarkdownURL(MarkdownLinkBase):
 
         Returns:
             URLCheckResult with status one of: ``alive``, ``broken``,
-            ``rate_limited``, or ``transient_error``.
+            ``rate_limited``, ``unverifiable``, or ``transient_error``.
         """
         _client = client or create_http_client()
         last_status_code: int | None = None
-        last_retry_after: int | None = None
         saw_hard_failure = False
-        saw_rate_limit = False
-        saw_auth_error = False
         try:
             for attempt in range(retries):
-                sleep_override: float | None = None
                 try:
                     response = _client.head(self.link, timeout=timeout)
                     last_status_code = response.status_code
                     if response.is_success:
                         return URLCheckResult(status="alive", http_status_code=response.status_code)
                     if retry_on_429:
-                        sleep_override = _retry_after_delay(response, fallback_retry_delay)
-                    if sleep_override is not None:
-                        saw_rate_limit = True
-                        last_retry_after = int(sleep_override)
-                    else:
-                        # Fall back to GET — some servers reject HEAD but allow GET.
-                        response = _client.get(self.link, timeout=timeout)
-                        last_status_code = response.status_code
-                        if response.is_success:
-                            return URLCheckResult(status="alive", http_status_code=response.status_code)
-                        if retry_on_429:
-                            sleep_override = _retry_after_delay(response, fallback_retry_delay)
-                        if sleep_override is not None:
-                            saw_rate_limit = True
-                            last_retry_after = int(sleep_override)
-                        elif response.status_code in (401, 403):
-                            # 401/403 means the server exists but is blocking automated access.
-                            # We cannot determine the real status of the resource.
-                            saw_auth_error = True
-                        else:
-                            saw_hard_failure = True
+                        delay = _retry_after_delay(response, fallback_retry_delay)
+                        if delay is not None:
+                            return URLCheckResult(
+                                status="rate_limited", http_status_code=response.status_code, retry_after=int(delay)
+                            )
+                    # Fall back to GET - some servers reject HEAD but allow GET.
+                    response = _client.get(self.link, timeout=timeout)
+                    last_status_code = response.status_code
+                    if response.is_success:
+                        return URLCheckResult(status="alive", http_status_code=response.status_code)
+                    if retry_on_429:
+                        delay = _retry_after_delay(response, fallback_retry_delay)
+                        if delay is not None:
+                            return URLCheckResult(
+                                status="rate_limited", http_status_code=response.status_code, retry_after=int(delay)
+                            )
+                    if response.status_code in (401, 403):
+                        # 401/403 means the server exists but is blocking automated access.
+                        # Retrying will not change the outcome, so return immediately.
+                        return URLCheckResult(status="unverifiable", http_status_code=response.status_code)
+                    saw_hard_failure = True
                 except httpx2.UnsupportedProtocol:
                     # Server redirected to a non-HTTP scheme (e.g. vscode://).
                     # The original URL is reachable; treat it as alive.
@@ -137,19 +140,10 @@ class MarkdownURL(MarkdownLinkBase):
                 except (httpx2.HTTPError, RuntimeError):
                     pass
                 if attempt < retries - 1:
-                    if sleep_override is not None:
-                        time.sleep(sleep_override)
-                    else:
-                        time.sleep(0.5 * 2**attempt)
+                    time.sleep(0.5 * 2**attempt)
         finally:
             if client is None:
                 _client.close()
         if saw_hard_failure:
             return URLCheckResult(status="broken", http_status_code=last_status_code)
-        if saw_rate_limit:
-            return URLCheckResult(
-                status="rate_limited", http_status_code=last_status_code, retry_after=last_retry_after
-            )
-        if saw_auth_error:
-            return URLCheckResult(status="unverifiable", http_status_code=last_status_code)
         return URLCheckResult(status="transient_error", http_status_code=None)

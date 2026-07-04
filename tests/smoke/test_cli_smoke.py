@@ -1,4 +1,4 @@
-"""Smoke tests — run the CLI end-to-end against sample markdown files."""
+"""Smoke tests - run the CLI end-to-end against sample markdown files."""
 
 from pathlib import Path
 

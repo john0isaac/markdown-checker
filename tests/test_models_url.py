@@ -107,49 +107,34 @@ def _make_response(status_code: int, headers: dict | None = None) -> MagicMock:
     return resp
 
 
-def test_check_429_with_retry_after_integer_sleeps_and_retries():
-    """429 + Retry-After: 2 → sleep(2) called, request retried, returns alive on success."""
+def test_check_429_with_retry_after_returns_immediately():
+    """429 + Retry-After: 2 → returns rate_limited immediately, no sleep or retry."""
     url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
     mock_client = MagicMock(spec=httpx2.Client)
-    rate_limited = _make_response(429, {"retry-after": "2"})
-    success = _make_response(200)
-    mock_client.head.side_effect = [rate_limited, success]
+    mock_client.head.return_value = _make_response(429, {"retry-after": "2"})
 
     with patch("markdown_checker.models.url.time.sleep") as mock_sleep:
-        result = url.check(timeout=5, retries=2, client=mock_client, retry_on_429=True, fallback_retry_delay=60)
+        result = url.check(timeout=5, retries=3, client=mock_client, retry_on_429=True, fallback_retry_delay=60)
 
-    assert result.status == "alive"
-    mock_sleep.assert_called_once_with(2.0)
-    assert mock_client.head.call_count == 2
+    assert result.status == "rate_limited"
+    assert result.retry_after == 2
+    mock_sleep.assert_not_called()
+    mock_client.head.assert_called_once()
+    mock_client.get.assert_not_called()
 
 
-def test_check_429_without_retry_after_uses_fallback():
-    """429 with no Retry-After header → sleep(fallback_retry_delay) called."""
+def test_check_429_without_retry_after_uses_fallback_as_retry_after():
+    """429 with no Retry-After header → rate_limited returned with fallback_retry_delay as retry_after."""
     url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
     mock_client = MagicMock(spec=httpx2.Client)
-    rate_limited = _make_response(429, {})
-    success = _make_response(200)
-    mock_client.head.side_effect = [rate_limited, success]
+    mock_client.head.return_value = _make_response(429, {})
 
     with patch("markdown_checker.models.url.time.sleep") as mock_sleep:
-        result = url.check(timeout=5, retries=2, client=mock_client, retry_on_429=True, fallback_retry_delay=30)
+        result = url.check(timeout=5, retries=3, client=mock_client, retry_on_429=True, fallback_retry_delay=30)
 
-    assert result.status == "alive"
-    mock_sleep.assert_called_once_with(30.0)
-
-
-def test_check_429_retry_succeeds():
-    """After a 429, a successful retry means check returns alive."""
-    url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
-    mock_client = MagicMock(spec=httpx2.Client)
-    rate_limited = _make_response(429, {"retry-after": "1"})
-    success = _make_response(200)
-    mock_client.head.side_effect = [rate_limited, success]
-
-    with patch("markdown_checker.models.url.time.sleep"):
-        result = url.check(timeout=5, retries=2, client=mock_client, retry_on_429=True, fallback_retry_delay=60)
-
-    assert result.status == "alive"
+    assert result.status == "rate_limited"
+    assert result.retry_after == 30
+    mock_sleep.assert_not_called()
 
 
 def test_is_alive_retry_on_429_disabled_uses_exponential_backoff():
@@ -169,20 +154,36 @@ def test_is_alive_retry_on_429_disabled_uses_exponential_backoff():
     mock_sleep.assert_called_once_with(0.5)
 
 
-def test_check_non_success_with_retry_after_header_uses_delay():
-    """Any non-success, non-redirect response with Retry-After is respected."""
+def test_check_non_success_with_retry_after_header_returns_rate_limited():
+    """Any non-success, non-redirect response with Retry-After returns rate_limited immediately."""
     url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
     mock_client = MagicMock(spec=httpx2.Client)
-    # 503 with Retry-After: 5 should also trigger the delay.
-    throttled = _make_response(503, {"retry-after": "5"})
-    success = _make_response(200)
-    mock_client.head.side_effect = [throttled, success]
+    # 503 with Retry-After: 5 should also trigger the immediate rate_limited return.
+    mock_client.head.return_value = _make_response(503, {"retry-after": "5"})
 
     with patch("markdown_checker.models.url.time.sleep") as mock_sleep:
-        result = url.check(timeout=5, retries=2, client=mock_client, retry_on_429=True, fallback_retry_delay=60)
+        result = url.check(timeout=5, retries=3, client=mock_client, retry_on_429=True, fallback_retry_delay=60)
 
-    assert result.status == "alive"
-    mock_sleep.assert_called_once_with(5.0)
+    assert result.status == "rate_limited"
+    assert result.http_status_code == 503
+    assert result.retry_after == 5
+    mock_sleep.assert_not_called()
+
+
+def test_check_401_403_does_not_retry():
+    """401/403 responses return immediately without retrying - they will not change."""
+    url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
+    mock_client = MagicMock(spec=httpx2.Client)
+    mock_client.head.return_value = _make_response(403)
+    mock_client.get.return_value = _make_response(403)
+
+    with patch("markdown_checker.models.url.time.sleep") as mock_sleep:
+        result = url.check(timeout=5, retries=5, client=mock_client)
+
+    assert result.status == "unverifiable"
+    mock_client.head.assert_called_once()
+    mock_client.get.assert_called_once()
+    mock_sleep.assert_not_called()
 
 
 def test_check_creates_client_when_none():
@@ -206,11 +207,6 @@ def test_check_does_not_close_provided_client():
     mock_client.close.assert_not_called()
 
 
-# ---------------------------------------------------------------------------
-# URLCheckResult dataclass
-# ---------------------------------------------------------------------------
-
-
 def test_url_check_result_fields():
     """URLCheckResult stores all three fields."""
     r = URLCheckResult(status="alive", http_status_code=200, retry_after=None)
@@ -224,11 +220,6 @@ def test_url_check_result_defaults():
     r = URLCheckResult(status="broken")
     assert r.http_status_code is None
     assert r.retry_after is None
-
-
-# ---------------------------------------------------------------------------
-# check() method — four outcome values
-# ---------------------------------------------------------------------------
 
 
 def test_check_returns_alive_on_2xx():
@@ -265,20 +256,6 @@ def test_check_returns_rate_limited_when_429_exhausts_retries():
     assert result.status == "rate_limited"
     assert result.http_status_code == 429
     assert result.retry_after == 5
-
-
-def test_check_returns_broken_when_429_is_followed_by_404():
-    """A later hard HTTP failure should classify the URL as broken, not rate-limited."""
-    url = MarkdownURL(link="https://example.com", line_number=1, file_path=Path("test.md"))
-    mock_client = MagicMock(spec=httpx2.Client)
-    rate_limited = _make_response(429, {"retry-after": "5"})
-    not_found = _make_response(404)
-    mock_client.head.side_effect = [rate_limited, not_found]
-    mock_client.get.return_value = not_found
-    with patch("markdown_checker.models.url.time.sleep"):
-        result = url.check(timeout=5, retries=2, client=mock_client, retry_on_429=True, fallback_retry_delay=30)
-    assert result.status == "broken"
-    assert result.http_status_code == 404
 
 
 def test_check_returns_broken_when_network_error_is_followed_by_404():

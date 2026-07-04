@@ -146,6 +146,23 @@ class ListOfStrings(click.Option):
     required=False,
 )
 @click.option(
+    "-mw",
+    "--max-workers",
+    type=click.IntRange(min=1),
+    default=None,
+    help="Maximum number of concurrent URL-check workers. Defaults to 10, "
+    "or the number of available CPUs when running in GitHub Actions.",
+    required=False,
+)
+@click.option(
+    "-phd",
+    "--per-host-delay",
+    type=click.FloatRange(0.0, 10.0),
+    default=0.5,
+    help="Minimum delay in seconds between requests to the same host.",
+    required=False,
+)
+@click.option(
     "-o",
     "--output-file-name",
     type=str,
@@ -172,9 +189,17 @@ def main(
     retries: int,
     retry_on_429: bool,
     fallback_retry_delay: int,
+    max_workers: int | None,
+    per_host_delay: float,
     output_file_name: str,
 ) -> None:
     """A markdown link validation reporting tool."""
+    if max_workers is None:
+        if os.getenv("GITHUB_ACTIONS") == "true":
+            max_workers = max(1, os.cpu_count() or 10)
+        else:
+            max_workers = 10
+
     if src:
         files_paths = []
         for p in src:
@@ -199,6 +224,8 @@ def main(
         retries=retries,
         retry_on_429=retry_on_429,
         fallback_retry_delay=fallback_retry_delay,
+        max_workers=max_workers,
+        per_host_delay=per_host_delay,
         output_mode="ci" if os.getenv("CI", "false") == "true" else "local",
     )
     repo_url = get_github_repo_blob_url() if config.output_mode == "ci" else None

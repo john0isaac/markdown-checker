@@ -1,5 +1,5 @@
 """
-markdown-checker — a markdown link validation reporting tool.
+markdown-checker - a markdown link validation reporting tool.
 """
 
 __version__ = "1.2.0"
