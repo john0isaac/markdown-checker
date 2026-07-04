@@ -33,8 +33,7 @@ def format_links(
     Args:
         links (list[MarkdownLinkBase]): The list of links to format.
         output_mode: "ci" omits file links unless repo_url is given; "local" includes clickable links.
-        repo_url: Base blob URL (e.g. resolved from the GitHub Actions context) used to build
-            clickable file links in "ci" mode. Ignored in "local" mode.
+        repo_url: Blob URL (e.g. from the GitHub Actions context) used for clickable links in "ci" mode.
 
     Returns:
         formatted_links (str): The formatted string with numbered bullets.
@@ -68,8 +67,7 @@ def format_issues_table(
     Args:
         file_issues: List of (file_path, issues) tuples.
         output_mode: "ci" omits file links unless repo_url is given; "local" includes clickable links.
-        repo_url: Base blob URL (e.g. resolved from the GitHub Actions context) used to build
-            clickable file links in "ci" mode. Ignored in "local" mode.
+        repo_url: Blob URL (e.g. from the GitHub Actions context) used for clickable links in "ci" mode.
 
     Returns:
         A markdown table string with header and all rows.
