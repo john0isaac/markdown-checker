@@ -1,5 +1,11 @@
-[v1.0.3]
--------------------
+[v1.2.0] 4 July 2026
+--------------------
+
+- Improve regex for matching URLs and paths.
+
+
+[v1.0.3] 28 May 2026
+--------------------
 
 - Migrate to ``httpx2``.
 - Support following ``Retry-After`` headers for rate-limited requests.
