@@ -11,6 +11,7 @@ from markdown_checker.models.path import MarkdownPath
     "link, expected",
     [
         ("https://learn.microsoft.com/en-us/azure", True),
+        ("https://learn.microsoft.com/en-US/azure", True),
         ("https://example.com/fr-fr/docs", True),
         ("https://example.com/pt-br/page", True),
         ("https://example.com/docs/page", False),
@@ -30,6 +31,8 @@ def test_has_locale(link: str, expected: bool):
     [
         ("https://learn.microsoft.com/azure?WT.mc_id=test123", True),
         ("https://learn.microsoft.com/azure?wt.mc_id=test123", True),
+        ("https://learn.microsoft.com/azure?Wt.mc_id=test123", True),
+        ("https://learn.microsoft.com/azure&wT.mc_id=test123", True),
         ("https://learn.microsoft.com/azure&WT.mc_id=test123", True),
         ("https://learn.microsoft.com/azure", False),
         ("https://learn.microsoft.com/azure?ref=other", False),
