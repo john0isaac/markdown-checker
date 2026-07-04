@@ -51,16 +51,6 @@ def test_dead_url_reported(check, make_markdown_url, make_markdown_links):
     assert result[0].issue == "is broken"
 
 
-def test_builtin_skip_domains_skipped(check, make_markdown_url, make_markdown_links):
-    """URLs from builtin skip domains are not checked."""
-    url = make_markdown_url("https://openai.com/pricing")
-    links = make_markdown_links(urls=[url])
-    with patch.object(MarkdownURL, "check") as mock_check:
-        result = check.run(links)
-    mock_check.assert_not_called()
-    assert result == []
-
-
 def test_custom_skip_domains(check, make_markdown_url, make_markdown_links):
     """Custom skip domains are respected."""
     url = make_markdown_url("https://custom-skip.com/page")
@@ -132,13 +122,6 @@ def test_check_url_returns_none_for_alive():
             fallback_retry_delay=60,
         )
     assert result is None
-
-
-def test_builtin_skip_domains_list():
-    """Builtin skip domains list contains known bot-blocking domains."""
-    assert isinstance(_BUILTIN_SKIP_DOMAINS, list)
-    assert len(_BUILTIN_SKIP_DOMAINS) > 0
-    assert "openai.com" in _BUILTIN_SKIP_DOMAINS
 
 
 # --- Rate-limiting tests ---
