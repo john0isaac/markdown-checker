@@ -1,8 +1,15 @@
-"""Central registry of all compiled regular expressions used across the package."""
+"""Central registry of all compiled regular expressions used across the package.
+
+This module lives at the top level (not inside `utils`) so it has no
+dependency on `markdown_checker.utils`, whose `__init__.py` eagerly imports
+`extract_links`. Importing this module from `models/base.py` (or anywhere
+else) must never re-enter that package's `__init__.py`, or it creates a
+circular import.
+"""
 
 import re
 
-# --- extract_links.py -------------------------------------------------------
+# --- utils/extract_links.py -------------------------------------------------
 
 # Matches the (...) destination of an inline markdown link. Plain destinations
 # may contain one level of balanced parentheses (e.g. wikipedia URLs); <...>

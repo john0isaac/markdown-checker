@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from markdown_checker.models.base import MarkdownLinkBase
-from markdown_checker.utils.patterns import TRACKING_QUERY_PATTERN
+from markdown_checker.patterns import TRACKING_QUERY_PATTERN
 
 
 @dataclass(slots=True)

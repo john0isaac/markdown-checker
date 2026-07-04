@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from markdown_checker.utils.patterns import LOCALE_PATTERN
-from markdown_checker.utils.patterns import TRACKING_PATTERN
+from markdown_checker.patterns import LOCALE_PATTERN
+from markdown_checker.patterns import TRACKING_PATTERN
 
 
 @dataclass(slots=True)

@@ -3,9 +3,9 @@ from pathlib import Path
 
 from markdown_checker.models.path import MarkdownPath
 from markdown_checker.models.url import MarkdownURL
-from markdown_checker.utils.patterns import FENCE_OPEN_PATTERN
-from markdown_checker.utils.patterns import LINK_PATTERN
-from markdown_checker.utils.patterns import SCHEME_PATTERN
+from markdown_checker.patterns import FENCE_OPEN_PATTERN
+from markdown_checker.patterns import LINK_PATTERN
+from markdown_checker.patterns import SCHEME_PATTERN
 
 
 @dataclass
