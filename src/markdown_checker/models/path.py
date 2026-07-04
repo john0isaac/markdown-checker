@@ -1,11 +1,9 @@
 import os
-import re
 from dataclasses import dataclass
 from pathlib import Path
 
 from markdown_checker.models.base import MarkdownLinkBase
-
-_TRACKING_QUERY_PATTERN = re.compile(r"(\?|\&)(WT|wt)\.mc_id=.*")
+from markdown_checker.utils.patterns import TRACKING_QUERY_PATTERN
 
 
 @dataclass(slots=True)
@@ -29,7 +27,7 @@ class MarkdownPath(MarkdownLinkBase):
         Returns:
             The path without the fragment
         """
-        cleaned = _TRACKING_QUERY_PATTERN.sub("", self.link)
+        cleaned = TRACKING_QUERY_PATTERN.sub("", self.link)
 
         # Find the last occurrence of the dot
         dot_index = cleaned.rfind(".")
@@ -79,7 +77,7 @@ class MarkdownPath(MarkdownLinkBase):
         """
         # For paths starting with /, strip the leading / to allow relative resolution
         link = self.link.lstrip("/") if self.link.startswith("/") else self.link
-        cleaned = _TRACKING_QUERY_PATTERN.sub("", link)
+        cleaned = TRACKING_QUERY_PATTERN.sub("", link)
 
         # Strip fragments/anchors the same way remove_fragments() does
         dot_index = cleaned.rfind(".")

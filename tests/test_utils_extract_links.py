@@ -124,3 +124,57 @@ def test_skips_links_inside_tilde_fenced_code_blocks(tmp_path: Path):
     result = get_links_from_md_file(md)
     assert len(result.urls) == 1
     assert result.urls[0].link == "https://outside.com"
+
+
+def test_extracts_url_with_balanced_parentheses(tmp_path: Path):
+    """URLs containing balanced parentheses are captured in full, not truncated."""
+    md = tmp_path / "parens.md"
+    md.write_text("[rust](https://en.wikipedia.org/wiki/Rust_(programming_language))\n")
+    result = get_links_from_md_file(md)
+    assert len(result.urls) == 1
+    assert result.urls[0].link == "https://en.wikipedia.org/wiki/Rust_(programming_language)"
+
+
+def test_extracts_bare_relative_paths(tmp_path: Path):
+    """Relative paths without a leading ./ or / are extracted as paths."""
+    md = tmp_path / "bare.md"
+    md.write_text("[a](usage.md)\n[b](docs/usage.md)\n")
+    result = get_links_from_md_file(md)
+    assert [p.link for p in result.paths] == ["usage.md", "docs/usage.md"]
+    assert result.urls == []
+
+
+def test_title_is_stripped_from_destination(tmp_path: Path):
+    """Optional link titles are not captured as part of the destination."""
+    md = tmp_path / "title.md"
+    md.write_text("[a](./file.md \"the title\")\n[b](https://example.com 'another')\n")
+    result = get_links_from_md_file(md)
+    assert result.paths[0].link == "./file.md"
+    assert result.urls[0].link == "https://example.com"
+
+
+def test_angle_bracket_destination_with_spaces(tmp_path: Path):
+    """<...> destinations may contain spaces and are captured without the brackets."""
+    md = tmp_path / "angle.md"
+    md.write_text("[a](<./my file.md>)\n")
+    result = get_links_from_md_file(md)
+    assert result.paths[0].link == "./my file.md"
+
+
+def test_skips_anchors_and_scheme_links(tmp_path: Path):
+    """Anchor-only links and non-http URI schemes are neither URLs nor paths."""
+    md = tmp_path / "skipped.md"
+    md.write_text("[a](#section)\n[b](mailto:someone@example.com)\n[c](tel:+123456)\n")
+    result = get_links_from_md_file(md)
+    assert result.urls == []
+    assert result.paths == []
+
+
+def test_protocol_relative_link_checked_as_https_url(tmp_path: Path):
+    """Protocol-relative //host links are classified as URLs with https prepended."""
+    md = tmp_path / "protorel.md"
+    md.write_text("[a](//example.com/page)\n")
+    result = get_links_from_md_file(md)
+    assert result.paths == []
+    assert len(result.urls) == 1
+    assert result.urls[0].link == "https://example.com/page"

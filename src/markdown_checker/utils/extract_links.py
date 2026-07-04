@@ -1,16 +1,11 @@
-import re
 from dataclasses import dataclass
 from pathlib import Path
 
 from markdown_checker.models.path import MarkdownPath
 from markdown_checker.models.url import MarkdownURL
-
-_LINK_PATTERN = re.compile(r"\]\((.*?)\)| \)")
-_URL_PATTERN = re.compile(
-    r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
-)
-_PATH_PATTERN = re.compile(r"(?:\.{1,2}\/|\/)+(?:[A-Za-z0-9-]+\/)*(?:.+\.[A-Za-z]+)")
-_FENCE_OPEN = re.compile(r"^\s*(`{3,}|~{3,})")
+from markdown_checker.utils.patterns import FENCE_OPEN_PATTERN
+from markdown_checker.utils.patterns import LINK_PATTERN
+from markdown_checker.utils.patterns import SCHEME_PATTERN
 
 
 @dataclass
@@ -38,12 +33,12 @@ def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
     with open(file_path, encoding="utf-8", errors="replace") as file:
         for line_number, line in enumerate(file, start=1):
             # Track fenced code blocks (``` or ~~~)
-            fence_match = _FENCE_OPEN.match(line)
+            fence_match = FENCE_OPEN_PATTERN.match(line)
             if fence_match:
                 marker = fence_match.group(1)[0]  # '`' or '~'
                 match_len = len(fence_match.group(1))
                 if fence_marker is None:
-                    # Opening fence – remember char and length
+                    # Opening fence, remember char and length
                     fence_marker = marker
                     fence_len = match_len
                 elif marker == fence_marker and match_len >= fence_len:
@@ -54,23 +49,27 @@ def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
             if fence_marker is not None:
                 continue
 
-            for matched_group in _LINK_PATTERN.finditer(line):
-                matched_link = matched_group.group(1)
-                if matched_link:
-                    if _URL_PATTERN.findall(matched_link):
-                        markdown_links.urls.append(
-                            MarkdownURL(
-                                link=matched_link,
-                                line_number=line_number,
-                                file_path=file_path,
-                            )
+            for matched_group in LINK_PATTERN.finditer(line):
+                matched_link = matched_group.group("angle") or matched_group.group("plain")
+                if not matched_link:
+                    continue
+                if matched_link.startswith("//"):
+                    # Protocol-relative URL, check as https
+                    matched_link = "https:" + matched_link
+                if matched_link.startswith(("http://", "https://")):
+                    markdown_links.urls.append(
+                        MarkdownURL(
+                            link=matched_link,
+                            line_number=line_number,
+                            file_path=file_path,
                         )
-                    elif _PATH_PATTERN.findall(matched_link):
-                        markdown_links.paths.append(
-                            MarkdownPath(
-                                link=matched_link,
-                                line_number=line_number,
-                                file_path=file_path,
-                            )
+                    )
+                elif not matched_link.startswith("#") and not SCHEME_PATTERN.match(matched_link):
+                    markdown_links.paths.append(
+                        MarkdownPath(
+                            link=matched_link,
+                            line_number=line_number,
+                            file_path=file_path,
                         )
+                    )
     return markdown_links
