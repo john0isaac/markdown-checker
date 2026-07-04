@@ -10,6 +10,9 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
   release-pypi:
     name: Upload release to PyPI
