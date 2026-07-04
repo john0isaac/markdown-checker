@@ -4,6 +4,7 @@ import pytest
 
 from markdown_checker.models.path import MarkdownPath
 from markdown_checker.models.url import MarkdownURL
+from markdown_checker.reports.format_output import format_issues_table
 from markdown_checker.reports.format_output import format_links
 
 
@@ -74,9 +75,40 @@ def test_format_links_local_mode_has_file_links(sample_urls):
 
 
 def test_format_links_ci_mode_no_file_links(sample_urls):
-    """In CI mode, line numbers are plain text without file links."""
+    """In CI mode without a repo_url, line numbers are plain text without file links."""
     result = format_links(sample_urls, output_mode="ci")
     assert "file.md#L" not in result
+
+
+def test_format_links_ci_mode_with_repo_url_has_clickable_links(sample_urls):
+    """In CI mode with a repo_url, line numbers are rendered as clickable repo links."""
+    result = format_links(sample_urls, output_mode="ci", repo_url="https://github.com/owner/repo/blob/sha")
+    assert "[`10`](https://github.com/owner/repo/blob/sha/file.md#L10)" in result
+    assert "[`20`](https://github.com/owner/repo/blob/sha/file.md#L20)" in result
+
+
+def test_format_links_ci_mode_repo_url_relativizes_absolute_paths(monkeypatch, tmp_path):
+    """In CI mode, absolute paths under the cwd are relativized before joining to repo_url."""
+    monkeypatch.chdir(tmp_path)
+    links = [
+        MarkdownURL(
+            link="https://example.com/broken", line_number=3, file_path=tmp_path / "docs" / "a.md", issue="is broken"
+        ),
+    ]
+    result = format_links(links, output_mode="ci", repo_url="https://github.com/owner/repo/blob/sha")
+    assert "[`3`](https://github.com/owner/repo/blob/sha/docs/a.md#L3)" in result
+
+
+def test_format_links_ci_mode_repo_url_skips_paths_outside_cwd(monkeypatch, tmp_path):
+    """In CI mode, absolute paths outside the cwd fall back to plain text."""
+    monkeypatch.chdir(tmp_path)
+    outside = Path("/somewhere/else/file.md")
+    links = [
+        MarkdownURL(link="https://example.com/broken", line_number=3, file_path=outside, issue="is broken"),
+    ]
+    result = format_links(links, output_mode="ci", repo_url="https://github.com/owner/repo/blob/sha")
+    assert "https://github.com/owner/repo/blob/sha" not in result
+    assert "`3`" in result
 
 
 def test_format_links_empty_list():
@@ -84,3 +116,24 @@ def test_format_links_empty_list():
     result = format_links([])
     assert "<table>" in result
     assert "</table>" in result
+
+
+def test_format_issues_table_local_mode_has_file_links(sample_urls):
+    """In non-CI mode, file paths are rendered as clickable links."""
+    result = format_issues_table([(Path("file.md"), sample_urls)], output_mode="local")
+    assert "[`file.md`](file.md)" in result
+
+
+def test_format_issues_table_ci_mode_no_repo_url(sample_urls):
+    """In CI mode without a repo_url, file paths are plain text without links."""
+    result = format_issues_table([(Path("file.md"), sample_urls)], output_mode="ci")
+    assert "[`file.md`]" not in result
+    assert "`file.md`" in result
+
+
+def test_format_issues_table_ci_mode_with_repo_url_has_clickable_links(sample_urls):
+    """In CI mode with a repo_url, file paths are rendered as clickable repo links."""
+    result = format_issues_table(
+        [(Path("file.md"), sample_urls)], output_mode="ci", repo_url="https://github.com/owner/repo/blob/sha"
+    )
+    assert "[`file.md`](https://github.com/owner/repo/blob/sha/file.md)" in result

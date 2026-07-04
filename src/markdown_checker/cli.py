@@ -8,6 +8,7 @@ from markdown_checker.checker import run_check_on_files
 from markdown_checker.models.config import Config
 from markdown_checker.reports.format_output import format_issues_table
 from markdown_checker.reports.markdown import MarkdownGenerator
+from markdown_checker.utils.github_env import get_github_repo_blob_url
 from markdown_checker.utils.list_files import get_files_paths_list
 
 
@@ -200,6 +201,7 @@ def main(
         fallback_retry_delay=fallback_retry_delay,
         output_mode="ci" if os.getenv("CI", "false") == "true" else "local",
     )
+    repo_url = get_github_repo_blob_url() if config.output_mode == "ci" else None
 
     with click.progressbar(length=len(files_paths), label="Checking", hidden=config.output_mode == "ci") as bar:
         check_result = run_check_on_files(
@@ -251,7 +253,7 @@ def main(
                 error_by_file.append((path, file_errors))
 
         if error_count:
-            formatted_output = format_issues_table(error_by_file, config.output_mode)
+            formatted_output = format_issues_table(error_by_file, config.output_mode, repo_url)
             generator = MarkdownGenerator(contributing_guide_url=guide_url, output_file_name=output_file_name)
             generator.generate(func, formatted_output)
             click.echo(click.style(f"😭 Found {error_count} issues in the following files:", fg="red"), err=True)
