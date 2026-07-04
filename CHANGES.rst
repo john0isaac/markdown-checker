@@ -2,6 +2,7 @@
 --------------------
 
 - Improve regex for matching URLs and paths.
+- Drop support for Python 3.10.
 
 
 [v1.0.3] 28 May 2026
