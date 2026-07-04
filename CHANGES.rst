@@ -1,4 +1,4 @@
-[v1.2.0] 4 July 2026
+[v1.1.0] 4 July 2026
 --------------------
 
 - Improve regex for matching URLs and paths.

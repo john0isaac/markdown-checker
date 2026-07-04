@@ -144,7 +144,7 @@ def test_cli_version(runner):
     """Displays version information."""
     result = runner.invoke(main, ["--version"])
     assert result.exit_code == 0
-    assert "1.2.0" in result.output
+    assert "1.1.0" in result.output
 
 
 def test_cli_ci_mode(runner, resources_dir, monkeypatch, tmp_path):
