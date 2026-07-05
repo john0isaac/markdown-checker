@@ -58,7 +58,7 @@ Run this tool within a GitHub workflow using the
 GitHub Action, which posts the report as a pull request comment:
 
 ```yaml
-- uses: john0isaac/action-check-markdown@v1.1.0
+- uses: john0isaac/action-check-markdown@v1.2.0
   with:
     github-token: ${{ secrets.GITHUB_TOKEN }}
     command: check_broken_paths

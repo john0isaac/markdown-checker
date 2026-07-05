@@ -34,15 +34,15 @@ replacing ``guide-url`` with the URL of your own contribution guide:
           pull-requests: write
           contents: read
         steps:
-          - uses: actions/checkout@v4
-          - uses: john0isaac/action-check-markdown@v1.1.0
+          - uses: actions/checkout@v7
+          - uses: john0isaac/action-check-markdown@v1.2.0
             with:
               github-token: ${{ secrets.GITHUB_TOKEN }}
               command: check_broken_paths
               directory: ./
               guide-url: "https://github.com/<owner>/<repo>/blob/main/CONTRIBUTING.md"
 
-The ``command`` input selects which check to run. As of v1.1.0 the action
+The ``command`` input selects which check to run. As of v1.2.0 the action
 supports ``check_broken_paths``, ``check_paths_tracking``,
 ``check_urls_tracking``, and ``check_urls_locale`` - **not**
 ``check_broken_urls``. Add a separate job (or step) per command if you want
@@ -64,8 +64,8 @@ annotations on the PR diff, the same way the action's output does:
         permissions:
           contents: read
         steps:
-          - uses: actions/checkout@v4
-          - uses: actions/setup-python@v5
+          - uses: actions/checkout@v7
+          - uses: actions/setup-python@v6
             with:
               python-version: "3.11"
           - run: pip install markdown-checker
