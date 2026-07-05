@@ -1,6 +1,7 @@
 import os
 import platform
 from pathlib import Path
+from typing import Any
 
 import click
 
@@ -17,6 +18,22 @@ from markdown_checker.reports.renderers.annotations import GitHubAnnotationsRend
 from markdown_checker.reports.renderers.console import ConsoleRenderer
 from markdown_checker.utils.github_env import get_github_repo_blob_url
 from markdown_checker.utils.list_files import get_files_paths_list
+from markdown_checker.utils.pyproject_config import resolve_default_map
+
+
+class PyprojectCommand(click.Command):
+    """Command that seeds ``ctx.default_map`` from ``[tool.markdown-checker]`` in pyproject.toml."""
+
+    def make_context(
+        self,
+        info_name: str | None,
+        args: list[str],
+        parent: click.Context | None = None,
+        **extra: Any,
+    ) -> click.Context:
+        if "default_map" not in extra:
+            extra["default_map"] = resolve_default_map(args, self)
+        return super().make_context(info_name, args, parent, **extra)
 
 
 class ListOfStrings(click.Option):
@@ -38,7 +55,7 @@ class ListOfStrings(click.Option):
             raise click.BadParameter(str(value)) from err
 
 
-@click.command()
+@click.command(cls=PyprojectCommand)
 @click.argument(
     "src",
     nargs=-1,
@@ -184,6 +201,22 @@ class ListOfStrings(click.Option):
     default="markdown",
     help="Report format to generate when errors are found.",
     required=False,
+)
+@click.option(
+    "-c",
+    "--config",
+    "config_file",
+    type=click.Path(path_type=Path, exists=True, dir_okay=False, readable=True),
+    expose_value=False,
+    is_eager=True,
+    help="TOML file to read [tool.markdown-checker] configuration from, instead of discovering pyproject.toml.",
+)
+@click.option(
+    "--isolated",
+    is_flag=True,
+    expose_value=False,
+    is_eager=True,
+    help="Ignore pyproject.toml configuration entirely.",
 )
 @click.version_option(
     version=__version__,

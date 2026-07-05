@@ -6,9 +6,12 @@ def test_utils_package_exports_expected_names():
     assert set(utils.__all__) == {
         "MarkdownLinks",
         "Spinner",
+        "find_pyproject",
         "get_files_paths_list",
         "get_github_repo_blob_url",
         "get_links_from_md_file",
+        "load_config_section",
+        "resolve_default_map",
         "spinner",
     }
 

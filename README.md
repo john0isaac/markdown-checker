@@ -45,6 +45,7 @@ The library provides the following functions:
   - [`check_urls_locale`](#check_urls_locale)
   - [`check_paths_tracking`](#check_paths_tracking)
   - [`check_urls_tracking`](#check_urls_tracking)
+  - [Configuration](#configuration)
 
 ## `check_broken_paths`
 
@@ -95,3 +96,12 @@ Example:
 ```bash
 markdown-checker -d . -f check_urls_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
 ```
+
+## Configuration
+
+Every CLI option can also be set in a `[tool.markdown-checker]` table in `pyproject.toml`, using
+hyphenated keys that mirror the long option names (e.g. `skip-files`, `max-workers`). A value
+passed on the command line always wins over the same value in `pyproject.toml`, which in turn
+wins over the built-in default. Use `-c`/`--config PATH` to point at a specific file, or
+`--isolated` to ignore configuration files for a single run. See the
+[Usage](https://markdown-checker.readthedocs.io/en/latest/usage/#configuration) docs for details.
