@@ -35,7 +35,7 @@ replacing ``guide-url`` with the URL of your own contribution guide:
           contents: read
         steps:
           - uses: actions/checkout@v7
-          - uses: john0isaac/action-check-markdown@v1.2.0
+          - uses: john0isaac/action-check-markdown@v1.3.0
             with:
               github-token: ${{ secrets.GITHUB_TOKEN }}
               command: check_broken_paths
