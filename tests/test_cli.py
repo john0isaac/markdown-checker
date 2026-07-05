@@ -21,9 +21,6 @@ def resources_dir():
     return Path(__file__).parent / "resources"
 
 
-# --- ListOfStrings ---
-
-
 def test_list_of_strings_parses_csv():
     """Parses comma-separated values into a list."""
     opt = ListOfStrings(["-t", "--test"], type=list[str])
@@ -50,9 +47,6 @@ def test_list_of_strings_invalid_type_raises():
     opt = ListOfStrings(["-t", "--test"], type=list[str])
     with pytest.raises(click.BadParameter):
         opt.type_cast_value(None, 12345)
-
-
-# --- CLI main ---
 
 
 def test_cli_check_broken_paths(runner, resources_dir):
@@ -144,7 +138,7 @@ def test_cli_version(runner):
     """Displays version information."""
     result = runner.invoke(main, ["--version"])
     assert result.exit_code == 0
-    assert "1.1.0" in result.output
+    assert "1.2.0" in result.output
 
 
 def test_cli_ci_mode(runner, resources_dir, monkeypatch, tmp_path):
@@ -173,14 +167,14 @@ def test_cli_warning_only_run_does_not_print_compliant_message(runner, tmp_path,
 
     with (
         patch("markdown_checker.cli.run_check_on_files", return_value=check_result),
-        patch("markdown_checker.cli.MarkdownGenerator.generate") as mock_generate,
+        patch("markdown_checker.cli.write_report") as mock_write_report,
     ):
         result = runner.invoke(main, [str(sample), "-f", "check_broken_urls"])
 
     assert result.exit_code == 0
     assert "links had warnings" in result.output
     assert "All files are compliant" not in result.output
-    mock_generate.assert_not_called()
+    mock_write_report.assert_not_called()
 
 
 def test_cli_local_issues_prints_all_issues_before_exiting(runner, tmp_path):
@@ -205,7 +199,7 @@ def test_cli_local_issues_prints_all_issues_before_exiting(runner, tmp_path):
 
     with (
         patch("markdown_checker.cli.run_check_on_files", return_value=check_result),
-        patch("markdown_checker.cli.MarkdownGenerator.generate") as mock_generate,
+        patch("markdown_checker.cli.write_report") as mock_write_report,
     ):
         result = runner.invoke(main, [str(sample), "-f", "check_broken_urls"])
 
@@ -213,7 +207,7 @@ def test_cli_local_issues_prints_all_issues_before_exiting(runner, tmp_path):
     assert "https://broken.example.com is broken." in result.output
     assert "https://rate-limited.example.com was skipped due to rate limiting." in result.output
     assert "All files are compliant" not in result.output
-    mock_generate.assert_called_once()
+    mock_write_report.assert_called_once()
 
 
 def test_cli_ci_issues_do_not_fall_through_to_success(runner, tmp_path, monkeypatch):
@@ -232,17 +226,14 @@ def test_cli_ci_issues_do_not_fall_through_to_success(runner, tmp_path, monkeypa
 
     with (
         patch("markdown_checker.cli.run_check_on_files", return_value=check_result),
-        patch("markdown_checker.cli.MarkdownGenerator.generate") as mock_generate,
+        patch("markdown_checker.cli.write_report") as mock_write_report,
     ):
         result = runner.invoke(main, [str(sample), "-f", "check_broken_urls"])
 
     assert result.exit_code == 1
     assert "::error file=" in result.output
     assert "All files are compliant" not in result.output
-    mock_generate.assert_called_once()
-
-
-# --- SRC positional argument ---
+    mock_write_report.assert_called_once()
 
 
 def test_cli_src_single_file(runner, resources_dir):

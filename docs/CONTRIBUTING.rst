@@ -16,13 +16,13 @@ Install all dependencies and the package in editable mode:
 
 .. code-block:: shell
 
-	 uv sync
+     uv sync
 
 Activate the virtual environment:
 
 .. code-block:: shell
 
-	 source .venv/bin/activate
+     source .venv/bin/activate
 
 Any changes you make to the source will take effect immediately.
 
@@ -39,13 +39,13 @@ These are the most common commands you will use:
 These are some more specific commands if you need them:
 
 - ``tox parallel``: Run all test environments that will be run in CI, in
-	parallel. Python versions that are not installed are skipped.
+    parallel. Python versions that are not installed are skipped.
 - ``pre-commit``: Run the linter and formatter tools. Only staged files are
-	checked, and this runs automatically before each commit.
+    checked, and this runs automatically before each commit.
 - ``pre-commit run --all-files``: Run the pre-commit hooks against all files,
-	including unchanged and unstaged files.
+    including unchanged and unstaged files.
 - ``tox run -e py3.11``: Run unit tests with a specific Python version. The
-	version must be installed.
+    version must be installed.
 - ``tox run -e style``: Run all pre-commit hooks on all files via tox.
 - ``tox run -e typing``: Run all typing checks.
 - ``tox run -e docs``: Build the documentation in strict mode.
@@ -56,5 +56,5 @@ These are some more specific commands if you need them:
 
 .. tip::
 
-	 ``tox run`` and ``tox parallel`` can be shortened to ``tox r`` and
-	 ``tox p``.
+     ``tox run`` and ``tox parallel`` can be shortened to ``tox r`` and
+     ``tox p``.

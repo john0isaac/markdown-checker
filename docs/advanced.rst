@@ -342,11 +342,42 @@ Usage examples
 Type
   ``str``
 Description
-  Name of the output file.
+  Name of the output file, without extension. Use ``-`` to write the report
+  to stdout instead of a file.
 Default
   ``comment``
 Required
   No.
+
+``-rf``, ``--report-format``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Type
+  ``click.Choice``
+Description
+  Report format to generate when errors are found. The renderer's own file
+  extension is appended to ``--output-file-name`` (e.g. ``comment.md`` for
+  ``markdown``, ``comment.json`` for ``json``).
+Choices
+  ``markdown``, ``json``, ``github-annotations``, ``console``
+Default
+  ``markdown``
+Required
+  No.
+
+Usage examples
+^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+  # Default: writes comment.md
+  markdown-checker -d . -f check_broken_urls
+
+  # Machine-readable JSON report, written to report.json
+  markdown-checker -d . -f check_broken_urls -rf json -o report
+
+  # Write the rendered report to stdout instead of a file
+  markdown-checker -d . -f check_broken_urls -rf json -o -
 
 URL Check Outcomes
 ------------------
@@ -395,10 +426,10 @@ In local mode::
 
   🔍 Checked 42 links in 10 files.
   ⚠ 3 links had warnings:
-  	File '/path/to/file.md', line 12
+    File '/path/to/file.md', line 12
   https://example.com/api was skipped due to rate limiting.
 
-  	File '/path/to/file.md', line 15
+    File '/path/to/file.md', line 15
   https://stackoverflow.com/a/123 could not be verified (access was forbidden by the server).
 
 In CI mode (``$CI=true``), GitHub Actions ``::warning::`` annotations are

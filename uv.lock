@@ -536,7 +536,6 @@ wheels = [
 
 [[package]]
 name = "markdown-checker"
-version = "1.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },

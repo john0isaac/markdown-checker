@@ -157,9 +157,6 @@ def test_run_check_on_files(tmp_path):
     assert result.links_checked == 1
 
 
-# --- Stage 2: bounded file-window pipelining ---
-
-
 def test_run_check_on_files_overlaps_url_checks_across_files(tmp_path):
     """URL checks for multiple files are submitted concurrently instead of one file at a time."""
     files = []

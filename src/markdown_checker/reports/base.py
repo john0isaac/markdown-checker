@@ -1,31 +1,23 @@
+"""
+Renderer contract for turning a `Report` into a string.
+"""
+
 from abc import ABC
 from abc import abstractmethod
-from pathlib import Path
+
+from markdown_checker.reports.model import Report
+from markdown_checker.reports.model import ReportFormat
 
 
-class GeneratorBase(ABC):
-    """Base class for all report generators."""
+class ReportRenderer(ABC):
+    """Renders a `Report` into a string. Pure: no file or network I/O."""
 
-    current_dir: Path
-    templates: dict[str, str]
-
-    @abstractmethod
-    def _write_file(self, generated_text: str) -> None:
-        """Write the formatted output to a file."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def _generate_text(self, function_name: str, formatted_output: str) -> str:
-        """
-        Generate text based on the formatted output, function name, and contributing guide URL.
-
-        Args:
-            formatted_output (str): The formatted output to be written to the file.
-            function_name (str): The name of the function to determine the header for the file.
-        """
-        raise NotImplementedError
+    # Registry key and CLI value, e.g. "markdown", "json".
+    format_name: ReportFormat
+    # Default file extension including the dot, e.g. ".md", ".json".
+    file_extension: str
 
     @abstractmethod
-    def generate(self, function_name: str, formatted_output: str) -> None:
-        """Generate a report based on the formatted output."""
+    def render(self, report: Report) -> str:
+        """Return the complete report body as a string."""
         raise NotImplementedError

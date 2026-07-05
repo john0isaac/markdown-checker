@@ -1,7 +1,7 @@
 [project]
 name = "markdown-checker"
 description= "A markdown link validation reporting tool."
-version = "1.1.0"
+dynamic = ["version"]
 authors = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 maintainers = [{ name = "John Aziz", email = "johnaziz269@gmail.com" }]
 license = "MIT"
@@ -127,7 +127,7 @@ markers = [
 addopts = "-ra"
 testpaths = ["tests"]
 pythonpath = ['src']
-filterwarnings = ["ignore::DeprecationWarning"]
+filterwarnings = ["error"]
 
 [tool.coverage.run]
 branch = true
@@ -167,7 +167,6 @@ commands = [
         "--capture=tee-sys", "--basetemp={env_tmp_dir}",
         { replace = "posargs", default = [], extend = true },
     ],
-    ["python", "{envtmpdir}/return_pytest_exit_code.py"],
 ]
 
 [tool.tox.env.style]
