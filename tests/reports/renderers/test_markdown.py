@@ -1,4 +1,5 @@
 from pathlib import Path
+from pathlib import PureWindowsPath
 
 import pytest
 
@@ -188,6 +189,28 @@ def test_issues_table_ci_mode_with_repo_url_has_clickable_links(two_errors):
     files = (_errors_file_report(Path("file.md"), two_errors),)
     result = MarkdownRenderer()._format_issues_table(files, context)
     assert "[`file.md`](https://github.com/owner/repo/blob/sha/file.md)" in result
+
+
+def test_issues_table_local_mode_windows_path_uses_forward_slashes():
+    """A Windows-style file path is rendered with forward slashes, not backslashes, so the
+    link resolves correctly when viewed on GitHub (backslashes get percent-encoded there)."""
+    file_path = PureWindowsPath(r"content\6502_Assembly_Code\README.md")
+    issue = ReportIssue(link="./missing.md", line_number=1, file_path=file_path, message="is broken", level="error")
+    context = ReportContext(check_name="check_broken_paths", output_mode="local")
+    files = (_errors_file_report(file_path, (issue,)),)
+    result = MarkdownRenderer()._format_issues_table(files, context)
+    assert "[`content/6502_Assembly_Code/README.md`](content/6502_Assembly_Code/README.md)" in result
+    assert "\\" not in result
+
+
+def test_issue_rows_local_mode_windows_path_uses_forward_slashes():
+    """The per-issue line-number link also uses forward slashes for a Windows-style path."""
+    file_path = PureWindowsPath(r"content\6502_Assembly_Code\README.md")
+    issue = ReportIssue(link="./missing.md", line_number=5, file_path=file_path, message="is broken", level="error")
+    context = ReportContext(check_name="check_broken_paths", output_mode="local")
+    result = MarkdownRenderer()._format_issue_rows((issue,), context)
+    assert "content/6502_Assembly_Code/README.md#L5" in result
+    assert "\\" not in result
 
 
 def test_issues_table_skips_files_without_errors(two_errors):

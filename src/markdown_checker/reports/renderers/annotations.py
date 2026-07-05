@@ -12,9 +12,10 @@ from markdown_checker.reports.model import ReportIssue
 
 def _annotation_line(issue: ReportIssue) -> str:
     level = "warning" if issue.level == "warning" else "error"
+    file_path = issue.file_path.as_posix()
     return (
-        f"::{level} file={issue.file_path},line={issue.line_number}::"
-        f"File {issue.file_path}, line {issue.line_number}, "
+        f"::{level} file={file_path},line={issue.line_number}::"
+        f"File {file_path}, line {issue.line_number}, "
         f"Link {issue.link} {issue.message}."
     )
 
