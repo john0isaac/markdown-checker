@@ -94,6 +94,9 @@ Usage examples
 
 .. code-block:: bash
 
+  # Default (no flag needed): .md,.ipynb
+  markdown-checker -d . -f check_broken_paths
+
   # Single value
   markdown-checker -d . -f check_broken_paths --extensions=.md
 
@@ -118,6 +121,9 @@ Usage examples
 
 .. code-block:: bash
 
+  # Default (no flag needed): github.com,microsoft.com,visualstudio.com,aka.ms,azure.com
+  markdown-checker -d . -f check_urls_tracking
+
   # Single value
   markdown-checker -d . -f check_urls_tracking --tracking-domains=github.com
 
@@ -140,6 +146,9 @@ Usage examples
 ^^^^^^^^^^^^^^
 
 .. code-block:: bash
+
+  # Default (no flag needed): CODE_OF_CONDUCT.md,SECURITY.md
+  markdown-checker -d . -f check_broken_paths
 
   # Single value
   markdown-checker -d . -f check_broken_paths --skip-files=README.md
@@ -164,6 +173,9 @@ Usage examples
 
 .. code-block:: bash
 
+  # Default (no flag needed): [] (no domains skipped)
+  markdown-checker -d . -f check_broken_urls
+
   # Single value
   markdown-checker -d . -f check_broken_urls --skip-domains=example.com
 
@@ -186,6 +198,9 @@ Usage examples
 ^^^^^^^^^^^^^^
 
 .. code-block:: bash
+
+  # Default (no flag needed): [] (no URLs skipped)
+  markdown-checker -d . -f check_broken_urls
 
   # Single value
   markdown-checker -d . -f check_broken_urls --skip-urls-containing=/embed/
@@ -279,6 +294,9 @@ Usage examples
 
 .. code-block:: bash
 
+  # Default (no flag needed): 30
+  markdown-checker -d . -f check_broken_urls
+
   # Use a custom fallback delay of 45 seconds
   markdown-checker -d . -f check_broken_urls --fallback-retry-delay=45
 
@@ -305,6 +323,9 @@ Usage examples
 
 .. code-block:: bash
 
+  # Default (no flag needed): 10, or the number of available CPUs in GitHub Actions
+  markdown-checker -d . -f check_broken_urls
+
   # Use a custom worker count
   markdown-checker -d . -f check_broken_urls --max-workers=20
 
@@ -329,6 +350,9 @@ Usage examples
 ^^^^^^^^^^^^^^
 
 .. code-block:: bash
+
+  # Default (no flag needed): 0.5
+  markdown-checker -d . -f check_broken_urls
 
   # Use a custom per-host delay of 1 second
   markdown-checker -d . -f check_broken_urls --per-host-delay=1.0

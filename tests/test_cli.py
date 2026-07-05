@@ -294,3 +294,84 @@ def test_cli_no_src_no_dir_fails(runner):
     """Fails when neither SRC nor --dir is provided."""
     result = runner.invoke(main, ["-f", "check_broken_paths"])
     assert result.exit_code != 0
+
+
+def test_cli_func_from_pyproject(runner, resources_dir, tmp_path, monkeypatch):
+    """--func can be supplied only via pyproject.toml."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.markdown-checker]\nfunc = "check_broken_paths"\n')
+    result = runner.invoke(main, ["-d", str(resources_dir)])
+    assert result.exit_code == 0
+    assert "Checked" in result.output
+
+
+def test_cli_no_func_anywhere_fails(runner, resources_dir, tmp_path, monkeypatch):
+    """Fails with Click's missing-option error when --func is absent from both CLI and pyproject.toml."""
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(main, ["-d", str(resources_dir)])
+    assert result.exit_code != 0
+    assert "Missing option" in result.output
+
+
+def test_cli_value_overrides_pyproject_value(runner, resources_dir, tmp_path, monkeypatch):
+    """A CLI-supplied option overrides the same option set in pyproject.toml."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text("[tool.markdown-checker]\ntimeout = 1\n")
+    result = runner.invoke(main, ["-d", str(resources_dir), "-f", "check_broken_paths", "-to", "5"])
+    assert result.exit_code == 0
+
+
+def test_cli_pyproject_list_option(runner, resources_dir, tmp_path, monkeypatch):
+    """A list option (skip-files) can be set from a TOML array."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.markdown-checker]\nskip-files = ["sample1.md"]\n')
+    result = runner.invoke(main, ["-d", str(resources_dir), "-f", "check_broken_paths"])
+    assert result.exit_code == 0
+
+
+def test_cli_pyproject_bool_flag_overridden_by_cli(runner, tmp_path, monkeypatch):
+    """CLI boolean flag wins over pyproject.toml value."""
+    monkeypatch.chdir(tmp_path)
+    sample = tmp_path / "sample.md"
+    sample.write_text("# Sample\n")
+    (tmp_path / "pyproject.toml").write_text("[tool.markdown-checker]\nretry-on-429 = false\n")
+    check_result = CheckResult(issues=[], links_checked=0)
+    with patch("markdown_checker.cli.run_check_on_files", return_value=check_result) as mock_run:
+        result = runner.invoke(main, [str(sample), "-f", "check_broken_urls", "--retry-on-429"])
+    assert result.exit_code == 0
+    assert mock_run.call_args.kwargs["config"].retry_on_429 is True
+
+
+def test_cli_pyproject_invalid_value_surfaces_click_error(runner, resources_dir, tmp_path, monkeypatch):
+    """An out-of-range value in pyproject.toml surfaces Click's normal validation error."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text("[tool.markdown-checker]\ntimeout = 999\n")
+    result = runner.invoke(main, ["-d", str(resources_dir), "-f", "check_broken_paths"])
+    assert result.exit_code != 0
+
+
+def test_cli_isolated_ignores_bad_pyproject(runner, resources_dir, tmp_path, monkeypatch):
+    """--isolated ignores pyproject.toml entirely, even an invalid one."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text("[tool.markdown-checker]\ntimout = 5\n")
+    result = runner.invoke(main, ["--isolated", "-d", str(resources_dir), "-f", "check_broken_paths"])
+    assert result.exit_code == 0
+
+
+def test_cli_unknown_pyproject_key_fails(runner, resources_dir, tmp_path, monkeypatch):
+    """An unknown key in pyproject.toml raises a clear usage error."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text("[tool.markdown-checker]\ntimout = 5\n")
+    result = runner.invoke(main, ["-d", str(resources_dir), "-f", "check_broken_paths"])
+    assert result.exit_code != 0
+    assert "Unknown key" in result.output
+
+
+def test_cli_explicit_config_file(runner, resources_dir, tmp_path, monkeypatch):
+    """--config points at an explicit TOML file, skipping discovery."""
+    monkeypatch.chdir(tmp_path)
+    custom = tmp_path / "custom.toml"
+    custom.write_text('[tool.markdown-checker]\nfunc = "check_broken_paths"\n')
+    result = runner.invoke(main, ["--config", str(custom), "-d", str(resources_dir)])
+    assert result.exit_code == 0
+    assert "Checked" in result.output

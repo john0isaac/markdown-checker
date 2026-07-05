@@ -2,6 +2,7 @@
 --------------------
 
 - Add support for json, github-announcements, markdown, and console report formats.
+- Allow setting CLI args via ``pyproject.toml`` config file.
 
 
 [v1.1.0] 4 July 2026
