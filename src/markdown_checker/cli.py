@@ -1,3 +1,5 @@
+"""Click-based command-line entry point (the ``markdown-checker`` command)."""
+
 import os
 import platform
 from pathlib import Path
@@ -247,7 +249,22 @@ def main(
     output_file_name: str,
     report_format: ReportFormat,
 ) -> None:
-    """A markdown link validation reporting tool."""
+    """A markdown link validation reporting tool.
+
+    Validates the markdown/notebook files under SRC (one or more files or
+    directories) or --dir, using the check selected by --func:
+    ``check_broken_paths``, ``check_broken_urls``, ``check_paths_tracking``,
+    ``check_urls_tracking``, or ``check_urls_locale``.
+
+    When issues are found, error-level issues are written as a report (see
+    --report-format and --output-file-name) and the command exits with
+    status 1; warning-level issues (e.g. rate-limited or unverifiable URLs)
+    are printed but never fail the run. With no issues, it exits 0.
+
+    Every option may also be set in a ``[tool.markdown-checker]`` table in
+    pyproject.toml (see --config/--isolated); command-line values always
+    take precedence.
+    """
     if max_workers is None:
         if os.getenv("GITHUB_ACTIONS") == "true":
             max_workers = max(1, os.cpu_count() or 10)

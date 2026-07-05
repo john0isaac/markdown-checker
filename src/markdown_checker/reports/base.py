@@ -12,10 +12,10 @@ from markdown_checker.reports.model import ReportFormat
 class ReportRenderer(ABC):
     """Renders a `Report` into a string. Pure: no file or network I/O."""
 
-    # Registry key and CLI value, e.g. "markdown", "json".
     format_name: ReportFormat
-    # Default file extension including the dot, e.g. ".md", ".json".
+    """Registry key and CLI value, e.g. "markdown", "json"""
     file_extension: str
+    """Default file extension for this report format, including the dot, e.g. ".md", ".json"."""
 
     @abstractmethod
     def render(self, report: Report) -> str:

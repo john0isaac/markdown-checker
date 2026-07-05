@@ -1,3 +1,5 @@
+"""The ``check_urls_tracking``/``check_paths_tracking`` checks: flag links missing a ``wt.mc_id`` tracking ID."""
+
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config
 from markdown_checker.models import MarkdownPath
@@ -18,6 +20,15 @@ class URLsTrackingCheck(BaseCheck[MarkdownURL]):
         config: Config | None = None,
         service: URLCheckService | None = None,
     ) -> list[MarkdownURL]:
+        """Flag every URL in ``links.urls`` whose host matches
+        ``config.tracking_domains`` but is missing a ``wt.mc_id`` query
+        parameter (see :meth:`MarkdownLinkBase.has_tracking
+        <markdown_checker.models.base.MarkdownLinkBase.has_tracking>`). URLs
+        on other hosts, or matching ``config.skip_domains``/
+        ``skip_urls_containing``, are ignored. Sets
+        ``issue="is missing tracking id"`` (error-level) on each match.
+        ``service`` is unused: this check does no network I/O.
+        """
         config = config or Config()
         skip_domains = config.skip_domains
         skip_urls_containing = config.skip_urls_containing
@@ -48,6 +59,13 @@ class PathsTrackingCheck(BaseCheck[MarkdownPath]):
         config: Config | None = None,
         service: URLCheckService | None = None,
     ) -> list[MarkdownPath]:
+        """Flag every path in ``links.paths`` missing a ``wt.mc_id`` query
+        parameter (see :meth:`MarkdownLinkBase.has_tracking
+        <markdown_checker.models.base.MarkdownLinkBase.has_tracking>`),
+        setting ``issue="is missing tracking id"`` (error-level) on each.
+        Unlike ``check_urls_tracking``, there is no domain filter: every
+        path is checked. ``config`` and ``service`` are unused.
+        """
         detected_issues: list[MarkdownPath] = []
         for path in links.paths:
             if not path.has_tracking():

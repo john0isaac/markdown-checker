@@ -1,3 +1,10 @@
+"""Format-agnostic report model, renderers, and the writer that emits them.
+
+See :mod:`markdown_checker.reports.model` for the ``build_report()``
+entry point that converts checker output into a :class:`Report
+<markdown_checker.reports.model.Report>`.
+"""
+
 from markdown_checker.reports.base import ReportRenderer
 from markdown_checker.reports.model import build_report
 from markdown_checker.reports.model import FileReport

@@ -6,11 +6,28 @@ from typing import TextIO
 
 
 class Spinner:
+    """A simple text spinner shown on a stream while a long-running task runs.
+
+    Use via the :func:`spinner` factory / context manager rather than
+    constructing directly. The spinner runs on a background thread and only
+    animates when the target stream is a TTY (or ``force=True``); otherwise
+    :meth:`start` is a no-op so redirected output (e.g. in CI logs) stays clean.
+    """
+
     spinner_cycle = itertools.cycle(["-", "/", "|", "\\"])
 
     def __init__(
         self, beep: bool = False, disable: bool = False, force: bool = False, stream: TextIO | Any = sys.stdout
     ):
+        """
+        Args:
+            beep: Write a bell character (``\\7``) to ``stream`` when the
+                spinner stops.
+            disable: Disable the spinner entirely; :meth:`start` becomes a no-op.
+            force: Animate even when ``stream`` is not a TTY (e.g. redirected
+                to a file).
+            stream: The stream to write the spinner animation to.
+        """
         self.disable = disable
         self.beep = beep
         self.force = force
@@ -19,6 +36,7 @@ class Spinner:
         self.spin_thread: threading.Thread | None = None
 
     def start(self) -> None:
+        """Start animating on a background thread, unless disabled or non-TTY (see :attr:`force`)."""
         if self.disable:
             return
         if self.stream.isatty() or self.force:
@@ -27,11 +45,13 @@ class Spinner:
             self.spin_thread.start()
 
     def stop(self) -> None:
+        """Signal the background thread to stop and wait for it to finish."""
         if self.spin_thread and self.stop_running:
             self.stop_running.set()
             self.spin_thread.join()
 
     def init_spin(self) -> None:
+        """Background-thread target: write ``"Checking... "`` then animate until :meth:`stop` is called."""
         self.stream.write("Checking... ")
         if self.stop_running:
             while not self.stop_running.is_set():
@@ -42,10 +62,12 @@ class Spinner:
                 self.stream.flush()
 
     def __enter__(self) -> "Spinner":
+        """Start the spinner; see :meth:`start`."""
         self.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore[no-untyped-def]
+        """Stop the spinner and, if :attr:`beep` is set, write a bell character."""
         if self.disable:
             return False
         self.stop()

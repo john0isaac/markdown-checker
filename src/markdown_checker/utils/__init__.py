@@ -1,3 +1,8 @@
+"""Standalone helpers used by the checker: link extraction, file listing,
+the URL-checking pipeline, GitHub Actions environment detection,
+pyproject.toml config loading, and the CLI spinner.
+"""
+
 from markdown_checker.utils.extract_links import get_links_from_md_file
 from markdown_checker.utils.extract_links import MarkdownLinks
 from markdown_checker.utils.github_env import get_github_repo_blob_url

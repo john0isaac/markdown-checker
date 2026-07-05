@@ -1,3 +1,7 @@
+"""Runs a named check (from the checks registry) across a set of files and
+aggregates the results into a single :class:`CheckResult`.
+"""
+
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -10,14 +14,20 @@ from markdown_checker.models import MarkdownLinkBase
 from markdown_checker.utils import get_links_from_md_file
 from markdown_checker.utils.url_pipeline import URLCheckService
 
-# Bounds on how many files may have their check submitted (but not yet collected) at
-# once. The window drains early once enough links are in flight to keep every worker
-# fed (target ~2x max_workers), so link-dense files don't balloon memory; it never
-# drains before _MIN_FILE_WINDOW files, so link-sparse files (few links per file) still
-# get real cross-file overlap; _MAX_FILE_WINDOW is an absolute cap regardless of
-# link density.
 _MIN_FILE_WINDOW = 4
+"""Bounds on how many files may have their check submitted (but not yet collected) at
+once. The window drains early once enough links are in flight to keep every worker
+fed (target ~2x max_workers), so link-dense files don't balloon memory; it never
+drains before _MIN_FILE_WINDOW files, so link-sparse files (few links per file) still
+get real cross-file overlap; _MAX_FILE_WINDOW is an absolute cap regardless of
+link density."""
 _MAX_FILE_WINDOW = 64
+"""Bounds on how many files may have their check submitted (but not yet collected) at
+once. The window drains early once enough links are in flight to keep every worker
+fed (target ~2x max_workers), so link-dense files don't balloon memory; it never
+drains before _MIN_FILE_WINDOW files, so link-sparse files (few links per file) still
+get real cross-file overlap; _MAX_FILE_WINDOW is an absolute cap regardless of
+link density."""
 
 
 @dataclass

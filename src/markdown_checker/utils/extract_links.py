@@ -1,3 +1,5 @@
+"""Extracts markdown link destinations from a file, split into URLs and paths."""
+
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,15 +12,35 @@ from markdown_checker.patterns import SCHEME_PATTERN
 
 @dataclass
 class MarkdownLinks:
-    """Dataclass to store markdown links"""
+    """The links found in one markdown file, split by kind."""
 
     urls: list[MarkdownURL]
+    """Web URLs (``http://``/``https://``, including protocol-relative
+    ``//host/...`` links, which are normalized to ``https:``).
+    """
+
     paths: list[MarkdownPath]
+    """Relative or root-relative file paths (anything that is neither a URL
+    nor a link with another URI scheme, e.g. ``mailto:``, nor a bare
+    ``#fragment``).
+    """
 
 
 def get_links_from_md_file(file_path: Path) -> MarkdownLinks:
-    """function to get an array of markdown urls, paths from a file
-    flags markdown links captures the part inside () that comes right after []
+    """Extract every markdown link destination from a file.
+
+    Scans each line for inline links of the form ``[text](destination)`` (see
+    :data:`~markdown_checker.patterns.LINK_PATTERN`), skipping lines inside
+    fenced code blocks (marked with three or more backtick or tilde
+    characters) so example links in code samples are never checked. Each
+    destination is then classified as:
+
+    - a **URL** if it starts with ``http://``/``https://`` (or ``//``, which
+      is treated as ``https://``);
+    - ignored if it starts with another URI scheme (e.g. ``mailto:``) or is a
+      bare same-page anchor (``#section``);
+    - a **path** otherwise, e.g. ``./img.png``, ``../docs/usage.md``, or a
+      bare ``docs/usage.md``.
 
     Args:
         file_path (Path): The file path to check.

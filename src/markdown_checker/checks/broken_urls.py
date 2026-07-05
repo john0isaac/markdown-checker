@@ -1,3 +1,5 @@
+"""The ``check_broken_urls`` check: flags URLs that don't return a 2xx response."""
+
 from concurrent.futures import Future
 from typing import cast
 
@@ -8,13 +10,14 @@ from markdown_checker.models.url import URLCheckResult
 from markdown_checker.utils.extract_links import MarkdownLinks
 from markdown_checker.utils.url_pipeline import URLCheckService
 
-# Domains known to block automated requests (e.g. Cloudflare 403);
-# always skipped for URL checks.
 _BUILTIN_SKIP_DOMAINS: list[str] = []
+"""Domains known to block automated requests (e.g. Cloudflare 403);
+always skipped for URL checks."""
 
-# Opaque token handed from submit() to collect(): the submitted jobs, plus the
-# service to close afterwards if this check created a private one for itself.
+
 _Pending = tuple[list[tuple[MarkdownURL, "Future[URLCheckResult]"]], URLCheckService | None]
+"""Opaque token handed from submit() to collect(): the submitted jobs, plus the
+service to close afterwards if this check created a private one for itself."""
 
 
 def _to_issue(url: MarkdownURL, result: URLCheckResult) -> MarkdownURL | None:
@@ -48,6 +51,12 @@ class BrokenURLsCheck(BaseCheck[MarkdownURL]):
         config: Config | None = None,
         service: URLCheckService | None = None,
     ) -> object:
+        """Filter out skipped domains/URLs, then hand each remaining URL to
+        ``service`` (or a private, run-scoped service when ``service`` is
+        None) without blocking. Returns a ``_Pending`` token - the
+        (url, Future) pairs plus the owned service, if any - for
+        :meth:`collect` to resolve later.
+        """
         config = config or Config()
         effective_skip = [domain.lower() for domain in [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]]
         skip_urls_containing = config.skip_urls_containing
@@ -67,6 +76,10 @@ class BrokenURLsCheck(BaseCheck[MarkdownURL]):
         return (pending, _service if owns_service else None)
 
     def collect(self, pending: object) -> list[MarkdownURL]:
+        """Block on every Future produced by :meth:`submit`, map each result
+        to an issue via :func:`_to_issue`, and close the service if this
+        check owns it (i.e. no shared ``service`` was passed to ``submit``).
+        """
         jobs, owned_service = cast(_Pending, pending)
         try:
             results: list[MarkdownURL] = []
@@ -85,4 +98,7 @@ class BrokenURLsCheck(BaseCheck[MarkdownURL]):
         config: Config | None = None,
         service: URLCheckService | None = None,
     ) -> list[MarkdownURL]:
+        """Synchronous convenience wrapper: ``collect(submit(...))``. Used by
+        callers (and tests) that don't need submit/collect overlap across files.
+        """
         return self.collect(self.submit(links, config=config, service=service))
