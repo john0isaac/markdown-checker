@@ -16,7 +16,7 @@ def test_json_renderer_produces_valid_json(sample_report):
 def test_json_renderer_includes_tool_version(sample_report):
     """JsonRenderer includes tool metadata from the report context."""
     data = json.loads(JsonRenderer().render(sample_report))
-    assert data["tool"]["version"] == "1.2.0"
+    assert data["tool"]["version"] == "1.2.1"
 
 
 def test_json_renderer_respects_custom_indent(sample_report):

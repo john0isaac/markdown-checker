@@ -1,3 +1,9 @@
+[v1.2.1] 6 July 2026
+--------------------
+
+- Always use posix (forward slash) paths for Markdown and github annotations.
+
+
 [v1.2.0] 5 July 2026
 --------------------
 

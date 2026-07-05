@@ -69,7 +69,7 @@ class MarkdownRenderer(ReportRenderer):
     def _file_link(self, file_path: Path, context: ReportContext) -> str | None:
         if context.output_mode == "ci":
             return _repo_file_link(context.repo_url, file_path) if context.repo_url else None
-        return str(file_path)
+        return file_path.as_posix()
 
     def _format_issue_rows(self, issues: tuple[ReportIssue, ...], context: ReportContext) -> str:
         parts: list[str] = ["<table><thead><tr><th>#</th><th>Link</th><th>Line Number</th></tr></thead><tbody>"]
@@ -94,9 +94,9 @@ class MarkdownRenderer(ReportRenderer):
             file_link = self._file_link(file_report.file_path, context)
             issue_rows = self._format_issue_rows(file_report.errors, context)
             if file_link is None:
-                rows.append(f"| `{file_report.file_path}` |" + issue_rows)
+                rows.append(f"| `{file_report.file_path.as_posix()}` |" + issue_rows)
             else:
-                rows.append(f"| [`{file_report.file_path}`]({file_link}) |" + issue_rows)
+                rows.append(f"| [`{file_report.file_path.as_posix()}`]({file_link}) |" + issue_rows)
         return "| File Full Path | Issues |\n|--------|--------|\n" + "".join(rows)
 
     def render(self, report: Report) -> str:

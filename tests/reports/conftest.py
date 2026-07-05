@@ -32,5 +32,5 @@ def sample_report():
             ),
         ),
     )
-    context = ReportContext(check_name="check_broken_urls", tool_version="1.2.0")
+    context = ReportContext(check_name="check_broken_urls", tool_version="1.2.1")
     return Report(context=context, files=(file_report,), links_checked=2, files_checked=1)

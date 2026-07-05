@@ -46,7 +46,7 @@ A structured document including both errors and warnings:
 .. code-block:: json
 
     {
-      "tool": {"name": "markdown-checker", "version": "1.2.0"},
+      "tool": {"name": "markdown-checker", "version": "1.2.1"},
       "check": "check_broken_urls",
       "summary": {
         "files_checked": 10,
