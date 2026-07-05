@@ -14,3 +14,4 @@ markdown-checker. If you're new to the tool, start with the
    rate-limits
    report-formats
    github-actions
+   shell-completions
