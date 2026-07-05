@@ -1,6 +1,11 @@
 Models
 ======
 
+Data models shared by the checks: extracted links (:class:`MarkdownPath
+<markdown_checker.models.path.MarkdownPath>`,
+:class:`MarkdownURL <markdown_checker.models.url.MarkdownURL>`) and runtime
+configuration (:class:`Config <markdown_checker.models.config.Config>`).
+
 Base
 ----
 

@@ -4,30 +4,6 @@ markdown-checker
 Markdown link validation reporting tool. It provides a couple of functions to
 validate relative paths and web URLs.
 
-User's Guide
-------------
-
-The user guide is the best place to start if you are new to Markdown Checker.
-It provides a comprehensive overview of the library, including installation
-instructions, usage examples, and troubleshooting tips.
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents
-
-   usage
-   advanced
-   automate
-
-Requirements
-~~~~~~~~~~~~
-
-You will need the following prerequisites in order to use this library:
-
-- Python >= 3.11
-- `httpx2 <https://pypi.org/project/httpx2/>`_
-- `click <https://pypi.org/project/click/>`_
-
 Installation
 ~~~~~~~~~~~~
 
@@ -35,16 +11,56 @@ Installation
 
    pip install markdown-checker
 
-1, 2, 3 - How To
-~~~~~~~~~~~~~~~~
+Requires Python >= 3.11.
 
-1. Run ``pip install markdown-checker``.
-2. Run ``markdown-checker -d {src} -f {func} -gu {url}``. Replace ``{src}``
-   with the directory you want to analyze, ``{func}`` with one of the
-   available functions such as ``check_broken_paths``, and ``{url}`` with the
-   full URL to your contribution guide.
-3. The output will be displayed in the terminal and in a ``comment.md`` file.
+New here?
+---------
 
+Start with the :doc:`tutorial`: install the tool and run it against a small
+sample project to see exactly what it does.
+
+.. toctree::
+   :maxdepth: 1
+
+   tutorial
+
+Have a specific task?
+----------------------
+
+The :doc:`howto/index` guides cover selecting files, skipping domains/URLs,
+configuring via ``pyproject.toml``, tuning rate limits, choosing a report
+format, and running in GitHub Actions.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: How-to Guides
+
+   howto/index
+
+Looking something up?
+------------------------
+
+The :doc:`reference/index` pages are dry, complete descriptions of every
+CLI option, what each check flags, configuration keys, report formats, and
+exit codes.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference
+
+   reference/index
+
+Want to understand how it works?
+-----------------------------------
+
+The :doc:`explanation/index` pages cover the URL-checking pipeline and how
+links are detected and classified.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Explanation
+
+   explanation/index
 
 API Reference
 -------------
@@ -53,11 +69,11 @@ If you are looking for information on a specific function, class or
 method, this part of the documentation is for you.
 
 .. toctree::
-    :maxdepth: 2
-    :caption: API Reference
-    :glob:
+   :maxdepth: 2
+   :caption: API Reference
+   :glob:
 
-    api/*
+   api/*
 
 Additional Notes
 ----------------

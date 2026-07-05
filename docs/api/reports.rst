@@ -1,6 +1,10 @@
 Reports
 =======
 
+The format-agnostic report model, the renderer contract and
+implementations, and the writer that emits rendered reports. See
+:doc:`../reference/report-formats` for the user-facing shape of each format.
+
 Base
 ----
 
