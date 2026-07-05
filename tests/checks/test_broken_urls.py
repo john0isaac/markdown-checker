@@ -71,9 +71,6 @@ def test_skip_urls_containing(check, make_markdown_url, make_markdown_links):
     mock_check.assert_not_called()
 
 
-# --- Tests for _to_issue helper ---
-
-
 def test_to_issue_skipped_domain_not_checked(check, make_markdown_url, make_markdown_links):
     """URLs on skipped domains are never submitted for a network check."""
     url = make_markdown_url("https://github.com/page")
@@ -99,9 +96,6 @@ def test_to_issue_returns_none_for_alive():
     url = MarkdownURL(link="https://alive.example.com", line_number=1, file_path=Path("test.md"))
     alive_result = URLCheckResult(status="alive", http_status_code=200)
     assert _to_issue(url, alive_result) is None
-
-
-# --- Rate-limiting tests ---
 
 
 def test_to_issue_rate_limited_returns_warning_issue():
@@ -169,9 +163,6 @@ def test_mixed_outcomes_broken_error_rate_limited_warning(check, make_markdown_u
     rate_limited = next(r for r in result if "rate-limited" in r.link)
     assert broken.issue_level == "error"
     assert rate_limited.issue_level == "warning"
-
-
-# --- Shared-service dedupe tests ---
 
 
 def test_shared_service_dedupes_duplicate_url_across_files(check, make_markdown_url, make_markdown_links):

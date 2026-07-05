@@ -17,9 +17,6 @@ def _url(link: str, file_path: Path = Path("test.md")) -> MarkdownURL:
     return MarkdownURL(link=link, line_number=1, file_path=file_path)
 
 
-# --- normalize_url ---
-
-
 @pytest.mark.parametrize(
     "link, expected",
     [
@@ -33,9 +30,6 @@ def _url(link: str, file_path: Path = Path("test.md")) -> MarkdownURL:
 def test_normalize_url(link: str, expected: str):
     """Lowercases scheme/host, strips trailing slash and fragment, keeps query."""
     assert normalize_url(link) == expected
-
-
-# --- memo / dedupe ---
 
 
 def test_submit_memo_hit_avoids_second_check():
@@ -78,9 +72,6 @@ def test_submit_in_flight_dedupe_shares_future():
     finally:
         release.set()
         service.close()
-
-
-# --- per-host serialization ---
 
 
 def test_per_host_requests_never_overlap():
@@ -153,9 +144,6 @@ def test_per_host_delay_paces_consecutive_requests():
 
     assert len(timestamps) == 2
     assert timestamps[1] - timestamps[0] >= 0.2 - 0.01
-
-
-# --- host-level circuit breaker ---
 
 
 def test_rate_limit_pauses_host_and_requeues_once():
@@ -240,9 +228,6 @@ def test_persistent_rate_limit_blocks_new_submissions_during_cooldown():
     assert len(calls) == 2, "the second URL should have been drained, not sent over the network"
 
 
-# --- backpressure ---
-
-
 def test_backpressure_blocks_submit_until_slot_frees():
     """submit() blocks the single producer thread once max_pending jobs are outstanding."""
     config = Config(max_workers=2, max_pending=2, per_host_delay=0.0)
@@ -283,9 +268,6 @@ def test_backpressure_blocks_submit_until_slot_frees():
         service.close()
 
 
-# --- single-producer contract ---
-
-
 def test_submit_from_second_thread_raises():
     """submit() from a second thread after the first raises RuntimeError."""
     config = Config(max_workers=1)
@@ -296,7 +278,7 @@ def test_submit_from_second_thread_raises():
     def other_thread_submit() -> None:
         try:
             service.submit(_url("https://second-thread.example.com/1"))
-        except BaseException as exc:  # noqa: BLE001 - captured to assert on in the test thread
+        except BaseException as exc:
             errors.append(exc)
 
     try:
@@ -311,9 +293,6 @@ def test_submit_from_second_thread_raises():
     assert len(errors) == 1
     assert isinstance(errors[0], RuntimeError)
     assert "single producer thread" in str(errors[0])
-
-
-# --- worker exception safety ---
 
 
 def test_unexpected_exception_resolves_as_transient_error():
@@ -334,14 +313,11 @@ def test_unexpected_exception_resolves_as_transient_error():
     assert result.status == "transient_error"
 
 
-# --- shutdown ---
-
-
 def test_close_joins_all_worker_threads():
     """close() joins every worker thread; none remain alive afterwards."""
     config = Config(max_workers=3)
     service = URLCheckService(config)
-    workers = list(service._workers)  # noqa: SLF001 - internal, but this is a whitebox test
+    workers = list(service._workers)
     assert all(worker.is_alive() for worker in workers)
     service.close()
     assert all(not worker.is_alive() for worker in workers)

@@ -100,8 +100,6 @@ class URLCheckService:
         for worker in self._workers:
             worker.start()
 
-    # -- producer side (must be called from a single thread) -------------
-
     def submit(self, url: MarkdownURL) -> "Future[URLCheckResult]":
         """
         Submit a URL for checking, deduped against the run-wide memo.
@@ -154,8 +152,6 @@ class URLCheckService:
             self._cond.notify_all()
         for worker in self._workers:
             worker.join()
-
-    # -- scheduling / bookkeeping (all called with self._cond held) -------
 
     def _check_single_producer_locked(self) -> None:
         current = threading.get_ident()
@@ -222,7 +218,7 @@ class URLCheckService:
                 retry_on_429=self._config.retry_on_429,
                 fallback_retry_delay=self._config.fallback_retry_delay,
             )
-        except Exception:  # noqa: BLE001 - a worker crashing must not hang collect() forever
+        except Exception:
             # Treat it like any other unreachable-URL outcome instead of propagating: one
             # unexpected exception shouldn't abort collection of every other file's results.
             result = URLCheckResult(status="transient_error", http_status_code=None)

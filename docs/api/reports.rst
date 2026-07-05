@@ -5,22 +5,63 @@ Base
 ----
 
 .. automodule:: markdown_checker.reports.base
-	:members:
-	:undoc-members:
-	:show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-Markdown
+Model
+------
+
+.. automodule:: markdown_checker.reports.model
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Registry
 --------
 
-.. automodule:: markdown_checker.reports.markdown
-	:members:
-	:undoc-members:
-	:show-inheritance:
+.. automodule:: markdown_checker.reports.registry
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-Format Output
+
+Writer
+------
+
+.. automodule:: markdown_checker.reports.writer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Markdown Renderer
+------------------
+
+.. automodule:: markdown_checker.reports.renderers.markdown
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+JSON Renderer
 -------------
 
-.. automodule:: markdown_checker.reports.format_output
-	:members:
-	:undoc-members:
-	:show-inheritance:
+.. automodule:: markdown_checker.reports.renderers.json
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+GitHub Annotations Renderer
+----------------------------
+
+.. automodule:: markdown_checker.reports.renderers.annotations
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Console Renderer
+-----------------
+
+.. automodule:: markdown_checker.reports.renderers.console
+    :members:
+    :undoc-members:
+    :show-inheritance:

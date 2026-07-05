@@ -4,7 +4,7 @@ Usage
 The library provides the following functions.
 
 .. contents:: Available checks
-	:local:
+    :local:
 
 ``check_broken_paths``
 ----------------------
@@ -16,7 +16,7 @@ Example
 
 .. code-block:: bash
 
-	markdown-checker -d . -f check_broken_paths -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
+    markdown-checker -d . -f check_broken_paths -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
 
 ``check_broken_urls``
 ---------------------
@@ -29,7 +29,7 @@ Example
 
 .. code-block:: bash
 
-	markdown-checker -d . -f check_broken_urls -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
+    markdown-checker -d . -f check_broken_urls -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
 
 ``check_urls_locale``
 ---------------------
@@ -41,7 +41,7 @@ Example
 
 .. code-block:: bash
 
-	markdown-checker -d . -f check_urls_locale -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
+    markdown-checker -d . -f check_urls_locale -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
 
 ``check_paths_tracking``
 ------------------------
@@ -53,7 +53,7 @@ Example
 
 .. code-block:: bash
 
-	markdown-checker -d . -f check_paths_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
+    markdown-checker -d . -f check_paths_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
 
 ``check_urls_tracking``
 -----------------------
@@ -65,7 +65,7 @@ Example
 
 .. code-block:: bash
 
-	markdown-checker -d . -f check_urls_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
+    markdown-checker -d . -f check_urls_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/docs/CONTRIBUTING.rst
 
 Want to do more?
 ----------------

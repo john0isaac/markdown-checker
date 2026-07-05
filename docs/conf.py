@@ -24,6 +24,9 @@ extensions = [
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 autodoc_preserve_defaults = True
+autodoc_default_options = {
+    "no-value": True,
+}
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 napoleon_use_rtype = False

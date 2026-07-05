@@ -4,8 +4,6 @@ from markdown_checker.checks.tracking import PathsTrackingCheck
 from markdown_checker.checks.tracking import URLsTrackingCheck
 from markdown_checker.models.config import Config
 
-# --- URLsTrackingCheck ---
-
 
 @pytest.fixture
 def urls_check():
@@ -96,9 +94,6 @@ def test_urls_tracking_id_detection(urls_check, make_markdown_url, make_markdown
     links = make_markdown_links(urls=[url])
     result = urls_check.run(links, config=Config(tracking_domains=["learn.microsoft.com"]))
     assert (len(result) == 0) == has_tracking
-
-
-# --- PathsTrackingCheck ---
 
 
 @pytest.fixture

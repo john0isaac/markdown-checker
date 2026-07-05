@@ -2,6 +2,6 @@ Main
 ====
 
 .. automodule:: markdown_checker
-	:members:
-	:undoc-members:
-	:noindex:
+    :members:
+    :undoc-members:
+    :noindex:

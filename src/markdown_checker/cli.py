@@ -4,10 +4,17 @@ from pathlib import Path
 
 import click
 
+from markdown_checker import __version__
 from markdown_checker.checker import run_check_on_files
 from markdown_checker.models.config import Config
-from markdown_checker.reports.format_output import format_issues_table
-from markdown_checker.reports.markdown import MarkdownGenerator
+from markdown_checker.reports import build_report
+from markdown_checker.reports import get_renderer
+from markdown_checker.reports import RENDERERS
+from markdown_checker.reports import ReportContext
+from markdown_checker.reports import ReportFormat
+from markdown_checker.reports import write_report
+from markdown_checker.reports.renderers.annotations import GitHubAnnotationsRenderer
+from markdown_checker.reports.renderers.console import ConsoleRenderer
 from markdown_checker.utils.github_env import get_github_repo_blob_url
 from markdown_checker.utils.list_files import get_files_paths_list
 
@@ -19,7 +26,7 @@ class ListOfStrings(click.Option):
     Ref: https://stackoverflow.com/questions/47631914/how-to-pass-several-list-of-arguments-to-click-option
     """
 
-    def type_cast_value(self, ctx, value) -> list[str]:  # type: ignore
+    def type_cast_value(self, ctx, value) -> list[str]:  # type: ignore[no-untyped-def]
         try:
             if isinstance(value, str):
                 return list(filter(None, value.split(",")))
@@ -167,11 +174,24 @@ class ListOfStrings(click.Option):
     "--output-file-name",
     type=str,
     default="comment",
-    help="Name of the output file.",
+    help="Name of the output file, without extension. Use '-' to write to stdout.",
+    required=False,
+)
+@click.option(
+    "-rf",
+    "--report-format",
+    type=click.Choice(sorted(RENDERERS)),
+    default="markdown",
+    help="Report format to generate when errors are found.",
     required=False,
 )
 @click.version_option(
-    message=(f"%(prog)s, %(version)s\nPython ({platform.python_implementation()}) {platform.python_version()}"),
+    version=__version__,
+    message=(
+        f"%(prog)s, %(version)s\n"
+        f"Python ({platform.python_implementation()}) {platform.python_version()} {platform.architecture()[0]}\n"
+        f"{platform.system()} {platform.release()}"
+    ),
 )
 @click.pass_context
 def main(
@@ -192,6 +212,7 @@ def main(
     max_workers: int | None,
     per_host_delay: float,
     output_file_name: str,
+    report_format: ReportFormat,
 ) -> None:
     """A markdown link validation reporting tool."""
     if max_workers is None:
@@ -244,57 +265,32 @@ def main(
     )
 
     if check_result.issues:
-        error_by_file = []
-        rendered_issues = []
-        error_count = 0
-        warning_count = 0
+        report_context = ReportContext(
+            check_name=func,
+            output_mode=config.output_mode,
+            repo_url=repo_url,
+            guide_url=guide_url,
+            tool_version=__version__,
+        )
+        report = build_report(check_result, context=report_context, files_checked=len(files_paths))
 
-        for path, issues in check_result.issues:
-            file_errors = []
-            resolved_path = path.resolve() if config.output_mode == "local" else None
-            for issue in issues:
-                is_warning = issue.issue_level == "warning"
-                if issue.issue_level == "error":
-                    error_count += 1
-                    file_errors.append(issue)
-                else:
-                    warning_count += 1
-                if config.output_mode == "ci":
-                    level = "warning" if is_warning else "error"
-                    rendered_issues.append(
-                        (
-                            f"::{level} file={issue.file_path},line={issue.line_number}::"
-                            f"File {issue.file_path}, line {issue.line_number}, "
-                            f"Link {issue} {issue.issue}.",
-                            "yellow" if is_warning else "red",
-                        )
-                    )
-                else:
-                    rendered_issues.append(
-                        (
-                            f"\tFile '{resolved_path}', line {issue.line_number}\n{issue} {issue.issue}.\n",
-                            "yellow" if is_warning else "red",
-                        )
-                    )
-            if file_errors:
-                error_by_file.append((path, file_errors))
+        if report.has_errors:
+            renderer = get_renderer(report_format)
+            out_path = None if output_file_name == "-" else Path(f"{output_file_name}{renderer.file_extension}")
+            write_report(renderer.render(report), output_path=out_path)
+            click.echo(click.style(f"😭 Found {report.error_count} issues in the following files:", fg="red"), err=True)
 
-        if error_count:
-            formatted_output = format_issues_table(error_by_file, config.output_mode, repo_url)
-            generator = MarkdownGenerator(contributing_guide_url=guide_url, output_file_name=output_file_name)
-            generator.generate(func, formatted_output)
-            click.echo(click.style(f"😭 Found {error_count} issues in the following files:", fg="red"), err=True)
-
-        if warning_count:
+        if report.has_warnings:
             click.echo(
-                click.style(f"⚠ {warning_count} links had warnings:", fg="yellow"),
+                click.style(f"⚠ {report.warning_count} links had warnings:", fg="yellow"),
                 err=True,
             )
 
-        for message, color in rendered_issues:
-            click.echo(click.style(message, fg=color), err=True)
+        terminal_renderer = GitHubAnnotationsRenderer() if config.output_mode == "ci" else ConsoleRenderer()
+        for message, level in terminal_renderer.render_lines(report):
+            click.echo(click.style(message, fg="yellow" if level == "warning" else "red"), err=True)
 
-        ctx.exit(1 if error_count else 0)
+        ctx.exit(1 if report.has_errors else 0)
 
     click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
     ctx.exit(0)

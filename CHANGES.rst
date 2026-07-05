@@ -1,3 +1,9 @@
+[v1.2.0] 5 July 2026
+--------------------
+
+- Add support for json, github-announcements, markdown, and console report formats.
+
+
 [v1.1.0] 4 July 2026
 --------------------
 
