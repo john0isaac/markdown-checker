@@ -8,24 +8,28 @@ from markdown_checker.patterns import TRACKING_QUERY_PATTERN
 
 @dataclass(slots=True)
 class MarkdownPath(MarkdownLinkBase):
-    """Dataclass to store info about a path"""
+    """A relative (or root-relative) file path extracted from a markdown link.
+
+    "Fragment" below always means the trailing ``?query`` and/or ``#anchor``
+    part of the link, e.g. in ``docs/usage.md#section?wt.mc_id=x`` the
+    fragment is ``#section?wt.mc_id=x`` and the path is ``docs/usage.md``.
+    """
 
     @property
     def path_without_fragments(self) -> Path:
         """
-        Get the path without the fragment
-
-        Returns:
-            The path without the fragment
+        The link as a :class:`~pathlib.Path`, with any query/anchor fragment
+        stripped. Equivalent to ``Path(self.remove_fragments())``.
         """
         return Path(self.remove_fragments())
 
     def remove_fragments(self) -> str:
         """
-        Remove the fragments from a path
+        Strip the tracking query string and any trailing ``?query``/``#anchor``
+        fragment from the link, leaving just the file path portion.
 
         Returns:
-            The path without the fragment
+            The link with its fragment removed, as a string.
         """
         cleaned = TRACKING_QUERY_PATTERN.sub("", self.link)
 
@@ -49,10 +53,16 @@ class MarkdownPath(MarkdownLinkBase):
 
     def get_full_path(self) -> Path:
         """
-        Get the full path of the file by resolving the path without fragments
+        Resolve the link (with its fragment stripped) to an absolute path,
+        relative to the current working directory.
+
+        This is used for links that are themselves absolute (e.g.
+        ``/docs/usage.md``) or otherwise resolvable without knowing which
+        file the link appeared in. If resolution fails (e.g. on an unusual
+        path), falls back to :meth:`get_full_path_relative`.
 
         Returns:
-            The full path of the file
+            The resolved absolute path.
         """
         try:
             return self.path_without_fragments.resolve()
@@ -61,16 +71,24 @@ class MarkdownPath(MarkdownLinkBase):
 
     def get_full_path_relative(self) -> str:
         """
-        Get the full path of the file by resolving the path without fragments
+        Resolve the link (with its fragment stripped) relative to the
+        directory of the markdown file it was found in (``self.file_path``),
+        e.g. a link ``../img.png`` found in ``docs/usage.md`` resolves
+        against ``docs/``.
 
         Returns:
-            The full path of the file
+            The resolved path, as a normalized string.
         """
         return os.path.normpath(os.path.join(os.path.dirname(self.file_path), self.remove_fragments()))
 
     def exists(self) -> bool:
         """
-        Check if the path exists
+        Check whether the link's target file exists on disk.
+
+        Tries resolution relative to the containing markdown file first
+        (see :meth:`get_full_path_relative`), then as an absolute/CWD-relative
+        path (see :meth:`get_full_path`). Used by ``check_broken_paths`` to
+        flag links whose target is missing.
 
         Returns:
             True if the path exists, False otherwise

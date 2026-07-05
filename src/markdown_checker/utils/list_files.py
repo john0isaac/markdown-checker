@@ -16,7 +16,9 @@ def get_files_paths_list(root_path: Path, extensions: list[str] | None = None) -
         extensions (list[str]): A list of file extensions to filter the search.
 
     Returns:
-        A tuple containing a list of subdirectories and a list of file paths.
+        A ``(sub_folders, files_paths)`` tuple: all subdirectories found
+        (recursively, regardless of ``extensions``), and all files matching
+        ``extensions`` (recursively).
     """
 
     extensions = extensions or []

@@ -17,7 +17,14 @@ class BaseCheck(Generic[TLink], ABC):
     """Abstract base class for all link checks."""
 
     name: str
+    """The CLI ``--func`` value and :data:`~markdown_checker.checks.REGISTRY`
+    key that selects this check, e.g. ``"check_broken_paths"``.
+    """
+
     link_type: Literal["paths", "urls"]
+    """Which half of a file's extracted links this check consumes:
+    ``"paths"`` for ``links.paths``, ``"urls"`` for ``links.urls``.
+    """
 
     @abstractmethod
     def run(

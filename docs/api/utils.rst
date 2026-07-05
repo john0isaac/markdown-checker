@@ -1,6 +1,10 @@
 Utilities
 =========
 
+Standalone helpers: link extraction, file listing, the concurrent
+URL-checking pipeline, GitHub Actions environment detection, pyproject.toml
+config loading, and the CLI spinner.
+
 Extract Links
 -------------
 

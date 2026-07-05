@@ -9,13 +9,13 @@ from markdown_checker.reports.renderers.console import ConsoleRenderer
 from markdown_checker.reports.renderers.json import JsonRenderer
 from markdown_checker.reports.renderers.markdown import MarkdownRenderer
 
-# Maps the CLI --report-format argument value to the corresponding renderer class.
 RENDERERS: dict[ReportFormat, type[ReportRenderer]] = {
     MarkdownRenderer.format_name: MarkdownRenderer,
     JsonRenderer.format_name: JsonRenderer,
     GitHubAnnotationsRenderer.format_name: GitHubAnnotationsRenderer,
     ConsoleRenderer.format_name: ConsoleRenderer,
 }
+"""Maps the CLI ``--report-format`` argument value to the corresponding renderer class."""
 
 
 def get_renderer(format_name: ReportFormat, **options: object) -> ReportRenderer:

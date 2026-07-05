@@ -18,8 +18,30 @@ class URLCheckResult:
     """Typed outcome of checking whether a URL is reachable."""
 
     status: Literal["alive", "broken", "rate_limited", "transient_error", "unverifiable"]
+    """One of:
+
+    - ``alive``: A 2xx response was received. The link is healthy.
+    - ``broken``: All retries returned a non-2xx response with no
+      rate-limit or auth signal. Reported as an error-level issue.
+    - ``rate_limited``: A 429 (or another non-success response carrying
+      ``Retry-After``) was seen. Reported as a warning-level issue; never
+      fails the run.
+    - ``unverifiable``: Both HEAD and GET returned 401/403 - the server is
+      reachable but blocking automated access. Reported as a warning-level issue.
+    - ``transient_error``: A network-level error (DNS failure, connection
+      timeout, etc.) with no HTTP response at all. Reported as a
+      warning-level issue.
+    """
+
     http_status_code: int | None = None
+    """The last HTTP status code observed, or None if no response was ever
+    received (e.g. ``transient_error``).
+    """
+
     retry_after: int | None = None
+    """Seconds the caller should wait before retrying, set only when
+    ``status`` is ``rate_limited``.
+    """
 
 
 def _retry_after_delay(response: httpx2.Response, fallback: int) -> float | None:
@@ -54,7 +76,7 @@ def _retry_after_delay(response: httpx2.Response, fallback: int) -> float | None
 
 @dataclass(slots=True)
 class MarkdownURL(MarkdownLinkBase):
-    """Dataclass to store info about a url"""
+    """A single web URL extracted from a markdown file, plus the ability to check it."""
 
     @property
     def parsed_url(self) -> ParseResult:
@@ -68,7 +90,8 @@ class MarkdownURL(MarkdownLinkBase):
 
     def host_name(self) -> str:
         """
-        Returns the hostname of the URL without the protocol
+        Return the URL's hostname (netloc), including any port but not the
+        scheme, e.g. ``"example.com"`` for ``"https://example.com/path"``.
         """
         return self.parsed_url.netloc
 

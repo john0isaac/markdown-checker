@@ -1,6 +1,9 @@
 Checks
 ======
 
+The five built-in checks and their shared base class. See
+:doc:`../reference/checks` for what each one flags.
+
 Base
 ----
 

@@ -1,3 +1,5 @@
+"""The ``check_broken_paths`` check: flags relative/root-relative paths that don't exist on disk."""
+
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.models import Config
 from markdown_checker.models import MarkdownPath
@@ -17,6 +19,12 @@ class BrokenPathsCheck(BaseCheck[MarkdownPath]):
         config: Config | None = None,
         service: URLCheckService | None = None,
     ) -> list[MarkdownPath]:
+        """Flag every path in ``links.paths`` whose target does not exist on
+        disk (see :meth:`MarkdownPath.exists
+        <markdown_checker.models.path.MarkdownPath.exists>`), setting
+        ``issue="is broken"`` (error-level) on each. ``config`` and
+        ``service`` are unused: this check does no network I/O.
+        """
         detected_issues: list[MarkdownPath] = []
         for path in links.paths:
             if not path.exists():

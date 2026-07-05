@@ -1,3 +1,5 @@
+"""The five built-in checks and the registry that maps CLI ``--func`` values to them."""
+
 from markdown_checker.checks.base import BaseCheck
 from markdown_checker.checks.broken_paths import BrokenPathsCheck
 from markdown_checker.checks.broken_urls import BrokenURLsCheck
@@ -6,7 +8,6 @@ from markdown_checker.checks.tracking import PathsTrackingCheck
 from markdown_checker.checks.tracking import URLsTrackingCheck
 from markdown_checker.models import MarkdownLinkBase
 
-# Maps the CLI --func argument value to the corresponding check instance.
 REGISTRY: dict[str, BaseCheck[MarkdownLinkBase]] = {
     BrokenPathsCheck.name: BrokenPathsCheck(),
     BrokenURLsCheck.name: BrokenURLsCheck(),
@@ -14,5 +15,6 @@ REGISTRY: dict[str, BaseCheck[MarkdownLinkBase]] = {
     PathsTrackingCheck.name: PathsTrackingCheck(),
     URLsLocaleCheck.name: URLsLocaleCheck(),
 }
+"""Maps the CLI ``--func`` argument value to the corresponding check instance."""
 
 __all__ = ["REGISTRY", "BaseCheck"]

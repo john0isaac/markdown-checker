@@ -5,103 +5,84 @@
 [![GitHub issues](https://img.shields.io/badge/issue_tracking-github-blue.svg)](https://github.com/john0isaac/markdown-checker/issues)
 [![Contributing](https://img.shields.io/badge/PR-Welcome-%23FF8300.svg?)](https://github.com/john0isaac/markdown-checker/pulls)
 
-markdown-checker is a markdown link validation reporting tool. It provides a couple of functions to validate relative paths and web URLs.
+markdown-checker is a markdown link validation reporting tool for `.md` and
+`.ipynb` files. It flags broken relative paths, broken web URLs, missing
+locale segments, and missing tracking IDs, then writes the findings as a
+report your CI can post back to a pull request.
+
+## Features
+
+- Five built-in checks: broken relative paths, broken web URLs, locale
+  segments in URLs, and tracking IDs on URLs and paths.
+- Concurrent URL checking with cross-file deduplication, per-host rate
+  pacing, and `Retry-After`/429 handling, so large repositories don't
+  trip host rate limits.
+- Four report formats: `markdown`, `json`, `github-annotations`, and
+  `console`.
+- Error vs. warning severity - rate-limited or unverifiable links are
+  reported but never fail your CI.
+- Configuration via a `[tool.markdown-checker]` table in `pyproject.toml`,
+  so you don't have to repeat flags in every command or workflow file.
 
 ## Installation
-
-Install the package:
 
 ```bash
 pip install markdown-checker
 ```
 
-### Documentation
+## Quickstart
 
-- [Full documentation](https://markdown-checker.readthedocs.io/en/latest/).
+```bash
+markdown-checker . -f check_broken_paths
+```
 
-## 1, 2, 3 - How To
+```text
+🔍 Checked 42 links in 10 files.
+All files are compliant with the guidelines. 🎉
+```
 
-1. Run `pip install markdown-checker`.
-2. Run `markdown-checker -d {src} -f {func} -gu {url}`. Replace `{src}` with the directory you want to analyze, `{func}` with the available functions like `check_broken_paths`, `{gu}` with your contribution guidance full URL.
-3. The output will be displayed in the terminal and in a `comment.md` file.
+When issues are found, a `comment.md` report is written and the command
+exits with a non-zero status:
 
-For more customizations read the docs.
-
-> **Note:** When using list parameters (like `--skip-domains`, `--skip-files`, etc.), provide values as comma-separated without spaces: `--skip-domains=example.com,test.com`. Do not use square brackets or spaces after commas. See the [Advanced Usage](https://markdown-checker.readthedocs.io/en/latest/advanced/) documentation for detailed examples.
+```text
+🔍 Checked 42 links in 10 files.
+😭 Found 1 issues in the following files:
+    File 'docs/index.md', line 5
+./missing.md is broken.
+```
 
 ## Using `markdown-checker` in GitHub Actions
 
-You can run this tool within a GitHub workflow using the [action-check-markdown](https://github.com/marketplace/actions/check-markdown) GitHub action.
+Run this tool within a GitHub workflow using the
+[action-check-markdown](https://github.com/marketplace/actions/check-markdown)
+GitHub Action, which posts the report as a pull request comment:
 
-The action will automatically post the output of the tool to your GitHub pull request as a comment.
-
-# Usage
-
-The library provides the following functions:
-
-- [Usage](#usage)
-  - [`check_broken_paths`](#check_broken_paths)
-  - [`check_broken_urls`](#check_broken_urls)
-  - [`check_urls_locale`](#check_urls_locale)
-  - [`check_paths_tracking`](#check_paths_tracking)
-  - [`check_urls_tracking`](#check_urls_tracking)
-  - [Configuration](#configuration)
-
-## `check_broken_paths`
-
-This function ensures that any relative path in your files are working.
-
-Example:
-
-```bash
-markdown-checker -d . -f check_broken_paths -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
+```yaml
+- uses: john0isaac/action-check-markdown@v1.1.0
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    command: check_broken_paths
+    directory: ./
+    guide-url: "https://github.com/<owner>/<repo>/blob/main/CONTRIBUTING.md"
 ```
 
-## `check_broken_urls`
+See the [GitHub Actions how-to](https://markdown-checker.readthedocs.io/en/latest/howto/github-actions/)
+for the full workflow, including running `check_broken_urls` (not yet
+supported by the wrapper action) directly as a step.
 
-This function ensures that any web URL in your files is working and returning 200 status code.
+## Documentation
 
-Example:
+- [Tutorial](https://markdown-checker.readthedocs.io/en/latest/tutorial/) - install and run your first check.
+- [How-to guides](https://markdown-checker.readthedocs.io/en/latest/howto/) - configuration, rate limiting, report formats, CI.
+- [CLI reference](https://markdown-checker.readthedocs.io/en/latest/reference/cli/) - every command-line option.
+- [API reference](https://markdown-checker.readthedocs.io/en/latest/api/) - for programmatic use.
+- [Full documentation](https://markdown-checker.readthedocs.io/en/latest/).
 
-```bash
-markdown-checker -d . -f check_broken_urls -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
-```
+## Contributing
 
-## `check_urls_locale`
+Contributions are welcome - see the
+[Contributing guide](https://markdown-checker.readthedocs.io/en/latest/CONTRIBUTING/).
 
-This function checks if country specific locale is present in URLs.
+## License
 
-Example:
-
-```bash
-markdown-checker -d . -f check_urls_locale -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
-```
-
-## `check_paths_tracking`
-
-This function ensures that any relative path has tracking in it.
-
-Example:
-
-```bash
-markdown-checker -d . -f check_paths_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
-```
-
-## `check_urls_tracking`
-
-This function ensures that any URL has tracking in it.
-
-Example:
-
-```bash
-markdown-checker -d . -f check_urls_tracking -gu https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md
-```
-
-## Configuration
-
-Every CLI option can also be set in a `[tool.markdown-checker]` table in `pyproject.toml`, using
-hyphenated keys that mirror the long option names (e.g. `skip-files`, `max-workers`). A value
-passed on the command line always wins over the same value in `pyproject.toml`, which in turn
-wins over the built-in default. Use `-c`/`--config PATH` to point at a specific file, or
-`--isolated` to ignore configuration files for a single run. See the
-[Usage](https://markdown-checker.readthedocs.io/en/latest/usage/#configuration) docs for details.
+[MIT](https://github.com/john0isaac/markdown-checker/blob/main/LICENSE)

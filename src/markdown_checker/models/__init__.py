@@ -1,3 +1,5 @@
+"""Data models shared by the checks: extracted links and runtime configuration."""
+
 from markdown_checker.models.base import MarkdownLinkBase
 from markdown_checker.models.config import Config
 from markdown_checker.models.config import create_http_client
