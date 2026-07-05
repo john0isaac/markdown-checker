@@ -88,7 +88,7 @@ default-groups = ["dev", "pre-commit", "tests", "typing"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py310"
+target-version = "py311"
 src = ["src"]
 fix = true
 show-fixes = true

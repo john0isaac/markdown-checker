@@ -2,7 +2,7 @@ import email.utils
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from datetime import timezone
+from datetime import UTC
 from typing import Literal
 from urllib.parse import ParseResult
 from urllib.parse import urlparse
@@ -65,7 +65,7 @@ def _retry_after_delay(response: httpx2.Response, fallback: int) -> float | None
         # Try HTTP-date format (e.g. "Wed, 21 Oct 2015 07:28:00 GMT").
         try:
             dt: datetime = email.utils.parsedate_to_datetime(header)
-            now: datetime = datetime.now(timezone.utc)
+            now: datetime = datetime.now(UTC)
             delay: float = (dt - now).total_seconds()
             return max(0.0, delay)
         except Exception:

@@ -3,11 +3,11 @@ Module to load CLI defaults from ``[tool.markdown-checker]`` in ``pyproject.toml
 """
 
 import difflib
+import tomllib
 from pathlib import Path
 from typing import Any
 
 import click
-import tomllib
 
 SECTION = "markdown-checker"
 
