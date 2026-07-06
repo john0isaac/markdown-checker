@@ -71,9 +71,8 @@ method, this part of the documentation is for you.
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
-   :glob:
 
-   api/*
+   api/index
 
 Additional Notes
 ----------------
