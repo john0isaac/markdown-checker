@@ -58,7 +58,7 @@ Run this tool within a GitHub workflow using the
 GitHub Action, which posts the report as a pull request comment:
 
 ```yaml
-- uses: john0isaac/action-check-markdown@v1.2.0
+- uses: john0isaac/action-check-markdown@v1.3.0
   with:
     github-token: ${{ secrets.GITHUB_TOKEN }}
     command: check_broken_paths
@@ -67,8 +67,7 @@ GitHub Action, which posts the report as a pull request comment:
 ```
 
 See the [GitHub Actions how-to](https://markdown-checker.readthedocs.io/en/latest/howto/github-actions/)
-for the full workflow, including running `check_broken_urls` (not yet
-supported by the wrapper action) directly as a step.
+for the full workflow.
 
 ## Documentation
 

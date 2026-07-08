@@ -42,40 +42,11 @@ replacing ``guide-url`` with the URL of your own contribution guide:
               directory: ./
               guide-url: "https://github.com/<owner>/<repo>/blob/main/CONTRIBUTING.md"
 
-The ``command`` input selects which check to run. As of v1.2.0 the action
+The ``command`` input selects which check to run it
 supports ``check_broken_paths``, ``check_paths_tracking``,
-``check_urls_tracking``, and ``check_urls_locale`` - **not**
+``check_urls_tracking``, and ``check_urls_locale``
 ``check_broken_urls``. Add a separate job (or step) per command if you want
 to run more than one check in the same workflow.
-
-Run ``check_broken_urls`` directly (no wrapper action)
-------------------------------------------------------------
-
-Since the wrapper action doesn't support URL checking yet, install and
-invoke markdown-checker directly as a workflow step instead. Use
-``--report-format github-annotations`` so failures show up as inline
-annotations on the PR diff, the same way the action's output does:
-
-.. code-block:: yaml
-
-    jobs:
-      check-broken-urls:
-        runs-on: ubuntu-latest
-        permissions:
-          contents: read
-        steps:
-          - uses: actions/checkout@v7
-          - uses: actions/setup-python@v6
-            with:
-              python-version: "3.11"
-          - run: pip install markdown-checker
-          - run: >
-              markdown-checker . -f check_broken_urls
-              -rf github-annotations -o -
-
-Because ``$CI=true`` is set automatically in GitHub Actions, warnings
-(rate-limited/unverifiable links) are emitted as ``::warning`` annotations
-rather than failing the job; only broken links (an error-level issue) fail it.
 
 Verify it worked
 ------------------
