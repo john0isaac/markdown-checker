@@ -2,6 +2,7 @@
 
 import os
 import platform
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,23 @@ class PyprojectCommand(click.Command):
         if "default_map" not in extra:
             extra["default_map"] = resolve_default_map(args, self)
         return super().make_context(info_name, args, parent, **extra)
+
+
+def _echo_safe(message: str, *, fg: str | None = None, err: bool = False) -> None:
+    """Echo a (optionally styled) message, dropping characters the output stream can't encode.
+
+    On Windows, piping stdout/stderr to another process (e.g. ``| grep``) can make Python
+    fall back to a legacy code page (e.g. cp1252) that can't represent emoji. Retry without
+    those characters instead of crashing the whole command.
+    """
+    styled = click.style(message, fg=fg) if fg else message
+    try:
+        click.echo(styled, err=err)
+    except UnicodeEncodeError:
+        stream = sys.stderr if err else sys.stdout
+        encoding = getattr(stream, "encoding", None) or "ascii"
+        safe_message = styled.encode(encoding, errors="ignore").decode(encoding)
+        click.echo(safe_message, err=err)
 
 
 class ListOfStrings(click.Option):
@@ -309,9 +327,9 @@ def main(
             progress_callback=lambda: bar.update(1),
         )
 
-    click.echo(
-        click.style(f"\n🔍 Checked {check_result.links_checked} links in {len(files_paths)} files.", fg="blue"),
-        err=False,
+    _echo_safe(
+        f"\n🔍 Checked {check_result.links_checked} links in {len(files_paths)} files.",
+        fg="blue",
     )
 
     if check_result.issues:
@@ -328,13 +346,10 @@ def main(
             renderer = get_renderer(report_format)
             out_path = None if output_file_name == "-" else Path(f"{output_file_name}{renderer.file_extension}")
             write_report(renderer.render(report), output_path=out_path)
-            click.echo(click.style(f"😭 Found {report.error_count} issues in the following files:", fg="red"), err=True)
+            _echo_safe(f"😭 Found {report.error_count} issues in the following files:", fg="red", err=True)
 
         if report.has_warnings:
-            click.echo(
-                click.style(f"⚠ {report.warning_count} links had warnings:", fg="yellow"),
-                err=True,
-            )
+            _echo_safe(f"⚠ {report.warning_count} links had warnings:", fg="yellow", err=True)
 
         terminal_renderer = GitHubAnnotationsRenderer() if config.output_mode == "ci" else ConsoleRenderer()
         for message, level in terminal_renderer.render_lines(report):
@@ -342,5 +357,5 @@ def main(
 
         ctx.exit(1 if report.has_errors else 0)
 
-    click.echo(click.style("All files are compliant with the guidelines. 🎉", fg="green"), err=False)
+    _echo_safe("All files are compliant with the guidelines. 🎉", fg="green")
     ctx.exit(0)

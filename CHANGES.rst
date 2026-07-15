@@ -1,3 +1,9 @@
+[v1.2.2] 15 July 2026
+--------------------
+
+- Fallback to utf-8 encoding when terminal can't display emojis.
+
+
 [v1.2.1] 6 July 2026
 --------------------
 
