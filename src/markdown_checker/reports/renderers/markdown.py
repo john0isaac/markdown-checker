@@ -72,16 +72,22 @@ class MarkdownRenderer(ReportRenderer):
         return file_path.as_posix()
 
     def _format_issue_rows(self, issues: tuple[ReportIssue, ...], context: ReportContext) -> str:
-        parts: list[str] = ["<table><thead><tr><th>#</th><th>Link</th><th>Line Number</th></tr></thead><tbody>"]
+        parts: list[str] = [
+            "<table><thead><tr><th>#</th><th>Link</th><th>Line Number</th><th>Resolved Path</th></tr></thead><tbody>"
+        ]
         for i, issue in enumerate(issues, 1):
             file_link = self._file_link(issue.file_path, context)
             link_cell = _link_cell(issue.link)
+            resolved_cell = f"`{issue.resolved_path.as_posix()}`" if issue.resolved_path is not None else ""
             if file_link is None:
-                parts.append(f"<tr><td>{i}</td><td>{link_cell}</td><td>`{issue.line_number}`</td></tr>")
+                parts.append(
+                    f"<tr><td>{i}</td><td>{link_cell}</td><td>`{issue.line_number}`</td><td>{resolved_cell}</td></tr>"
+                )
             else:
                 parts.append(
                     f"<tr><td>{i}</td><td>{link_cell}</td>"
-                    f"<td>[`{issue.line_number}`]({file_link}#L{issue.line_number})</td></tr>"
+                    f"<td>[`{issue.line_number}`]({file_link}#L{issue.line_number})</td>"
+                    f"<td>{resolved_cell}</td></tr>"
                 )
         parts.append("</tbody></table>|\n")
         return "".join(parts)

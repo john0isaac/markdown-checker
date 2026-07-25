@@ -164,6 +164,37 @@ def test_issue_rows_non_url_link_stays_as_code():
     assert "[`./missing.md`]" not in result
 
 
+def test_issue_rows_header_includes_resolved_path_column():
+    """The table header includes a 'Resolved Path' column beside 'Line Number'."""
+    context = ReportContext(check_name="check_broken_paths")
+    result = MarkdownRenderer()._format_issue_rows((), context)
+    assert "<th>Line Number</th><th>Resolved Path</th>" in result
+
+
+def test_issue_rows_shows_resolved_path_when_set():
+    """When an issue has a resolved_path, it's rendered as a code cell."""
+    file_path = Path("file.md")
+    resolved_path = Path("/abs/missing.md")
+    issue = ReportIssue(
+        link="./missing.md",
+        line_number=1,
+        file_path=file_path,
+        message="is broken",
+        level="error",
+        resolved_path=resolved_path,
+    )
+    context = ReportContext(check_name="check_broken_paths")
+    result = MarkdownRenderer()._format_issue_rows((issue,), context)
+    assert f"<td>`{resolved_path.as_posix()}`</td>" in result
+
+
+def test_issue_rows_resolved_path_empty_cell_when_none(two_errors):
+    """When resolved_path is None (e.g. URL issues), the cell is rendered empty."""
+    context = ReportContext(check_name="check_broken_urls")
+    result = MarkdownRenderer()._format_issue_rows(two_errors, context)
+    assert "<td></td>" in result
+
+
 def test_issues_table_local_mode_has_file_links(two_errors):
     """In non-CI mode, file paths are rendered as clickable links."""
     context = ReportContext(check_name="check_broken_urls", output_mode="local")

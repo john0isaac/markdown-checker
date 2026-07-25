@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from markdown_checker.checker import CheckResult
+from markdown_checker.models.path import MarkdownPath
 from markdown_checker.models.url import MarkdownURL
 from markdown_checker.reports.model import build_report
 from markdown_checker.reports.model import ReportContext
@@ -75,3 +76,24 @@ def test_report_error_and_warning_counts_default_to_zero():
     assert report.warning_count == 0
     assert report.has_errors is False
     assert report.has_warnings is False
+
+
+def test_build_report_copies_resolved_path_for_path_issues():
+    """build_report copies resolved_path straight from the issue (set by check_broken_paths)."""
+    file_path = Path("docs/sample.md")
+    path = MarkdownPath(link="./missing.md", line_number=3, file_path=file_path, issue="is broken")
+    path.resolved_path = path.get_full_path()
+    check_result = CheckResult(issues=[(file_path, [path])], links_checked=1)
+    context = ReportContext(check_name="check_broken_paths")
+    report = build_report(check_result, context=context, files_checked=1)
+
+    assert report.files[0].errors[0].resolved_path == path.resolved_path
+
+
+def test_build_report_leaves_resolved_path_none_for_url_issues():
+    """build_report leaves resolved_path unset (None) for URL issues."""
+    check_result = _check_result_with(errors=1)
+    context = ReportContext(check_name="check_broken_urls")
+    report = build_report(check_result, context=context, files_checked=1)
+
+    assert report.files[0].errors[0].resolved_path is None

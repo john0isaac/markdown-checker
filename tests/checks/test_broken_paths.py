@@ -40,8 +40,9 @@ def test_missing_path_reported(check, tmp_path):
     links = MarkdownLinks(urls=[], paths=[path])
     result = check.run(links)
     assert len(result) == 1
-    assert result[0].issue == "is broken"
+    assert result[0].issue == f"could not be found at {path.get_full_path()}"
     assert result[0].link == "./nonexistent.md"
+    assert result[0].resolved_path == path.get_full_path()
 
 
 def test_mixed_existing_and_missing(check, tmp_path):

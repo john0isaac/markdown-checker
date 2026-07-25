@@ -48,7 +48,7 @@ exits with a non-zero status:
 🔍 Checked 42 links in 10 files.
 😭 Found 1 issues in the following files:
     File 'docs/index.md', line 5
-./missing.md is broken.
+./missing.md could not be found at ~/docs/.
 ```
 
 ## Using `markdown-checker` in GitHub Actions

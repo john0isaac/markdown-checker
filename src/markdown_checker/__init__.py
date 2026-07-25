@@ -2,7 +2,7 @@
 markdown-checker - a markdown link validation reporting tool.
 """
 
-__version__ = "1.2.2"
+__version__ = "1.3.0"
 
 from markdown_checker.cli import main
 from markdown_checker.models import Config
