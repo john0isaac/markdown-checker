@@ -29,6 +29,6 @@ class BrokenPathsCheck(BaseCheck[MarkdownPath]):
         for path in links.paths:
             if not path.exists():
                 path.resolved_path = path.get_full_path()
-                path.issue = f"could not be found at {path.resolved_path}"
+                path.issue = f"could not be found at {path.resolved_path.as_posix()}"
                 detected_issues.append(path)
         return detected_issues
