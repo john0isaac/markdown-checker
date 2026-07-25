@@ -16,7 +16,7 @@ class _DummyCheck(BaseCheck[MarkdownLinkBase]):
 
     def run(self, links, config=None, service=None):
         for path in links.paths:
-            path.issue = "is broken"
+            path.issue = f"could not be found at {path.get_full_path()}"
         return list(links.paths)
 
 

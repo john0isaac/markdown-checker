@@ -29,6 +29,12 @@ class ReportIssue:
     file_path: Path
     message: str
     level: Level
+    resolved_path: Path | None = None
+    """The link's resolved target path, copied from
+    :attr:`MarkdownLinkBase.resolved_path
+    <markdown_checker.models.base.MarkdownLinkBase.resolved_path>`; only set
+    by ``check_broken_paths``, ``None`` for every other check.
+    """
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,6 +115,7 @@ def build_report(
                 file_path=issue.file_path,
                 message=issue.issue,
                 level="error",
+                resolved_path=issue.resolved_path,
             )
             for issue in issues
             if issue.issue_level == "error"
@@ -120,6 +127,7 @@ def build_report(
                 file_path=issue.file_path,
                 message=issue.issue,
                 level="warning",
+                resolved_path=issue.resolved_path,
             )
             for issue in issues
             if issue.issue_level == "warning"

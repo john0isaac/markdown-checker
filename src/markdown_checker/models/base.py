@@ -34,6 +34,13 @@ class MarkdownLinkBase(ABC):
     code 1); ``"warning"`` is reported but never fails it.
     """
 
+    resolved_path: Path | None = None
+    """The link's resolved on-disk target path, set by
+    ``check_broken_paths`` (see :meth:`MarkdownPath.get_full_path
+    <markdown_checker.models.path.MarkdownPath.get_full_path>`); left unset
+    (``None``) by every other check, including URL checks.
+    """
+
     def has_locale(self) -> bool:
         """
         Check if the link has a locale

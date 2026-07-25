@@ -1,3 +1,9 @@
+[v1.3.0] 25 July 2026
+---------------------
+
+- Improve error message when a file is not found, including the file path and the current working directory.
+
+
 [v1.2.2] 15 July 2026
 ---------------------
 

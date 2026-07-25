@@ -26,7 +26,7 @@ Sample finding
     .. code-block:: text
 
         File 'docs/index.md', line 5
-        ./missing.md is broken.
+        ./missing.md could not be found at ~/docs/.
 
 ``check_broken_urls``
 ------------------------
