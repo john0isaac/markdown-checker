@@ -63,7 +63,7 @@ You'll see output similar to:
     🔍 Checked 2 links in 2 files.
     😭 Found 1 issues in the following files:
         File 'docs-sample/index.md', line 5
-    ./missing.md could not be found at ~/docs/.
+    ./missing.md could not be found at /docs/missing.md.
 
 Because an error-level issue was found, markdown-checker also writes a
 ``comment.md`` file in the current directory with the same information as a
