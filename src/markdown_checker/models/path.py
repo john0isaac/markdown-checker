@@ -38,14 +38,16 @@ class MarkdownPath(MarkdownLinkBase):
 
         # If a dot is found, slice the string up to the end of the extension
         if dot_index != -1:
-            # Find the next slash or fragment after the dot
+            # Find the next slash, query or fragment after the dot
             slash_index = cleaned.find("/", dot_index)
             fragment_index = cleaned.find("#", dot_index)
+            query_index = cleaned.find("?", dot_index)
 
-            # Determine the earliest occurrence of either slash or fragment or query
+            # Determine the earliest occurrence of either slash, query or fragment
             end_index = min(
                 slash_index if slash_index != -1 else len(cleaned),
                 fragment_index if fragment_index != -1 else len(cleaned),
+                query_index if query_index != -1 else len(cleaned),
             )
             return cleaned[:end_index]
         else:
@@ -97,14 +99,16 @@ class MarkdownPath(MarkdownLinkBase):
         link = self.link.lstrip("/") if self.link.startswith("/") else self.link
         cleaned = TRACKING_QUERY_PATTERN.sub("", link)
 
-        # Strip fragments/anchors the same way remove_fragments() does
+        # Strip queries/fragments the same way remove_fragments() does
         dot_index = cleaned.rfind(".")
         if dot_index != -1:
             slash_index = cleaned.find("/", dot_index)
             fragment_index = cleaned.find("#", dot_index)
+            query_index = cleaned.find("?", dot_index)
             end_index = min(
                 slash_index if slash_index != -1 else len(cleaned),
                 fragment_index if fragment_index != -1 else len(cleaned),
+                query_index if query_index != -1 else len(cleaned),
             )
             cleaned = cleaned[:end_index]
 
