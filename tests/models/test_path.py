@@ -13,6 +13,8 @@ from markdown_checker.models.path import MarkdownPath
         ("./docs/guide.md?WT.mc_id=test123", "./docs/guide.md"),
         ("../README.md#heading", "../README.md"),
         ("./docs/file.txt#frag", "./docs/file.txt"),
+        ("./docs/guide.md?foo=bar", "./docs/guide.md"),
+        ("./docs/guide.md?foo=bar#section", "./docs/guide.md"),
     ],
 )
 def test_remove_fragments(link: str, expected: str):
@@ -67,6 +69,15 @@ def test_exists_with_fragment(tmp_path: Path):
     target.write_text("# Section")
     parent = tmp_path / "parent.md"
     path = MarkdownPath(link="./readme.md#section", line_number=1, file_path=parent)
+    assert path.exists() is True
+
+
+def test_exists_with_query_string(tmp_path: Path):
+    """Returns True for paths with a query string when the base file exists."""
+    target = tmp_path / "readme.md"
+    target.write_text("# Section")
+    parent = tmp_path / "parent.md"
+    path = MarkdownPath(link="./readme.md?foo=bar", line_number=1, file_path=parent)
     assert path.exists() is True
 
 
