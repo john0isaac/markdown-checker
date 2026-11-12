@@ -140,3 +140,23 @@ def test_paths_tracking_multiple(paths_check, make_markdown_path, make_markdown_
     links = make_markdown_links(paths=paths)
     result = paths_check.run(links)
     assert len(result) == 2
+
+
+def test_paths_tracking_custom_params(paths_check, make_markdown_path, make_markdown_links):
+    """Any one of the configured tracking params counts, case-insensitively; the default no longer does."""
+    paths = [
+        make_markdown_path("./a.md?UTM_Source=x"),
+        make_markdown_path("./b.md?ref=1&cid=2"),
+        make_markdown_path("./c.md?WT.mc_id=x"),
+    ]
+    links = make_markdown_links(paths=paths)
+    result = paths_check.run(links, config=Config(tracking_param=["utm_source", "cid"]))
+    assert [path.link for path in result] == ["./c.md?WT.mc_id=x"]
+
+
+def test_urls_tracking_custom_params(urls_check, make_markdown_url, make_markdown_links):
+    """URL tracking check uses the configured tracking params."""
+    url = make_markdown_url("https://learn.microsoft.com/azure?utm_source=x")
+    links = make_markdown_links(urls=[url])
+    config = Config(tracking_domains=["microsoft.com"], tracking_param=["utm_source"])
+    assert urls_check.run(links, config=config) == []

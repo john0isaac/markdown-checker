@@ -55,8 +55,10 @@ Sample finding
 
 Flags
     URLs whose path contains a locale segment, e.g. ``/en-us/`` in
-    ``https://example.com/en-us/docs``. A "locale segment" is a
-    language-country pair matching ``xx-xx`` (case-insensitive).
+    ``https://example.com/en-us/docs`` or a trailing ``/en-us``. A "locale
+    segment" is a known language-country pair of the form ``xx-xx``
+    (case-insensitive), so look-alikes such as ``/ci-cd/`` aren't flagged.
+    The host, query string and anchor are not searched.
 Ignores
     ``www.nvidia.com`` (built in - its docs always include a locale
     segment), plus any host in ``--skip-domains`` or URL in
@@ -73,8 +75,8 @@ Sample finding
 --------------------------
 
 Flags
-    URLs on a configured tracking domain that are missing a ``wt.mc_id``
-    query parameter.
+    URLs on a configured tracking domain that are missing every
+    ``--tracking-param`` query parameter (``wt.mc_id`` by default).
 Ignores
     URLs on hosts *not* listed in ``--tracking-domains`` (the check does
     nothing for them), plus any host in ``--skip-domains`` or URL in
@@ -83,7 +85,8 @@ Default tracking domains
     ``github.com``, ``microsoft.com``, ``visualstudio.com``, ``aka.ms``,
     ``azure.com``.
 Options that affect it
-    ``--tracking-domains``, ``--skip-domains``, ``--skip-urls-containing``.
+    ``--tracking-domains``, ``--tracking-param``, ``--skip-domains``,
+    ``--skip-urls-containing``.
 Sample finding
     .. code-block:: text
 
@@ -94,10 +97,12 @@ Sample finding
 ---------------------------
 
 Flags
-    Every relative path link missing a ``wt.mc_id`` query parameter. Unlike
-    ``check_urls_tracking``, there is no domain filter - all paths are checked.
+    Every relative path link missing every ``--tracking-param`` query
+    parameter (``wt.mc_id`` by default). Unlike ``check_urls_tracking``,
+    there is no domain filter - all paths are checked.
 Options that affect it
-    ``SRC``/``--dir``, ``--extensions``, ``--skip-files`` only.
+    ``SRC``/``--dir``, ``--extensions``, ``--skip-files``,
+    ``--tracking-param``.
 Sample finding
     .. code-block:: text
 

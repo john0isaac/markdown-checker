@@ -24,6 +24,23 @@ def test_host_name(link: str, expected_host: str):
     assert url.host_name() == expected_host
 
 
+@pytest.mark.parametrize(
+    "link, domains, expected",
+    [
+        ("https://example.com/page", ["example.com"], True),
+        ("https://www.Example.com/page", ["EXAMPLE.com"], True),
+        ("https://user@example.com:8080/page", ["example.com"], True),
+        ("https://notexample.com/page", ["example.com"], False),
+        ("https://example.com.evil.net/page", ["example.com"], False),
+        ("https://example.com/page", [], False),
+    ],
+)
+def test_matches_domain(link: str, domains: list[str], expected: bool):
+    """Matches a domain exactly or as a parent domain, never as a substring."""
+    url = MarkdownURL(link=link, line_number=1, file_path=Path("test.md"))
+    assert url.matches_domain(domains) is expected
+
+
 def test_parsed_url_returns_parse_result():
     """Returns a ParseResult from urlparse."""
     url = MarkdownURL(link="https://example.com/path?q=1#frag", line_number=1, file_path=Path("test.md"))

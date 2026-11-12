@@ -79,6 +79,17 @@ def test_cli_check_paths_tracking(runner, resources_dir):
     assert "Checked" in result.output
 
 
+def test_cli_tracking_param(runner, tmp_path):
+    """--tracking-param replaces the default wt.mc_id requirement."""
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "README.md").write_text("[guide](./guide.md?utm_source=docs)\n")
+    args = ["-d", str(docs), "-f", "check_paths_tracking", "-o", "-", "--isolated"]
+
+    assert runner.invoke(main, args).exit_code == 1
+    assert runner.invoke(main, [*args, "--tracking-param=wt.mc_id,utm_source"]).exit_code == 0
+
+
 def test_cli_missing_dir(runner):
     """Fails with error when --dir is missing."""
     result = runner.invoke(main, ["-f", "check_broken_paths"])

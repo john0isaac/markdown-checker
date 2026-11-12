@@ -40,10 +40,7 @@ class URLsLocaleCheck(BaseCheck[MarkdownURL]):
 
         detected_issues: list[MarkdownURL] = []
         for url in links.urls:
-            hostname = url.host_name().lower()
-            if any(domain.lower() in hostname for domain in effective_skip) or any(
-                substring in url.link for substring in skip_urls_containing
-            ):
+            if url.matches_domain(effective_skip) or any(substring in url.link for substring in skip_urls_containing):
                 continue
             if url.has_locale():
                 url.issue = "has locale"

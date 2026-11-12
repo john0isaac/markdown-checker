@@ -1,7 +1,31 @@
-[v1.3.0] 25 July 2026
----------------------
+[v1.3.0] 12 November 2026
+-------------------------
 
-- Improve error message when a file is not found, including the file path and the current working directory.
+- Add ``--tracking-param`` (``tracking-param`` in ``pyproject.toml``) to
+  choose which tracking query parameters ``check_urls_tracking`` and
+  ``check_paths_tracking`` accept. Takes one or more comma-separated names; a
+  link passes if it has any of them (case-insensitive). Defaults to
+  ``wt.mc_id``.
+- ``check_broken_paths``: the issue message changed from ``is broken`` to
+  ``could not be found at <path>``, showing where the link was resolved to
+  (root-relative links like ``/docs/usage.md`` are shown under the current
+  working directory). The Markdown report gains a "Resolved Path" column.
+- ``check_broken_paths``: everything from the first ``?`` or ``#`` in a path
+  is now treated as the query/anchor, fixing false "broken" reports for
+  links like ``guide.md?foo=bar``, ``guide.md?v=1.2``,
+  ``guide.md#step-1.2`` and ``LICENSE#L10``.
+- ``check_broken_paths``: missing files without an extension (e.g.
+  ``./LICENSE``) or under a dotted folder (e.g. ``docs/v1.0/missing``) are
+  now reported. Previously they resolved to ``.``/``..`` or the folder and
+  were never flagged.
+- ``check_broken_paths``: percent-encoded paths (e.g. ``my%20file.md``) are
+  decoded before checking existence.
+- ``check_urls_locale``: only the URL path is searched, a trailing locale
+  (e.g. ``/en-us`` at the end) is detected, and only known locales are
+  flagged, so segments like ``/ci-cd/`` are no longer reported.
+- ``--skip-domains`` and ``--tracking-domains`` now match a host exactly or
+  as a parent domain instead of by substring, so ``example.com`` no longer
+  matches ``notexample.com``. Ports and user info are ignored.
 
 
 [v1.2.2] 15 July 2026

@@ -1,12 +1,16 @@
 """Shared base dataclass for the two kinds of link markdown-checker extracts: URLs and paths."""
 
+import locale
 from abc import ABC
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlparse
 
+from markdown_checker.patterns import DEFAULT_TRACKING_PARAMS
 from markdown_checker.patterns import LOCALE_PATTERN
-from markdown_checker.patterns import TRACKING_PATTERN
+from markdown_checker.patterns import tracking_pattern
 
 
 @dataclass(slots=True)
@@ -43,21 +47,35 @@ class MarkdownLinkBase(ABC):
 
     def has_locale(self) -> bool:
         """
-        Check if the link has a locale
+        Check if the link's path contains a locale segment, e.g. ``/en-us/``.
+
+        Only the path is searched (not the host, query or anchor), and a
+        candidate ``xx-yy`` segment only counts if it's a known locale, so
+        segments like ``/ci-cd/`` aren't reported.
 
         Returns:
             True if the link has a locale, False otherwise
         """
-        return bool(LOCALE_PATTERN.search(self.link))
+        path = urlparse(self.link).path
+        return any(
+            f"{match['language']}_{match['region']}".lower() in locale.locale_alias
+            for match in LOCALE_PATTERN.finditer(path)
+        )
 
-    def has_tracking(self) -> bool:
+    def has_tracking(self, params: Sequence[str] = DEFAULT_TRACKING_PARAMS) -> bool:
         """
-        Check if the link has a tracking ID
+        Check if the link carries any of the tracking query parameters in
+        ``params`` (case-insensitive), e.g. ``?wt.mc_id=`` or ``&wt.mc_id=``.
+
+        Args:
+            params: Tracking parameter names; any one of them counts.
 
         Returns:
             True if the link has a tracking ID, False otherwise
         """
-        return bool(TRACKING_PATTERN.search(self.link))
+        if not params:
+            return False
+        return bool(tracking_pattern(tuple(params)).search(self.link))
 
     def __str__(self) -> str:
         return self.link

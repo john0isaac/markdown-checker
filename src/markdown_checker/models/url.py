@@ -95,6 +95,20 @@ class MarkdownURL(MarkdownLinkBase):
         """
         return self.parsed_url.netloc
 
+    def matches_domain(self, domains: list[str]) -> bool:
+        """
+        Check whether the URL's host is one of ``domains`` or a subdomain of
+        one, e.g. ``example.com`` matches ``example.com`` and
+        ``www.example.com`` but not ``notexample.com``. Ports and user info
+        are ignored, and matching is case-insensitive.
+        """
+        hostname = (self.parsed_url.hostname or "").rstrip(".")
+        for domain in domains:
+            domain = domain.lower().strip(".")
+            if domain and (hostname == domain or hostname.endswith("." + domain)):
+                return True
+        return False
+
     def check(
         self,
         timeout: int = 20,

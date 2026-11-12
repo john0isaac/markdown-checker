@@ -47,6 +47,9 @@ Keys
    * - ``tracking-domains``
      - ``--tracking-domains``
      - array of strings
+   * - ``tracking-param``
+     - ``--tracking-param``
+     - array of strings
    * - ``skip-files``
      - ``--skip-files``
      - array of strings
@@ -96,6 +99,7 @@ Example
     skip-files = ["CODE_OF_CONDUCT.md", "SECURITY.md"]
     skip-domains = []
     tracking-domains = ["github.com", "microsoft.com", "visualstudio.com", "aka.ms", "azure.com"]
+    tracking-param = ["wt.mc_id"]
     guide-url = "https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md"
     timeout = 20
     retries = 3
