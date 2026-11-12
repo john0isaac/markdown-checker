@@ -38,16 +38,19 @@ Fragments on paths
 ----------------------
 
 A path may carry a trailing ``?query`` and/or ``#anchor`` - for example
-``docs/usage.md#configuration``. Both checks that operate on paths strip
-this fragment before resolving the file, so only the ``docs/usage.md``
-part needs to exist on disk; the anchor itself is never validated against
-the target file's headings.
+``docs/usage.md#configuration``. As in any URL, everything from the first
+``?`` or ``#`` onward is stripped before resolving the file, so only the
+``docs/usage.md`` part needs to exist on disk; the anchor itself is never
+validated against the target file's headings. The remaining path is then
+percent-decoded, so ``my%20file.md`` refers to ``my file.md``. A file name
+that really contains ``#`` or ``?`` must be written as ``%23``/``%3F``.
 
 Resolving a path to a file
 --------------------------------
 
 ``check_broken_paths`` tries to resolve a path relative to the markdown
 file it was found in first (e.g. ``../img.png`` in ``docs/usage.md``
-resolves against ``docs/``), then falls back to resolving it as an
-absolute or current-working-directory-relative path. A path is reported as
-broken only if neither resolution finds an existing file.
+resolves against ``docs/``), then relative to the current working
+directory. Root-relative paths (``/docs/usage.md``) are tried the same way
+with the leading ``/`` dropped. A path is reported as broken only if
+neither resolution finds an existing file.

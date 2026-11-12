@@ -18,6 +18,7 @@ Add a ``[tool.markdown-checker]`` table to your project's
     extensions = [".md", ".ipynb"]
     skip-files = ["CODE_OF_CONDUCT.md", "SECURITY.md"]
     tracking-domains = ["github.com", "microsoft.com", "visualstudio.com", "aka.ms", "azure.com"]
+    tracking-param = ["wt.mc_id"]
     guide-url = "https://github.com/john0isaac/markdown-checker/blob/main/CONTRIBUTING.md"
     max-workers = 10
     report-format = "markdown"

@@ -17,8 +17,9 @@ check automatically (e.g. it blocks bots) but you still want to keep the link:
 
     markdown-checker . -f check_broken_urls --skip-domains=example.com,test.com
 
-Matching is a substring match against the URL's hostname, so
-``--skip-domains=example.com`` also matches ``www.example.com``.
+A domain matches the URL's hostname exactly or as a parent domain, so
+``--skip-domains=example.com`` also matches ``www.example.com`` (but not
+``notexample.com``).
 
 Skip URLs containing a substring
 ------------------------------------
@@ -35,7 +36,7 @@ List syntax
 -----------
 
 Every list option (``--skip-domains``, ``--skip-urls-containing``,
-``--extensions``, ``--skip-files``, ``--tracking-domains``) takes a single
+``--extensions``, ``--skip-files``, ``--tracking-domains``, ``--tracking-param``) takes a single
 comma-separated value:
 
 - Correct: ``--skip-domains=example.com,test.com``

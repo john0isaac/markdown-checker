@@ -58,7 +58,7 @@ class BrokenURLsCheck(BaseCheck[MarkdownURL]):
         :meth:`collect` to resolve later.
         """
         config = config or Config()
-        effective_skip = [domain.lower() for domain in [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]]
+        effective_skip = [*config.skip_domains, *_BUILTIN_SKIP_DOMAINS]
         skip_urls_containing = config.skip_urls_containing
 
         # Standalone fallback (direct calls, tests): own a private service for this run only.
@@ -67,10 +67,7 @@ class BrokenURLsCheck(BaseCheck[MarkdownURL]):
 
         pending: list[tuple[MarkdownURL, Future[URLCheckResult]]] = []
         for url in links.urls:
-            hostname = url.host_name().lower()
-            if any(domain in hostname for domain in effective_skip) or any(
-                substring in url.link for substring in skip_urls_containing
-            ):
+            if url.matches_domain(effective_skip) or any(substring in url.link for substring in skip_urls_containing):
                 continue
             pending.append((url, _service.submit(url)))
         return (pending, _service if owns_service else None)

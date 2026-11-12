@@ -11,6 +11,7 @@ import click
 from markdown_checker import __version__
 from markdown_checker.checker import run_check_on_files
 from markdown_checker.models.config import Config
+from markdown_checker.patterns import DEFAULT_TRACKING_PARAMS
 from markdown_checker.reports import build_report
 from markdown_checker.reports import get_renderer
 from markdown_checker.reports import RENDERERS
@@ -121,6 +122,15 @@ class ListOfStrings(click.Option):
     type=list[str],
     default=["github.com", "microsoft.com", "visualstudio.com", "aka.ms", "azure.com"],
     help="List of tracking domains to check.",
+    required=False,
+)
+@click.option(
+    "-tp",
+    "--tracking-param",
+    cls=ListOfStrings,
+    type=list[str],
+    default=list(DEFAULT_TRACKING_PARAMS),
+    help="List of tracking query parameters; a link passes if it has any of them.",
     required=False,
 )
 @click.option(
@@ -258,6 +268,7 @@ def main(
     skip_domains: list[str],
     skip_urls_containing: list[str],
     tracking_domains: list[str],
+    tracking_param: list[str],
     timeout: int,
     retries: int,
     retry_on_429: bool,
@@ -309,6 +320,7 @@ def main(
         skip_domains=skip_domains,
         skip_urls_containing=skip_urls_containing,
         tracking_domains=tracking_domains,
+        tracking_param=tracking_param,
         timeout=timeout,
         retries=retries,
         retry_on_429=retry_on_429,

@@ -4,6 +4,8 @@ from typing import Literal
 
 import httpx2
 
+from markdown_checker.patterns import DEFAULT_TRACKING_PARAMS
+
 DEFAULT_HEADERS: dict[str, str] = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
@@ -33,8 +35,10 @@ class Config:
     """Holds all runtime configuration for a check run."""
 
     skip_domains: list[str] = field(default_factory=list)
-    """Hostnames to exclude from URL checks (substring match against the
-    URL's hostname). Used by ``check_broken_urls`` and ``check_urls_locale``.
+    """Domains to exclude from URL checks. A domain matches the URL's
+    hostname exactly or as a parent domain (``example.com`` matches
+    ``www.example.com`` but not ``notexample.com``). Used by
+    ``check_broken_urls``, ``check_urls_locale`` and ``check_urls_tracking``.
     """
 
     skip_urls_containing: list[str] = field(default_factory=list)
@@ -43,9 +47,16 @@ class Config:
     """
 
     tracking_domains: list[str] = field(default_factory=list)
-    """Hostnames that must carry a ``wt.mc_id`` tracking parameter. Only
-    used by ``check_urls_tracking``; URLs on other hosts are ignored by
-    that check.
+    """Domains whose URLs must carry a tracking parameter (see
+    ``tracking_param``), matched like ``skip_domains`` (subdomains
+    included). Only used by ``check_urls_tracking``; URLs on other hosts are
+    ignored by that check.
+    """
+
+    tracking_param: list[str] = field(default_factory=lambda: list(DEFAULT_TRACKING_PARAMS))
+    """Tracking query parameter names a link must carry; any one of them
+    counts, matched case-insensitively. Used by ``check_urls_tracking`` and
+    ``check_paths_tracking``.
     """
 
     timeout: int = 20

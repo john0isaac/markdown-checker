@@ -18,6 +18,10 @@ from markdown_checker.models.path import MarkdownPath
         ("https://example.com/azure", False),
         ("./en-us/docs/guide.md", True),
         ("./docs/guide.md", False),
+        ("https://learn.microsoft.com/en-us", True),
+        ("https://example.com/ci-cd/setup", False),
+        ("https://example.com/page?next=/en-us/", False),
+        ("https://example.com/page#/en-us/", False),
     ],
 )
 def test_has_locale(link: str, expected: bool):

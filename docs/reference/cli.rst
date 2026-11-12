@@ -78,13 +78,32 @@ Type
 Default
   ``github.com,microsoft.com,visualstudio.com,aka.ms,azure.com``.
 Constraints
-  Only affects ``check_urls_tracking``.
+  Only affects ``check_urls_tracking``. Subdomains are included, e.g.
+  ``microsoft.com`` also matches ``learn.microsoft.com``.
 Description
-  Hostnames that must carry a ``wt.mc_id`` tracking parameter.
+  Hostnames that must carry a tracking parameter (see ``--tracking-param``).
 
 .. code-block:: bash
 
     markdown-checker . -f check_urls_tracking --tracking-domains=github.com,microsoft.com
+
+``-tp``, ``--tracking-param``
+---------------------------------
+
+Type
+  ``list[str]``, comma-separated.
+Default
+  ``wt.mc_id``.
+Constraints
+  Only affects ``check_urls_tracking`` and ``check_paths_tracking``.
+  Matched case-insensitively as a query parameter (after ``?`` or ``&``).
+Description
+  Tracking query parameters a link must carry. A link passes if it has any
+  one of them.
+
+.. code-block:: bash
+
+    markdown-checker . -f check_urls_tracking --tracking-param=wt.mc_id,utm_source
 
 ``-sf``, ``--skip-files``
 -----------------------------
@@ -110,8 +129,9 @@ Type
 Default
   ``[]`` (none).
 Constraints
-  Only affects ``check_broken_urls`` and ``check_urls_locale``. Substring
-  match against the URL's hostname.
+  Only affects ``check_broken_urls`` and ``check_urls_locale``. Matches the
+  URL's hostname exactly or as a parent domain (``example.com`` matches
+  ``www.example.com`` but not ``notexample.com``).
 Description
   Domains to exclude from URL checks.
 

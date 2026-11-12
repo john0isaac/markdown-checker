@@ -1,8 +1,10 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import unquote
 
 from markdown_checker.models.base import MarkdownLinkBase
+from markdown_checker.patterns import QUERY_OR_ANCHOR_PATTERN
 from markdown_checker.patterns import TRACKING_QUERY_PATTERN
 
 
@@ -26,48 +28,36 @@ class MarkdownPath(MarkdownLinkBase):
     def remove_fragments(self) -> str:
         """
         Strip the tracking query string and any trailing ``?query``/``#anchor``
-        fragment from the link, leaving just the file path portion.
+        fragment from the link, then percent-decode what's left (e.g.
+        ``my%20file.md`` becomes ``my file.md``), leaving just the file path.
+
+        As in any URL, the first ``?`` or ``#`` starts the fragment, so a
+        literal ``#`` or ``?`` in a file name must be written as ``%23``/``%3F``.
 
         Returns:
             The link with its fragment removed, as a string.
         """
         cleaned = TRACKING_QUERY_PATTERN.sub("", self.link)
-
-        # Find the last occurrence of the dot
-        dot_index = cleaned.rfind(".")
-
-        # If a dot is found, slice the string up to the end of the extension
-        if dot_index != -1:
-            # Find the next slash, query or fragment after the dot
-            slash_index = cleaned.find("/", dot_index)
-            fragment_index = cleaned.find("#", dot_index)
-            query_index = cleaned.find("?", dot_index)
-
-            # Determine the earliest occurrence of either slash, query or fragment
-            end_index = min(
-                slash_index if slash_index != -1 else len(cleaned),
-                fragment_index if fragment_index != -1 else len(cleaned),
-                query_index if query_index != -1 else len(cleaned),
-            )
-            return cleaned[:end_index]
-        else:
-            return cleaned
+        return unquote(QUERY_OR_ANCHOR_PATTERN.sub("", cleaned))
 
     def get_full_path(self) -> Path:
         """
-        Resolve the link (with its fragment stripped) to an absolute path,
-        relative to the current working directory.
+        Resolve the link (with its fragment stripped) to an absolute path.
 
-        This is used for links that are themselves absolute (e.g.
-        ``/docs/usage.md``) or otherwise resolvable without knowing which
-        file the link appeared in. If resolution fails (e.g. on an unusual
-        path), falls back to :meth:`get_full_path_relative`.
+        Root-relative links (e.g. ``/docs/usage.md``) resolve against the
+        current working directory, which is treated as the repository root.
+        Other links resolve relative to the current working directory too;
+        if that fails (e.g. on an unusual path), this falls back to
+        :meth:`get_full_path_relative`.
 
         Returns:
             The resolved absolute path.
         """
+        cleaned = self.remove_fragments()
+        if cleaned.startswith("/"):
+            return Path(os.path.normpath(Path.cwd() / cleaned.lstrip("/")))
         try:
-            return self.path_without_fragments.resolve()
+            return Path(cleaned).resolve()
         except (FileNotFoundError, RuntimeError):
             return Path(self.get_full_path_relative())
 
@@ -87,41 +77,21 @@ class MarkdownPath(MarkdownLinkBase):
         """
         Check whether the link's target file exists on disk.
 
-        Tries resolution relative to the containing markdown file first
-        (see :meth:`get_full_path_relative`), then as an absolute/CWD-relative
-        path (see :meth:`get_full_path`). Used by ``check_broken_paths`` to
-        flag links whose target is missing.
+        Tries resolution relative to the containing markdown file first, then
+        relative to the current working directory. Root-relative links (e.g.
+        ``/docs/usage.md``) are tried the same way with the leading ``/``
+        dropped. Used by ``check_broken_paths`` to flag links whose target is
+        missing.
 
         Returns:
             True if the path exists, False otherwise
         """
-        # For paths starting with /, strip the leading / to allow relative resolution
-        link = self.link.lstrip("/") if self.link.startswith("/") else self.link
-        cleaned = TRACKING_QUERY_PATTERN.sub("", link)
+        cleaned = self.remove_fragments().lstrip("/")
 
-        # Strip queries/fragments the same way remove_fragments() does
-        dot_index = cleaned.rfind(".")
-        if dot_index != -1:
-            slash_index = cleaned.find("/", dot_index)
-            fragment_index = cleaned.find("#", dot_index)
-            query_index = cleaned.find("?", dot_index)
-            end_index = min(
-                slash_index if slash_index != -1 else len(cleaned),
-                fragment_index if fragment_index != -1 else len(cleaned),
-                query_index if query_index != -1 else len(cleaned),
-            )
-            cleaned = cleaned[:end_index]
-
-        # Check relative path resolution
         relative_path = os.path.normpath(os.path.join(os.path.dirname(self.file_path), cleaned))
         if os.path.exists(relative_path):
             return True
-        # Check absolute path resolution
         try:
-            if Path(cleaned).resolve().exists():
-                return True
+            return Path(cleaned).resolve().exists()
         except (FileNotFoundError, RuntimeError, OSError):
-            resolved = Path(relative_path)
-            if resolved.exists():
-                return True
-        return False
+            return False
